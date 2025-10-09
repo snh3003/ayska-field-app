@@ -1,0 +1,29 @@
+{
+  "admins": [
+    { "id": "a1", "email": "admin@field.co", "password": "admin123", "name": "Admin User" }
+  ],
+  "employees": [
+    { "id": "e1", "email": "alice@field.co", "password": "password123", "name": "Alice", "role": "employee" },
+    { "id": "e2", "email": "bob@field.co", "password": "password123", "name": "Bob", "role": "employee" }
+  ],
+  "doctors": [
+    { "id": "d1", "name": "Dr. Smith", "specialization": "Cardiology", "location": { "lat": 40.7128, "lng": -74.0060 }, "phone": "+1-555-0101" },
+    { "id": "d2", "name": "Dr. Johnson", "specialization": "Neurology", "location": { "lat": 40.7589, "lng": -73.9851 }, "phone": "+1-555-0102" },
+    { "id": "d3", "name": "Dr. Williams", "specialization": "Orthopedics", "location": { "lat": 40.7505, "lng": -73.9934 }, "phone": "+1-555-0103" }
+  ],
+  "assignments": [
+    { "id": "as1", "employeeId": "e1", "doctorId": "d1", "assignedDate": "2025-01-15", "status": "active" },
+    { "id": "as2", "employeeId": "e1", "doctorId": "d2", "assignedDate": "2025-01-15", "status": "active" },
+    { "id": "as3", "employeeId": "e2", "doctorId": "d3", "assignedDate": "2025-01-15", "status": "active" }
+  ],
+  "attendance": [
+    { "id": "at1", "employeeId": "e1", "startTime": "2025-01-15T09:00:00Z", "date": "2025-01-15", "status": "active" },
+    { "id": "at2", "employeeId": "e2", "startTime": "2025-01-15T08:30:00Z", "endTime": "2025-01-15T17:00:00Z", "date": "2025-01-15", "status": "completed" }
+  ],
+  "visits": [
+    { "id": "v1", "employeeId": "e1", "doctorId": "d1", "checkInTime": "2025-01-15T10:00:00Z", "notes": "Regular checkup", "status": "completed" },
+    { "id": "v2", "employeeId": "e1", "doctorId": "d2", "checkInTime": "2025-01-15T14:00:00Z", "status": "in_progress" }
+  ]
+}
+
+
