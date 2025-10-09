@@ -8,8 +8,10 @@ interface InputProps {
   placeholder?: string;
   value: string;
   onChangeText: (text: string) => void;
+  onBlur?: () => void;
   secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   multiline?: boolean;
   numberOfLines?: number;
   error?: string;
@@ -22,8 +24,10 @@ export const Input: React.FC<InputProps> = ({
   placeholder,
   value,
   onChangeText,
+  onBlur,
   secureTextEntry,
   keyboardType = 'default',
+  autoCapitalize = 'sentences',
   multiline,
   numberOfLines,
   error,
@@ -33,6 +37,13 @@ export const Input: React.FC<InputProps> = ({
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
   const [isFocused, setIsFocused] = useState(false);
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    if (onBlur) {
+      onBlur();
+    }
+  };
 
   return (
     <View style={[styles.container, style]}>
@@ -60,10 +71,11 @@ export const Input: React.FC<InputProps> = ({
           placeholderTextColor={theme.textSecondary}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
+          autoCapitalize={autoCapitalize}
           multiline={multiline}
           numberOfLines={numberOfLines}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={handleBlur}
           style={[
             Typography.body,
             styles.input,

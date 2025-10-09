@@ -2,6 +2,8 @@ import { Colors, Typography, BorderRadius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { hapticFeedback } from '@/utils/haptics';
+import { getButtonA11yProps } from '@/utils/accessibility';
 
 interface ButtonSecondaryProps {
   title: string;
@@ -9,6 +11,7 @@ interface ButtonSecondaryProps {
   disabled?: boolean;
   loading?: boolean;
   style?: any;
+  accessibilityHint?: string;
 }
 
 export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({ 
@@ -16,14 +19,20 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
   onPress, 
   disabled, 
   loading,
-  style 
+  style,
+  accessibilityHint 
 }) => {
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
+
+  const handlePress = () => {
+    hapticFeedback.light();
+    onPress();
+  };
   
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={handlePress}
       disabled={disabled || loading}
       style={[
         styles.button,
@@ -34,6 +43,7 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
         style
       ]}
       activeOpacity={0.8}
+      {...getButtonA11yProps(title, accessibilityHint, disabled || loading)}
     >
       {loading ? (
         <ActivityIndicator color={theme.primary} />

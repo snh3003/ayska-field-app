@@ -1,128 +1,189 @@
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Text, View, SafeAreaView, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Input } from '../src/components/ui/Input';
 import { ButtonPrimary } from '../src/components/ui/ButtonPrimary';
 import { Card } from '../src/components/ui/Card';
-import { Input } from '../src/components/ui/Input';
-import { localDataService } from '../src/services/LocalDataService';
-import type { RootState } from '../src/store';
 import { login } from '../src/store/slices/authSlice';
-import { ThemeToggle } from '../components/ThemeToggle';
+import type { RootState } from '../src/store';
+import { localDataService } from '../src/services/LocalDataService';
+import { ThemeToggle } from '../src/components/layout/ThemeToggle';
+import { Logo } from '../src/components/layout/Logo';
+import { useFormValidation, commonRules } from '../utils/validation';
+import { useToast } from '../contexts/ToastContext';
+import { hapticFeedback } from '../utils/haptics';
+import { getHeaderA11yProps } from '../utils/accessibility';
 
 export default function LoginScreen() {
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((s: RootState) => s.auth);
-  const [email, setEmail] = useState('alice@field.co');
-  const [password, setPassword] = useState('password123');
-  const [loginError, setLoginError] = useState<string | null>(null);
-
-  const onSubmit = async () => {
-    setLoginError(null);
-    
-    // Validate against LocalDataService
-    const admin = localDataService.validateAdmin(email, password);
-    const employee = localDataService.validateEmployee(email, password);
-    
-    if (admin) {
-      const action = await dispatch(login({ email, password, role: 'admin', userId: admin.id, name: admin.name }) as any);
-      if (action.type.endsWith('fulfilled')) {
-        router.replace('/(tabs)');
-      }
-    } else if (employee) {
-      const action = await dispatch(login({ email, password, role: 'employee', userId: employee.id, name: employee.name }) as any);
-      if (action.type.endsWith('fulfilled')) {
-        router.replace('/(tabs)');
-      }
-    } else {
-      setLoginError('Invalid email or password');
-    }
-  };
-
+  const { loading: loginLoading, error: loginError } = useSelector((s: RootState) => s.auth);
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
+  const toast = useToast();
+
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    validateAll,
+    setValues,
+  } = useFormValidation(
+    { email: '', password: '' },
+    {
+      email: [
+        { required: true, message: 'Email is required' },
+        commonRules.email,
+      ],
+      password: [
+        { required: true, message: 'Password is required' },
+        commonRules.password,
+      ],
+    }
+  );
+
+  const onSubmit = async () => {
+    if (!validateAll()) {
+      hapticFeedback.error();
+      toast.error('Please fix the errors in the form');
+      return;
+    }
+
+    const { email, password } = values;
+
+    // Check admin
+    const admin = localDataService.validateAdmin(email, password);
+    if (admin) {
+      const action = await dispatch(
+        login({ email, password, role: 'admin', userId: admin.id, name: admin.name }) as any
+      );
+      if (action.type.endsWith('fulfilled')) {
+        hapticFeedback.success();
+        toast.success(`Welcome back, ${admin.name}!`);
+        router.replace('/(tabs)');
+      }
+      return;
+    }
+
+    // Check employee
+    const employee = localDataService.validateEmployee(email, password);
+    if (employee) {
+      const action = await dispatch(
+        login({ email, password, role: 'employee', userId: employee.id, name: employee.name }) as any
+      );
+      if (action.type.endsWith('fulfilled')) {
+        hapticFeedback.success();
+        toast.success(`Welcome back, ${employee.name}!`);
+        router.replace('/(tabs)');
+      }
+      return;
+    }
+
+    // Invalid credentials
+    hapticFeedback.error();
+    toast.error('Invalid email or password');
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.header}>
-            <View style={styles.themeToggleContainer}>
-              <ThemeToggle />
-            </View>
-            <View style={[styles.logoContainer, { backgroundColor: theme.primary + '15' }]}>
-              <Ionicons name="briefcase" size={48} color={theme.primary} />
-            </View>
-            <Text style={[Typography.h1, { color: theme.text, marginTop: Spacing.lg, textAlign: 'center' }]}>
-              Field Sales
-            </Text>
-            <Text style={[Typography.body, { color: theme.textSecondary, marginTop: Spacing.sm, textAlign: 'center' }]}>
-              Track your sales activities effortlessly
-            </Text>
+            <ThemeToggle />
           </View>
 
-          <View style={styles.formContainer}>
-            <Card variant="elevated" style={{ padding: Spacing.lg }}>
-              <Input
-                label="Email"
-                placeholder="Enter your email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                icon={<Ionicons name="mail-outline" size={20} color={theme.icon} />}
-              />
-              <Input
-                label="Password"
-                placeholder="Enter your password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                icon={<Ionicons name="lock-closed-outline" size={20} color={theme.icon} />}
-              />
-              <ButtonPrimary 
-                title="Sign In" 
-                onPress={onSubmit} 
-                loading={loading}
-                style={{ marginTop: Spacing.sm }}
-              />
-              {!!error && (
-                <View style={styles.errorContainer}>
-                  <Ionicons name="alert-circle" size={16} color={theme.error} />
-                  <Text style={[Typography.bodySmall, { color: theme.error, marginLeft: Spacing.xs }]}>
-                    {error}
-                  </Text>
-                </View>
-              )}
-              {!!loginError && (
-                <View style={styles.errorContainer}>
-                  <Ionicons name="alert-circle" size={16} color={theme.error} />
-                  <Text style={[Typography.bodySmall, { color: theme.error, marginLeft: Spacing.xs }]}>
-                    {loginError}
-                  </Text>
-                </View>
-              )}
-            </Card>
+          <Logo size="responsive" matchCardWidth={true} style={styles.logo} />
 
-            <View style={styles.quickLoginContainer}>
-              <Text style={[Typography.caption, { color: theme.textSecondary, textAlign: 'center', marginBottom: Spacing.sm }]}>
-                Quick login credentials:
+          <Card variant="elevated" style={styles.formCard}>
+            <Text style={[Typography.h3, { color: theme.text, marginBottom: Spacing.xs }]}>
+              Welcome Back
+            </Text>
+            <Text style={[Typography.body, { color: theme.textSecondary, marginBottom: Spacing.xl }]}>
+              Sign in to continue
+            </Text>
+
+            <Input
+              placeholder="Email"
+              value={values.email}
+              onChangeText={(text) => handleChange('email', text)}
+              onBlur={() => handleBlur('email')}
+              icon={<Ionicons name="mail-outline" size={20} color={theme.textSecondary} />}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              error={touched.email ? errors.email : undefined}
+            />
+
+            <Input
+              placeholder="Password"
+              value={values.password}
+              onChangeText={(text) => handleChange('password', text)}
+              onBlur={() => handleBlur('password')}
+              icon={<Ionicons name="lock-closed-outline" size={20} color={theme.textSecondary} />}
+              secureTextEntry
+              error={touched.password ? errors.password : undefined}
+            />
+
+            <ButtonPrimary 
+              title="Sign In" 
+              onPress={onSubmit} 
+              loading={loginLoading}
+              accessibilityHint="Double tap to sign in to your account"
+            />
+            
+            {!!loginError && (
+              <Text style={[Typography.bodySmall, { color: theme.error, marginTop: Spacing.md, textAlign: 'center' }]}>
+                {loginError}
               </Text>
-              <Text style={[Typography.caption, { color: theme.textSecondary, textAlign: 'center' }]}>
-                Employee: alice@field.co / password123
-              </Text>
-              <Text style={[Typography.caption, { color: theme.textSecondary, textAlign: 'center' }]}>
+            )}
+          </Card>
+
+          <View style={styles.demoCredentials}>
+            <Text style={[Typography.caption, { color: theme.textSecondary, textAlign: 'center', marginBottom: Spacing.sm }]}>
+              Demo Credentials
+            </Text>
+            <TouchableOpacity 
+              onPress={() => {
+                setValues({ email: 'admin@field.co', password: 'admin123' });
+                onSubmit();
+              }}
+              style={styles.demoButton}
+            >
+              <Text style={[Typography.caption, { color: theme.primary, textAlign: 'center' }]}>
                 Admin: admin@field.co / admin123
               </Text>
-            </View>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => {
+                setValues({ email: 'alice@field.co', password: 'password123' });
+                onSubmit();
+              }}
+              style={styles.demoButton}
+            >
+              <Text style={[Typography.caption, { color: theme.primary, textAlign: 'center' }]}>
+                Employee: alice@field.co / password123
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -139,39 +200,28 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: Spacing.lg,
+    justifyContent: 'center',
+    padding: Spacing.xl,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    marginTop: Spacing.xl,
+    marginBottom: Spacing.md,
+  },
+  logo: {
+    marginBottom: Spacing.xl,
+    marginTop: Spacing.lg,
+  },
+  formCard: {
     marginBottom: Spacing.xl,
   },
-  themeToggleContainer: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-  },
-  logoContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: BorderRadius.xl,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  formContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: Spacing.md,
-    justifyContent: 'center',
-  },
-  quickLoginContainer: {
+  demoCredentials: {
     marginTop: Spacing.lg,
-    padding: Spacing.md,
+  },
+  demoButton: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.xs,
   },
 });
-
-

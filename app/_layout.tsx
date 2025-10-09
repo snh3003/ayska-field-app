@@ -5,6 +5,9 @@ import 'react-native-reanimated';
 import { Provider } from 'react-redux';
 import { store } from '../src/store';
 import { ThemeProvider, useColorScheme } from '../contexts/ThemeContext';
+import { ToastProvider } from '../contexts/ToastContext';
+import { ErrorBoundary } from '../src/components/feedback/ErrorBoundary';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export const unstable_settings = {
   anchor: 'login',
@@ -33,10 +36,16 @@ function RootLayoutContent() {
 
 export default function RootLayout() {
   return (
-    <Provider store={store}>
-      <ThemeProvider>
-        <RootLayoutContent />
-      </ThemeProvider>
-    </Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={store}>
+        <ThemeProvider>
+          <ToastProvider>
+            <ErrorBoundary>
+              <RootLayoutContent />
+            </ErrorBoundary>
+          </ToastProvider>
+        </ThemeProvider>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }

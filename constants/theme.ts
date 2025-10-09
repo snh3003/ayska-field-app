@@ -1,55 +1,61 @@
 /**
  * Modern, minimal design system with elegant Light and Dark modes
- * Colors, Typography, and Spacing for consistent UI/UX
+ * Colors complement Ayska logo: Dark Blue "Ay" + Dark Red "ska"
  */
 
 import { Platform } from 'react-native';
 
-// Modern Color Palette
-const primaryBlue = '#4A90E2';
-const secondaryTeal = '#50E3C2';
-const lightBg = '#F5F5F5';
-const darkBg = '#121212';
-const textDark = '#1A1A1A';
-const textLight = '#EAEAEA';
+// Brand Color Palette - Complementing Ayska Logo
+const primaryBlue = '#1E40AF'; // Dark blue matching "Ay"
+const primaryRed = '#B91C1C'; // Dark red matching "ska"
+const secondaryTeal = '#0891B2'; // Complementary cyan
+const accentPurple = '#7C3AED'; // Accent color
+const lightBg = '#F9FAFB'; // Soft white
+const darkBg = '#0F172A'; // Deep navy
+const textDark = '#1E293B';
+const textLight = '#F1F5F9';
 
 export const Colors = {
   light: {
     text: textDark,
-    textSecondary: '#666666',
+    textSecondary: '#64748B',
     background: lightBg,
     tint: primaryBlue,
-    icon: '#666666',
-    tabIconDefault: '#999999',
+    icon: '#64748B',
+    tabIconDefault: '#94A3B8',
     tabIconSelected: primaryBlue,
     primary: primaryBlue,
+    primaryRed: primaryRed,
     secondary: secondaryTeal,
+    accent: accentPurple,
     card: '#FFFFFF',
-    cardShadow: 'rgba(0, 0, 0, 0.08)',
-    border: '#E0E0E0',
-    success: '#10B981',
-    warning: '#F59E0B',
-    error: '#EF4444',
-    info: '#3B82F6',
-    overlay: 'rgba(0, 0, 0, 0.5)',
+    cardShadow: 'rgba(30, 64, 175, 0.08)', // Blue tint shadow
+    border: '#E2E8F0',
+    success: '#059669',
+    warning: '#D97706',
+    error: primaryRed,
+    info: '#0891B2',
+    overlay: 'rgba(15, 23, 42, 0.5)',
   },
   dark: {
     text: textLight,
-    textSecondary: '#A0A0A0',
+    textSecondary: '#94A3B8',
     background: darkBg,
-    tint: primaryBlue,
-    icon: '#A0A0A0',
-    tabIconDefault: '#666666',
-    tabIconSelected: primaryBlue,
-    primary: primaryBlue,
-    secondary: secondaryTeal,
-    card: '#1E1E1E',
-    cardShadow: 'rgba(0, 0, 0, 0.3)',
-    border: '#2A2A2A',
+    tint: '#60A5FA', // Lighter blue for dark mode
+    icon: '#94A3B8',
+    tabIconDefault: '#64748B',
+    tabIconSelected: '#60A5FA',
+    primary: '#60A5FA', // Lighter blue for visibility
+    primaryRed: '#EF4444', // Lighter red for visibility
+    secondary: '#06B6D4', // Lighter cyan
+    accent: '#A78BFA', // Lighter purple
+    card: '#1E293B',
+    cardShadow: 'rgba(0, 0, 0, 0.4)',
+    border: '#334155',
     success: '#10B981',
     warning: '#F59E0B',
     error: '#EF4444',
-    info: '#3B82F6',
+    info: '#06B6D4',
     overlay: 'rgba(0, 0, 0, 0.7)',
   },
 };

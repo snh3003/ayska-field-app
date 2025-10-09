@@ -6,7 +6,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Card } from '../components/ui/Card';
-import { ThemeToggle } from '../../components/ThemeToggle';
+import { ThemeToggle } from '../components/layout/ThemeToggle';
+import { Logo } from '../components/layout/Logo';
 import type { RootState } from '../store';
 import { logout } from '../store/slices/authSlice';
 
@@ -78,6 +79,11 @@ export default function Settings() {
             Settings
           </Text>
           <ThemeToggle />
+        </View>
+
+        {/* Logo & Brand */}
+        <View style={styles.brandSection}>
+          <Logo size="responsive" matchCardWidth={true} />
         </View>
 
         {/* Profile Card */}
@@ -200,6 +206,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: Spacing.lg,
+  },
+  brandSection: {
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+    marginTop: Spacing.md,
   },
   profileCard: {
     padding: Spacing.lg,
