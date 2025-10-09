@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import data from '../../fixtures/data.json';
 
 export type UserRole = 'employee' | 'admin' | null;
 
@@ -23,17 +22,13 @@ const initialState: AuthState = {
 
 export const login = createAsyncThunk(
   'auth/login',
-  async ({ email, password }: { email: string; password: string }) => {
-    const user = data.users.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+  async ({ email, password, role, userId, name }: { email: string; password: string; role: Exclude<UserRole, null>; userId: string; name: string }) => {
     await new Promise((r) => setTimeout(r, 300));
-    if (!user) {
-      throw new Error('Invalid credentials');
-    }
     return {
-      token: `local-${user.id}`,
-      role: user.role as Exclude<UserRole, null>,
-      userId: user.id,
-      name: user.name,
+      token: `local-${userId}`,
+      role,
+      userId,
+      name,
     };
   }
 );

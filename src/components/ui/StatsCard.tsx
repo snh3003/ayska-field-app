@@ -1,16 +1,23 @@
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, BorderRadius, Spacing, Shadows } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 interface StatsCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
-  color?: 'primary' | 'secondary' | 'success' | 'warning';
+  color?: 'primary' | 'secondary' | 'success' | 'warning' | 'info';
+  icon?: React.ReactNode;
 }
 
-export const StatsCard: React.FC<StatsCardProps> = ({ title, value, subtitle, color = 'primary' }) => {
+export const StatsCard: React.FC<StatsCardProps> = ({ 
+  title, 
+  value, 
+  subtitle, 
+  color = 'primary',
+  icon 
+}) => {
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
 
@@ -19,36 +26,62 @@ export const StatsCard: React.FC<StatsCardProps> = ({ title, value, subtitle, co
       case 'secondary':
         return theme.secondary;
       case 'success':
-        return '#10B981';
+        return theme.success;
       case 'warning':
-        return '#F59E0B';
+        return theme.warning;
+      case 'info':
+        return theme.info;
       default:
         return theme.primary;
     }
   };
 
+  const accentColor = getColor();
+
   return (
-    <View style={{
-      backgroundColor: theme.card,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor: theme.border,
-      flex: 1,
-      marginHorizontal: 4,
-    }}>
-      <Text style={{ fontSize: 14, color: theme.text, opacity: 0.7, marginBottom: 4 }}>
+    <View style={[
+      styles.container,
+      {
+        backgroundColor: theme.card,
+        borderColor: theme.border,
+      },
+      Shadows.small
+    ]}>
+      {icon && (
+        <View style={[styles.iconContainer, { backgroundColor: accentColor + '15' }]}>
+          {icon}
+        </View>
+      )}
+      <Text style={[Typography.bodySmall, { color: theme.textSecondary, marginBottom: Spacing.xs }]}>
         {title}
       </Text>
-      <Text style={{ fontSize: 24, fontWeight: '700', color: getColor(), marginBottom: 4 }}>
+      <Text style={[Typography.h2, { color: accentColor, marginBottom: subtitle ? Spacing.xs : 0 }]}>
         {value}
       </Text>
       {subtitle && (
-        <Text style={{ fontSize: 12, color: theme.text, opacity: 0.6 }}>
+        <Text style={[Typography.caption, { color: theme.textSecondary }]}>
           {subtitle}
         </Text>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
+    flex: 1,
+    marginHorizontal: Spacing.xs / 2,
+    borderWidth: 0,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+});

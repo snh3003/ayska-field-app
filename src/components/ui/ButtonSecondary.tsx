@@ -1,20 +1,65 @@
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, BorderRadius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 
-export const ButtonSecondary: React.FC<{ title: string; onPress: () => void; disabled?: boolean }> = ({ title, onPress, disabled }) => {
+interface ButtonSecondaryProps {
+  title: string;
+  onPress: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+  style?: any;
+}
+
+export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({ 
+  title, 
+  onPress, 
+  disabled, 
+  loading,
+  style 
+}) => {
   const scheme = useColorScheme() ?? 'light';
-  const color = Colors[scheme].primary ?? Colors[scheme].tint;
+  const theme = Colors[scheme];
+  
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={disabled}
-      style={{ backgroundColor: 'transparent', borderWidth: 1, borderColor: color, padding: 14, borderRadius: 10, opacity: disabled ? 0.6 : 1 }}
+      disabled={disabled || loading}
+      style={[
+        styles.button,
+        { 
+          borderColor: theme.primary,
+          opacity: (disabled || loading) ? 0.6 : 1 
+        },
+        style
+      ]}
+      activeOpacity={0.8}
     >
-      <Text style={{ color, textAlign: 'center', fontWeight: '700' }}>{title}</Text>
+      {loading ? (
+        <ActivityIndicator color={theme.primary} />
+      ) : (
+        <Text style={[styles.text, Typography.button, { color: theme.primary }]}>
+          {title}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+  },
+  text: {
+    textAlign: 'center',
+  },
+});
 
 

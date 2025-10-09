@@ -9,12 +9,14 @@
   "doctors": [
     { "id": "d1", "name": "Dr. Smith", "specialization": "Cardiology", "location": { "lat": 40.7128, "lng": -74.0060 }, "phone": "+1-555-0101" },
     { "id": "d2", "name": "Dr. Johnson", "specialization": "Neurology", "location": { "lat": 40.7589, "lng": -73.9851 }, "phone": "+1-555-0102" },
-    { "id": "d3", "name": "Dr. Williams", "specialization": "Orthopedics", "location": { "lat": 40.7505, "lng": -73.9934 }, "phone": "+1-555-0103" }
+    { "id": "d3", "name": "Dr. Williams", "specialization": "Orthopedics", "location": { "lat": 40.7505, "lng": -73.9934 }, "phone": "+1-555-0103" },
+    { "id": "d4", "name": "Dr. Marley", "specialization": "Orthopedics", "location": { "lat": 40.7505, "lng": -73.9934 }, "phone": "+1-555-0103" }
   ],
   "assignments": [
     { "id": "as1", "employeeId": "e1", "doctorId": "d1", "assignedDate": "2025-01-15", "status": "active" },
     { "id": "as2", "employeeId": "e1", "doctorId": "d2", "assignedDate": "2025-01-15", "status": "active" },
-    { "id": "as3", "employeeId": "e2", "doctorId": "d3", "assignedDate": "2025-01-15", "status": "active" }
+    { "id": "as3", "employeeId": "e1", "doctorId": "d3", "assignedDate": "2025-01-15", "status": "active" },
+    { "id": "as4", "employeeId": "e1", "doctorId": "d4", "assignedDate": "2025-01-15", "status": "active" }
   ],
   "attendance": [
     { "id": "at1", "employeeId": "e1", "startTime": "2025-01-15T09:00:00Z", "date": "2025-01-15", "status": "active" },
