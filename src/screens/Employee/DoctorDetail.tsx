@@ -1,13 +1,25 @@
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View, SafeAreaView, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import {
+  Linking,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
 import { ButtonPrimary } from '../../components/ui/ButtonPrimary';
 import { ButtonSecondary } from '../../components/ui/ButtonSecondary';
-import { localDataService, type Doctor, type Visit } from '../../services/LocalDataService';
+import {
+  type Doctor,
+  localDataService,
+  type Visit,
+} from '../../services/LocalDataService';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 
@@ -26,7 +38,9 @@ export default function DoctorDetail() {
 
       if (userId) {
         const allVisits = localDataService.getAll<Visit>('visits');
-        const doctorVisits = allVisits.filter((v: Visit) => v.doctorId === id && v.employeeId === userId);
+        const doctorVisits = allVisits.filter(
+          (v: Visit) => v.doctorId === id && v.employeeId === userId
+        );
         setVisits(doctorVisits);
       }
     }
@@ -54,10 +68,17 @@ export default function DoctorDetail() {
 
   if (!doctor) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.background }]}
+      >
         <View style={styles.centerContent}>
           <Ionicons name="alert-circle" size={64} color={theme.textSecondary} />
-          <Text style={[Typography.h4, { color: theme.textSecondary, marginTop: Spacing.md }]}>
+          <Text
+            style={[
+              Typography.h4,
+              { color: theme.textSecondary, marginTop: Spacing.md },
+            ]}
+          >
             Doctor not found
           </Text>
         </View>
@@ -66,15 +87,17 @@ export default function DoctorDetail() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <ScrollView 
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => router.back()}
             style={[styles.backButton, { backgroundColor: theme.card }]}
           >
@@ -89,14 +112,24 @@ export default function DoctorDetail() {
         {/* Doctor Profile Card */}
         <Card variant="elevated" style={styles.profileCard}>
           <View style={styles.profileHeader}>
-            <View style={[styles.avatarLarge, { backgroundColor: theme.primary + '15' }]}>
+            <View
+              style={[
+                styles.avatarLarge,
+                { backgroundColor: theme.primary + '15' },
+              ]}
+            >
               <Ionicons name="person" size={48} color={theme.primary} />
             </View>
             <View style={styles.profileInfo}>
               <Text style={[Typography.h2, { color: theme.text }]}>
                 {doctor.name}
               </Text>
-              <Text style={[Typography.body, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+              <Text
+                style={[
+                  Typography.body,
+                  { color: theme.textSecondary, marginTop: Spacing.xs },
+                ]}
+              >
                 {doctor.specialization}
               </Text>
             </View>
@@ -104,21 +137,42 @@ export default function DoctorDetail() {
         </Card>
 
         {/* Contact Information */}
-        <Text style={[Typography.h4, { color: theme.text, marginBottom: Spacing.md, marginTop: Spacing.lg }]}>
+        <Text
+          style={[
+            Typography.h4,
+            {
+              color: theme.text,
+              marginBottom: Spacing.md,
+              marginTop: Spacing.lg,
+            },
+          ]}
+        >
           Contact Information
         </Text>
-        
+
         {doctor.phone && (
           <Card variant="elevated">
             <TouchableOpacity onPress={handleCall} style={styles.contactRow}>
-              <View style={[styles.contactIcon, { backgroundColor: theme.success + '15' }]}>
+              <View
+                style={[
+                  styles.contactIcon,
+                  { backgroundColor: theme.success + '15' },
+                ]}
+              >
                 <Ionicons name="call" size={24} color={theme.success} />
               </View>
               <View style={styles.contactInfo}>
-                <Text style={[Typography.caption, { color: theme.textSecondary }]}>
+                <Text
+                  style={[Typography.caption, { color: theme.textSecondary }]}
+                >
                   Phone Number
                 </Text>
-                <Text style={[Typography.body, { color: theme.text, marginTop: Spacing.xs }]}>
+                <Text
+                  style={[
+                    Typography.body,
+                    { color: theme.text, marginTop: Spacing.xs },
+                  ]}
+                >
                   {doctor.phone}
                 </Text>
               </View>
@@ -129,15 +183,28 @@ export default function DoctorDetail() {
 
         <Card variant="elevated" style={{ marginTop: Spacing.md }}>
           <View style={styles.contactRow}>
-            <View style={[styles.contactIcon, { backgroundColor: theme.info + '15' }]}>
+            <View
+              style={[
+                styles.contactIcon,
+                { backgroundColor: theme.info + '15' },
+              ]}
+            >
               <Ionicons name="location" size={24} color={theme.info} />
             </View>
             <View style={styles.contactInfo}>
-              <Text style={[Typography.caption, { color: theme.textSecondary }]}>
+              <Text
+                style={[Typography.caption, { color: theme.textSecondary }]}
+              >
                 Location
               </Text>
-              <Text style={[Typography.body, { color: theme.text, marginTop: Spacing.xs }]}>
-                Lat: {doctor.location.lat.toFixed(4)}, Lng: {doctor.location.lng.toFixed(4)}
+              <Text
+                style={[
+                  Typography.body,
+                  { color: theme.text, marginTop: Spacing.xs },
+                ]}
+              >
+                Lat: {doctor.location.lat.toFixed(4)}, Lng:{' '}
+                {doctor.location.lng.toFixed(4)}
               </Text>
             </View>
           </View>
@@ -155,46 +222,97 @@ export default function DoctorDetail() {
 
         {visits.length === 0 ? (
           <Card style={{ alignItems: 'center', padding: Spacing.xl }}>
-            <Ionicons name="calendar-outline" size={48} color={theme.textSecondary} style={{ opacity: 0.3 }} />
-            <Text style={[Typography.body, { color: theme.textSecondary, marginTop: Spacing.md, textAlign: 'center' }]}>
+            <Ionicons
+              name="calendar-outline"
+              size={48}
+              color={theme.textSecondary}
+              style={{ opacity: 0.3 }}
+            />
+            <Text
+              style={[
+                Typography.body,
+                {
+                  color: theme.textSecondary,
+                  marginTop: Spacing.md,
+                  textAlign: 'center',
+                },
+              ]}
+            >
               No visits recorded yet
             </Text>
           </Card>
         ) : (
-          visits.map((visit) => {
+          visits.map(visit => {
             const isCompleted = visit.status === 'completed';
             return (
-              <Card key={visit.id} variant="outlined" style={{ marginBottom: Spacing.sm }}>
+              <Card
+                key={visit.id}
+                variant="outlined"
+                style={{ marginBottom: Spacing.sm }}
+              >
                 <View style={styles.visitRow}>
-                  <View style={[
-                    styles.visitIcon,
-                    { backgroundColor: isCompleted ? theme.success + '15' : theme.warning + '15' }
-                  ]}>
-                    <Ionicons 
-                      name={isCompleted ? "checkmark-circle" : "time"} 
-                      size={20} 
-                      color={isCompleted ? theme.success : theme.warning} 
+                  <View
+                    style={[
+                      styles.visitIcon,
+                      {
+                        backgroundColor: isCompleted
+                          ? theme.success + '15'
+                          : theme.warning + '15',
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name={isCompleted ? 'checkmark-circle' : 'time'}
+                      size={20}
+                      color={isCompleted ? theme.success : theme.warning}
                     />
                   </View>
                   <View style={styles.visitInfo}>
-                    <Text style={[Typography.body, { color: theme.text, fontWeight: '600' }]}>
+                    <Text
+                      style={[
+                        Typography.body,
+                        { color: theme.text, fontWeight: '600' },
+                      ]}
+                    >
                       {new Date(visit.checkInTime).toLocaleDateString()}
                     </Text>
-                    <Text style={[Typography.caption, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+                    <Text
+                      style={[
+                        Typography.caption,
+                        { color: theme.textSecondary, marginTop: Spacing.xs },
+                      ]}
+                    >
                       {new Date(visit.checkInTime).toLocaleTimeString()}
-                      {visit.checkOutTime && ` - ${new Date(visit.checkOutTime).toLocaleTimeString()}`}
+                      {visit.checkOutTime &&
+                        ` - ${new Date(visit.checkOutTime).toLocaleTimeString()}`}
                     </Text>
                     {visit.notes && (
-                      <Text style={[Typography.bodySmall, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+                      <Text
+                        style={[
+                          Typography.bodySmall,
+                          { color: theme.textSecondary, marginTop: Spacing.xs },
+                        ]}
+                      >
                         {visit.notes}
                       </Text>
                     )}
                   </View>
-                  <View style={[
-                    styles.statusBadge,
-                    { backgroundColor: isCompleted ? theme.success : theme.warning }
-                  ]}>
-                    <Text style={[Typography.caption, { color: '#FFFFFF', fontWeight: '600' }]}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: isCompleted
+                          ? theme.success
+                          : theme.warning,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        Typography.caption,
+                        { color: '#FFFFFF', fontWeight: '600' },
+                      ]}
+                    >
                       {isCompleted ? 'Done' : 'Active'}
                     </Text>
                   </View>
@@ -206,14 +324,14 @@ export default function DoctorDetail() {
 
         {/* Actions */}
         <View style={styles.actionsContainer}>
-          <ButtonPrimary 
-            title="Check In" 
+          <ButtonPrimary
+            title="Check In"
             onPress={handleCheckIn}
             style={{ flex: 1, marginRight: Spacing.sm }}
           />
           {doctor.phone && (
-            <ButtonSecondary 
-              title="Call" 
+            <ButtonSecondary
+              title="Call"
               onPress={handleCall}
               style={{ flex: 1, marginLeft: Spacing.sm }}
             />

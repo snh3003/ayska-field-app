@@ -1,17 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  useAnimatedGestureHandler,
   runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { Colors, Spacing, BorderRadius } from '@/constants/theme';
-import { useColorScheme } from '../../../hooks/use-color-scheme';
-import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
+import { BorderRadius, Spacing } from '@/constants/theme';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 
 interface SwipeableCardProps {
   children: React.ReactNode;
@@ -38,27 +36,24 @@ export function SwipeableCard({
   leftAction,
   rightAction,
 }: SwipeableCardProps) {
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme];
   const translateX = useSharedValue(0);
 
-  const panGestureEvent = useAnimatedGestureHandler({
-    onActive: (event) => {
-      if (event.translationX > 0 && rightAction) {
-        translateX.value = event.translationX;
-      } else if (event.translationX < 0 && leftAction) {
-        translateX.value = event.translationX;
-      }
-    },
-    onEnd: (event) => {
-      if (event.translationX > SWIPE_THRESHOLD && onSwipeRight) {
-        runOnJS(onSwipeRight)();
-      } else if (event.translationX < -SWIPE_THRESHOLD && onSwipeLeft) {
-        runOnJS(onSwipeLeft)();
-      }
-      translateX.value = withSpring(0);
-    },
-  });
+  const panGestureEvent = (event: any) => {
+    if (event.translationX > 0 && rightAction) {
+      translateX.value = event.translationX;
+    } else if (event.translationX < 0 && leftAction) {
+      translateX.value = event.translationX;
+    }
+  };
+
+  const panGestureEnd = (event: any) => {
+    if (event.translationX > SWIPE_THRESHOLD && onSwipeRight) {
+      runOnJS(onSwipeRight)();
+    } else if (event.translationX < -SWIPE_THRESHOLD && onSwipeLeft) {
+      runOnJS(onSwipeLeft)();
+    }
+    translateX.value = withSpring(0);
+  };
 
   const rStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -84,7 +79,7 @@ export function SwipeableCard({
           ]}
         >
           <Ionicons name={rightAction.icon} size={24} color="#FFF" />
-          <TamaguiText 
+          <TamaguiText
             color="white"
             fontWeight="600"
             marginTop="$xs"
@@ -104,7 +99,7 @@ export function SwipeableCard({
           ]}
         >
           <Ionicons name={leftAction.icon} size={24} color="#FFF" />
-          <TamaguiText 
+          <TamaguiText
             color="white"
             fontWeight="600"
             marginTop="$xs"
@@ -114,7 +109,10 @@ export function SwipeableCard({
           </TamaguiText>
         </Animated.View>
       )}
-      <PanGestureHandler onGestureEvent={panGestureEvent}>
+      <PanGestureHandler
+        onGestureEvent={panGestureEvent}
+        onEnded={panGestureEnd}
+      >
         <Animated.View style={rStyle}>{children}</Animated.View>
       </PanGestureHandler>
     </TamaguiView>
@@ -149,4 +147,3 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
-

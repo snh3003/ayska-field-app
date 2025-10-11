@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 
 interface Props {
   children: ReactNode;
@@ -24,6 +24,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
+    // eslint-disable-next-line no-console
     console.error('Error caught by boundary:', error, errorInfo);
   }
 
@@ -32,33 +33,44 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   render() {
-    if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
+    const { hasError, error } = this.state;
+    const { fallback, children } = this.props;
+
+    if (hasError) {
+      if (fallback) {
+        return fallback;
       }
 
       return (
         <View style={styles.container}>
           <View style={styles.iconContainer}>
-            <Ionicons name="alert-circle" size={64} color={Colors.light.error} />
+            <Ionicons
+              name="alert-circle"
+              size={64}
+              color={Colors.light.error}
+            />
           </View>
-          <Text style={[Typography.h3, styles.title]}>Oops! Something went wrong</Text>
+          <Text style={[Typography.h3, styles.title]}>
+            Oops! Something went wrong
+          </Text>
           <Text style={[Typography.body, styles.message]}>
             We&apos;re sorry for the inconvenience. Please try again.
           </Text>
-          {__DEV__ && this.state.error && (
+          {__DEV__ && error && (
             <Text style={[Typography.caption, styles.error]}>
-              {this.state.error.toString()}
+              {error.toString()}
             </Text>
           )}
           <TouchableOpacity style={styles.button} onPress={this.handleReset}>
-            <Text style={[Typography.button, styles.buttonText]}>Try Again</Text>
+            <Text style={[Typography.button, styles.buttonText]}>
+              Try Again
+            </Text>
           </TouchableOpacity>
         </View>
       );
     }
 
-    return this.props.children;
+    return children;
   }
 }
 
@@ -99,4 +111,3 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 });
-

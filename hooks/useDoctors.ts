@@ -1,33 +1,29 @@
-import { useState, useEffect } from 'react';
-import { localDataService, type Doctor } from '../src/services/LocalDataService';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  type Doctor,
+  localDataService,
+} from '../src/services/LocalDataService';
 
-export function useDoctors(employeeId?: string) {
+export function useDoctors(_employeeId?: string) {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchDoctors();
-  }, [employeeId]);
-
-  const fetchDoctors = async () => {
+  const fetchDoctors = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
-      
-      if (employeeId) {
-        const assignedDoctors = localDataService.getAssignedDoctors(employeeId);
-        setDoctors(assignedDoctors);
-      } else {
-        const allDoctors = localDataService.getAll<Doctor>('doctors');
-        setDoctors(allDoctors);
-      }
+      const data = await localDataService.getAll<Doctor>('doctors');
+      setDoctors(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch doctors');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDoctors();
+  }, [fetchDoctors]);
 
   const searchDoctors = (query: string) => {
     if (!query.trim()) {
@@ -35,9 +31,10 @@ export function useDoctors(employeeId?: string) {
       return;
     }
 
-    const filtered = doctors.filter((doctor) =>
-      doctor.name.toLowerCase().includes(query.toLowerCase()) ||
-      doctor.specialization.toLowerCase().includes(query.toLowerCase())
+    const filtered = doctors.filter(
+      doctor =>
+        doctor.name.toLowerCase().includes(query.toLowerCase()) ||
+        doctor.specialization.toLowerCase().includes(query.toLowerCase())
     );
     setDoctors(filtered);
   };
@@ -48,8 +45,9 @@ export function useDoctors(employeeId?: string) {
       return;
     }
 
-    const filtered = doctors.filter((doctor) =>
-      doctor.specialization.toLowerCase() === specialization.toLowerCase()
+    const filtered = doctors.filter(
+      doctor =>
+        doctor.specialization.toLowerCase() === specialization.toLowerCase()
     );
     setDoctors(filtered);
   };
@@ -63,4 +61,3 @@ export function useDoctors(employeeId?: string) {
     filterBySpecialization,
   };
 }
-

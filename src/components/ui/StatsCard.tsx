@@ -1,8 +1,7 @@
-import { Colors, Typography, BorderRadius, Spacing, Shadows } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 
 interface StatsCardProps {
   title: string;
@@ -12,12 +11,12 @@ interface StatsCardProps {
   icon?: React.ReactNode;
 }
 
-export const StatsCard: React.FC<StatsCardProps> = ({ 
-  title, 
-  value, 
-  subtitle, 
+export const StatsCard: React.FC<StatsCardProps> = ({
+  title,
+  value,
+  subtitle,
   color = 'primary',
-  icon 
+  icon,
 }) => {
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
@@ -40,7 +39,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   const accentColor = getColor();
 
   return (
-    <TamaguiView 
+    <TamaguiView
       backgroundColor="$card"
       borderColor="$border"
       borderRadius="$md"
@@ -53,10 +52,9 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       shadowOffset={{ width: 0, height: 2 }}
       shadowOpacity={0.08}
       shadowRadius={4}
-      elevation={2}
     >
       {icon && (
-        <TamaguiView 
+        <TamaguiView
           width={40}
           height={40}
           borderRadius="$sm"
@@ -68,48 +66,22 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           {icon}
         </TamaguiView>
       )}
-      <TamaguiText 
-        fontSize="$3" 
-        color="$textSecondary" 
-        marginBottom="$xs"
-      >
+      <TamaguiText fontSize="$3" color="$textSecondary" marginBottom="$xs">
         {title}
       </TamaguiText>
-      <TamaguiText 
-        fontSize="$8" 
+      <TamaguiText
+        fontSize="$8"
         fontWeight="700"
-        color={accentColor} 
-        marginBottom={subtitle ? "$xs" : 0}
+        color={accentColor}
+        marginBottom={subtitle ? '$xs' : 0}
       >
         {value}
       </TamaguiText>
       {subtitle && (
-        <TamaguiText 
-          fontSize="$2" 
-          color="$textSecondary"
-        >
+        <TamaguiText fontSize="$2" color="$textSecondary">
           {subtitle}
         </TamaguiText>
       )}
     </TamaguiView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    flex: 1,
-    marginHorizontal: Spacing.xs / 2,
-    borderWidth: 0,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-});

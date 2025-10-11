@@ -77,12 +77,16 @@ class LocalDataService {
     return item;
   }
 
-  update<T>(collectionName: keyof Database, id: string, updates: Partial<T>): T | null {
+  update<T>(
+    collectionName: keyof Database,
+    id: string,
+    updates: Partial<T>
+  ): T | null {
     const collection = this.data[collectionName] as T[];
     const index = collection.findIndex((item: any) => item.id === id);
     if (index !== -1) {
-      collection[index] = { ...collection[index], ...updates };
-      return collection[index];
+      collection[index] = { ...collection[index], ...updates } as T;
+      return collection[index] || null;
     }
     return null;
   }
@@ -99,21 +103,35 @@ class LocalDataService {
 
   // Auth helpers
   validateAdmin(email: string, password: string): Admin | null {
-    return this.data.admins.find(admin => admin.email === email && admin.password === password) || null;
+    return (
+      this.data.admins.find(
+        admin => admin.email === email && admin.password === password
+      ) || null
+    );
   }
 
   validateEmployee(email: string, password: string): Employee | null {
-    return this.data.employees.find(emp => emp.email === email && emp.password === password) || null;
+    return (
+      this.data.employees.find(
+        emp => emp.email === email && emp.password === password
+      ) || null
+    );
   }
 
   // Business logic helpers
   getAssignedDoctors(employeeId: string): Doctor[] {
-    const assignments = this.data.assignments.filter(a => a.employeeId === employeeId && a.status === 'active');
-    return assignments.map(a => this.getById<Doctor>('doctors', a.doctorId)).filter(Boolean) as Doctor[];
+    const assignments = this.data.assignments.filter(
+      a => a.employeeId === employeeId && a.status === 'active'
+    );
+    return assignments
+      .map(a => this.getById<Doctor>('doctors', a.doctorId))
+      .filter(Boolean) as Doctor[];
   }
 
   getEmployeeStats(employeeId: string) {
-    const attendance = this.data.attendance.filter(a => a.employeeId === employeeId);
+    const attendance = this.data.attendance.filter(
+      a => a.employeeId === employeeId
+    );
     const visits = this.data.visits.filter(v => v.employeeId === employeeId);
     return {
       totalDays: attendance.length,
@@ -128,7 +146,8 @@ class LocalDataService {
       totalEmployees: this.data.employees.length,
       totalDoctors: this.data.doctors.length,
       totalVisits: this.data.visits.length,
-      activeAttendance: this.data.attendance.filter(a => a.status === 'active').length,
+      activeAttendance: this.data.attendance.filter(a => a.status === 'active')
+        .length,
     };
   }
 }

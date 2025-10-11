@@ -11,9 +11,13 @@ import { logout } from '../store/slices/authSlice';
 export class ApiClient {
   private instance: AxiosInstance;
   private getState: () => RootState;
-  private dispatch: (action: any) => void;
+  private dispatch: (_action: any) => void;
 
-  constructor(options: { baseURL: string; getState: () => RootState; dispatch: (action: any) => void }) {
+  constructor(options: {
+    baseURL: string;
+    getState: () => RootState;
+    dispatch: (_action: any) => void;
+  }) {
     this.instance = axios.create({
       baseURL: options.baseURL,
       timeout: 15000,
@@ -21,7 +25,7 @@ export class ApiClient {
     this.getState = options.getState;
     this.dispatch = options.dispatch;
 
-    this.instance.interceptors.request.use((config) => {
+    this.instance.interceptors.request.use(config => {
       const token = this.getState().auth.token;
       if (token) {
         config.headers = config.headers ?? {};
@@ -31,7 +35,7 @@ export class ApiClient {
     });
 
     this.instance.interceptors.response.use(
-      (response) => response,
+      response => response,
       async (error: AxiosError & { config: any }) => {
         const originalRequest = error.config;
         const status = error.response?.status;
@@ -40,7 +44,8 @@ export class ApiClient {
           this.dispatch(logout());
         }
 
-        const isNetworkOr5xx = !error.response || (status ? status >= 500 : false);
+        const isNetworkOr5xx =
+          !error.response || (status ? status >= 500 : false);
         if (isNetworkOr5xx && !originalRequest.__isRetry) {
           originalRequest.__isRetry = true;
           return this.instance(originalRequest);
@@ -57,5 +62,3 @@ export class ApiClient {
 }
 
 export type ApiError = AxiosError & { message: string };
-
-

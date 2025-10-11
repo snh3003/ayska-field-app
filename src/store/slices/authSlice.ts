@@ -22,8 +22,20 @@ const initialState: AuthState = {
 
 export const login = createAsyncThunk(
   'auth/login',
-  async ({ email, password, role, userId, name }: { email: string; password: string; role: Exclude<UserRole, null>; userId: string; name: string }) => {
-    await new Promise((r) => setTimeout(r, 300));
+  async ({
+    email: _email,
+    password: _password,
+    role,
+    userId,
+    name,
+  }: {
+    email: string;
+    password: string;
+    role: Exclude<UserRole, null>;
+    userId: string;
+    name: string;
+  }) => {
+    await new Promise(r => setTimeout(r, 300));
     return {
       token: `local-${userId}`,
       role,
@@ -37,7 +49,10 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials(state, action: PayloadAction<{ token: string; role: Exclude<UserRole, null> }>) {
+    setCredentials(
+      state,
+      action: PayloadAction<{ token: string; role: Exclude<UserRole, null> }>
+    ) {
       state.token = action.payload.token;
       state.role = action.payload.role;
     },
@@ -49,9 +64,9 @@ const authSlice = createSlice({
       state.error = null;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(login.pending, (state) => {
+      .addCase(login.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -71,5 +86,3 @@ const authSlice = createSlice({
 
 export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer;
-
-

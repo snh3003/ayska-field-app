@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { localDataService, type Visit } from '../src/services/LocalDataService';
 
 export function useVisits(employeeId?: string) {
@@ -6,21 +6,19 @@ export function useVisits(employeeId?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchVisits();
-  }, [employeeId]);
-
-  const fetchVisits = async () => {
+  const fetchVisits = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const allVisits = localDataService.getAll<Visit>('visits');
-      
+
       if (employeeId) {
-        const employeeVisits = allVisits.filter((v: Visit) => v.employeeId === employeeId);
+        const allVisits = localDataService.getAll<Visit>('visits');
+        const employeeVisits = allVisits.filter(
+          (v: Visit) => v.employeeId === employeeId
+        );
         setVisits(employeeVisits);
       } else {
+        const allVisits = localDataService.getAll<Visit>('visits');
         setVisits(allVisits);
       }
     } catch (err) {
@@ -28,7 +26,11 @@ export function useVisits(employeeId?: string) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [employeeId]);
+
+  useEffect(() => {
+    fetchVisits();
+  }, [fetchVisits]);
 
   const createVisit = (doctorId: string, notes?: string) => {
     if (!employeeId) return null;
@@ -39,7 +41,7 @@ export function useVisits(employeeId?: string) {
       doctorId,
       checkInTime: new Date().toISOString(),
       status: 'in_progress',
-      notes,
+      notes: notes || '',
     };
 
     localDataService.add('visits', visit);
@@ -51,7 +53,7 @@ export function useVisits(employeeId?: string) {
     const updatedVisit = localDataService.update<Visit>('visits', visitId, {
       checkOutTime: new Date().toISOString(),
       status: 'completed',
-      notes,
+      notes: notes || '',
     });
 
     fetchVisits();
@@ -84,4 +86,3 @@ export function useVisits(employeeId?: string) {
     filterByDate,
   };
 }
-

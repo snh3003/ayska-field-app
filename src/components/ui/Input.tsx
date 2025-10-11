@@ -1,15 +1,14 @@
-import { Colors, Typography, BorderRadius, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import React, { useState } from 'react';
-import { Text, TextInput, View, StyleSheet } from 'react-native';
-import { Input as TamaguiInput } from '@tamagui/input'
-import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
+import { StyleSheet } from 'react-native';
+import { Input as TamaguiInput } from '@tamagui/input';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 
 interface InputProps {
   label?: string;
   placeholder?: string;
   value: string;
-  onChangeText: (text: string) => void;
+  onChangeText: (_e: any) => void;
   onBlur?: () => void;
   secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
@@ -36,8 +35,6 @@ export const Input: React.FC<InputProps> = ({
   style,
   icon,
 }) => {
-  const scheme = useColorScheme() ?? 'light';
-  const theme = Colors[scheme];
   const [isFocused, setIsFocused] = useState(false);
 
   const handleBlur = () => {
@@ -50,17 +47,17 @@ export const Input: React.FC<InputProps> = ({
   return (
     <TamaguiView style={[styles.container, style]}>
       {label && (
-        <TamaguiText 
-          fontSize="$4" 
-          color="$text" 
-          marginBottom="$sm" 
+        <TamaguiText
+          fontSize="$4"
+          color="$text"
+          marginBottom="$sm"
           fontWeight="600"
         >
           {label}
         </TamaguiText>
       )}
       <TamaguiView
-        borderColor={error ? '$error' : (isFocused ? '$primary' : '$border')}
+        borderColor={error ? '$error' : isFocused ? '$primary' : '$border'}
         backgroundColor="$card"
         borderWidth={1}
         borderRadius="$md"
@@ -68,22 +65,17 @@ export const Input: React.FC<InputProps> = ({
         flexDirection="row"
         alignItems="center"
       >
-        {icon && (
-          <TamaguiView marginRight="$sm">
-            {icon}
-          </TamaguiView>
-        )}
+        {icon && <TamaguiView marginRight="$sm">{icon}</TamaguiView>}
         <TamaguiInput
           value={value}
-          onChangeText={onChangeText}
+          onChangeText={(_e: any) => onChangeText(_e.nativeEvent?.text || _e)}
           placeholder={placeholder}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
-          multiline={multiline}
-          numberOfLines={numberOfLines}
+          multiline={multiline || false}
+          numberOfLines={numberOfLines || 1}
           color="$text"
-          fontSize="$4"
           borderWidth={0}
           backgroundColor="transparent"
           flex={1}
@@ -92,11 +84,7 @@ export const Input: React.FC<InputProps> = ({
         />
       </TamaguiView>
       {error && (
-        <TamaguiText 
-          fontSize="$3" 
-          color="$error" 
-          marginTop="$xs"
-        >
+        <TamaguiText fontSize="$3" color="$error" marginTop="$xs">
           {error}
         </TamaguiText>
       )}

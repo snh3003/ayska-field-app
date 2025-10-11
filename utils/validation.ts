@@ -1,9 +1,12 @@
+// Hook for form validation
+import { useState } from 'react';
+
 export interface ValidationRule {
   required?: boolean;
   minLength?: number;
   maxLength?: number;
   pattern?: RegExp;
-  custom?: (value: any) => boolean;
+  custom?: (_value: any) => boolean;
   message?: string;
 }
 
@@ -15,7 +18,10 @@ export interface ValidationErrors {
   [key: string]: string;
 }
 
-export function validateField(value: any, rules: ValidationRule[]): string | null {
+export function validateField(
+  value: any,
+  rules: ValidationRule[]
+): string | null {
   for (const rule of rules) {
     if (rule.required && (!value || value.toString().trim() === '')) {
       return rule.message || 'This field is required';
@@ -26,7 +32,9 @@ export function validateField(value: any, rules: ValidationRule[]): string | nul
     }
 
     if (rule.maxLength && value.length > rule.maxLength) {
-      return rule.message || `Must be no more than ${rule.maxLength} characters`;
+      return (
+        rule.message || `Must be no more than ${rule.maxLength} characters`
+      );
     }
 
     if (rule.pattern && !rule.pattern.test(value)) {
@@ -47,8 +55,8 @@ export function validateForm(
 ): ValidationErrors {
   const errors: ValidationErrors = {};
 
-  Object.keys(validationRules).forEach((field) => {
-    const error = validateField(values[field], validationRules[field]);
+  Object.keys(validationRules).forEach(field => {
+    const error = validateField(values[field], validationRules[field] || []);
     if (error) {
       errors[field] = error;
     }
@@ -73,9 +81,6 @@ export const commonRules = {
   },
 };
 
-// Hook for form validation
-import { useState } from 'react';
-
 export function useFormValidation<T extends { [key: string]: any }>(
   initialValues: T,
   validationRules: FieldValidation
@@ -85,12 +90,15 @@ export function useFormValidation<T extends { [key: string]: any }>(
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
 
   const handleChange = (field: keyof T, value: any) => {
-    setValues((prev) => ({ ...prev, [field]: value }));
-    
+    setValues(prev => ({ ...prev, [field]: value }));
+
     // Validate field if it has been touched
     if (touched[field as string]) {
-      const error = validateField(value, validationRules[field as string] || []);
-      setErrors((prev) => ({
+      const error = validateField(
+        value,
+        validationRules[field as string] || []
+      );
+      setErrors(prev => ({
         ...prev,
         [field]: error || '',
       }));
@@ -98,13 +106,13 @@ export function useFormValidation<T extends { [key: string]: any }>(
   };
 
   const handleBlur = (field: keyof T) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-    
+    setTouched(prev => ({ ...prev, [field]: true }));
+
     const error = validateField(
       values[field],
       validationRules[field as string] || []
     );
-    setErrors((prev) => ({
+    setErrors(prev => ({
       ...prev,
       [field]: error || '',
     }));
@@ -113,14 +121,14 @@ export function useFormValidation<T extends { [key: string]: any }>(
   const validateAll = (): boolean => {
     const newErrors = validateForm(values, validationRules);
     setErrors(newErrors);
-    
+
     // Mark all fields as touched
     const allTouched = Object.keys(validationRules).reduce(
       (acc, key) => ({ ...acc, [key]: true }),
       {}
     );
     setTouched(allTouched);
-    
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -141,4 +149,3 @@ export function useFormValidation<T extends { [key: string]: any }>(
     setValues,
   };
 }
-

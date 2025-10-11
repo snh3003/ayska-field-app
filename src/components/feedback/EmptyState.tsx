@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 
 interface EmptyStateProps {
@@ -20,7 +20,7 @@ export function EmptyState({
   onAction,
 }: EmptyStateProps) {
   const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme];
+  const theme = Colors[colorScheme ?? 'light'];
 
   return (
     <View style={styles.container}>
@@ -91,4 +91,3 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 });
-

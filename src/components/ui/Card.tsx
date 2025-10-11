@@ -1,8 +1,6 @@
-import { Colors, BorderRadius, Spacing, Shadows } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { View as TamaguiView, styled } from '@tamagui/core'
+import { TouchableOpacity } from 'react-native';
+import { styled, View as TamaguiView } from '@tamagui/core';
 
 const CardContainer = styled(TamaguiView, {
   backgroundColor: '$card',
@@ -30,10 +28,10 @@ const CardContainer = styled(TamaguiView, {
         shadowOpacity: 0.08,
         shadowRadius: 4,
         elevation: 2,
-      }
-    }
-  }
-})
+      },
+    },
+  },
+});
 
 interface CardProps {
   children: React.ReactNode;
@@ -42,7 +40,12 @@ interface CardProps {
   variant?: 'default' | 'elevated' | 'outlined';
 }
 
-export const Card: React.FC<CardProps> = ({ children, onPress, style, variant = 'default' }) => {
+export const Card: React.FC<CardProps> = ({
+  children,
+  onPress,
+  style,
+  variant = 'default',
+}) => {
   if (onPress) {
     return (
       <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
@@ -52,5 +55,9 @@ export const Card: React.FC<CardProps> = ({ children, onPress, style, variant = 
       </TouchableOpacity>
     );
   }
-  return <CardContainer variant={variant} style={style}>{children}</CardContainer>;
+  return (
+    <CardContainer variant={variant} style={style}>
+      {children}
+    </CardContainer>
+  );
 };
