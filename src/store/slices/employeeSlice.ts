@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '..';
-import { ApiClient } from '../../api/client';
-import { EmployeeService } from '../../services/EmployeeService';
 import type { Activity, SubmitActivityRequest } from '../../types/api';
+import { ServiceContainer } from '../../di/ServiceContainer';
 
 interface EmployeeState {
   activities: Activity[];
@@ -16,26 +15,25 @@ const initialState: EmployeeState = {
   error: null,
 };
 
-const createEmployeeService = (state: RootState, dispatch: any) => {
-  const api = new ApiClient({ baseURL: '', getState: () => state, dispatch });
-  return new EmployeeService(api.axios);
-};
-
 export const fetchActivities = createAsyncThunk<
   Activity[],
   { employeeId: string },
-  { state: RootState }
+  { state: RootState; extra: { serviceContainer: ServiceContainer } }
 >('employee/fetchActivities', async ({ employeeId }, thunkAPI) => {
-  const service = createEmployeeService(thunkAPI.getState(), thunkAPI.dispatch);
+  const service = thunkAPI.extra.serviceContainer.get(
+    'IEmployeeService'
+  ) as any;
   return service.getActivities(employeeId);
 });
 
 export const submitActivity = createAsyncThunk<
   Activity,
   SubmitActivityRequest,
-  { state: RootState }
+  { state: RootState; extra: { serviceContainer: ServiceContainer } }
 >('employee/submitActivity', async (payload, thunkAPI) => {
-  const service = createEmployeeService(thunkAPI.getState(), thunkAPI.dispatch);
+  const service = thunkAPI.extra.serviceContainer.get(
+    'IEmployeeService'
+  ) as any;
   const result = await service.submitActivity(payload);
   return result.activity;
 });
@@ -44,9 +42,9 @@ const employeeSlice = createSlice({
   name: 'employee',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchActivities.pending, (state) => {
+      .addCase(fetchActivities.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -64,10 +62,11 @@ const employeeSlice = createSlice({
   },
 });
 
-export const selectActivities = (state: RootState) => state.employee?.activities ?? [];
-export const selectEmployeeLoading = (state: RootState) => state.employee?.loading ?? false;
-export const selectEmployeeError = (state: RootState) => state.employee?.error ?? null;
+export const selectActivities = (state: RootState) =>
+  state.employee?.activities ?? [];
+export const selectEmployeeLoading = (state: RootState) =>
+  state.employee?.loading ?? false;
+export const selectEmployeeError = (state: RootState) =>
+  state.employee?.error ?? null;
 
 export default employeeSlice.reducer;
-
-
