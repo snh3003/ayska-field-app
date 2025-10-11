@@ -46,30 +46,47 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       shadowOpacity={0.08}
       shadowRadius={4}
     >
-      {icon && (
-        <TamaguiView
-          width={40}
-          height={40}
-          borderRadius="$sm"
-          justifyContent="center"
-          alignItems="center"
-          marginBottom="$sm"
-          backgroundColor={accentColor + '15'}
-        >
-          {icon}
-        </TamaguiView>
-      )}
-      <TamaguiText fontSize="$3" color="$textSecondary" marginBottom="$xs">
-        {title}
-      </TamaguiText>
-      <TamaguiText
-        fontSize="$8"
-        fontWeight="700"
-        color={accentColor}
-        marginBottom={subtitle ? '$xs' : 0}
+      {/* Top row: Icon and Title */}
+      <TamaguiView
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-evenly"
+        marginBottom="$sm"
+        gap="$sm"
       >
-        {value}
-      </TamaguiText>
+        {icon && (
+          <TamaguiView
+            width={40}
+            height={40}
+            borderRadius="$sm"
+            justifyContent="center"
+            alignItems="center"
+            backgroundColor={accentColor + '15'}
+          >
+            {icon}
+          </TamaguiView>
+        )}
+        <TamaguiText fontSize="$3" color="$textSecondary" flex={1}>
+          {title}
+        </TamaguiText>
+      </TamaguiView>
+
+      {/* Value row */}
+      <TamaguiView
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <TamaguiText
+          fontSize="$8"
+          fontWeight="700"
+          color={accentColor}
+          marginBottom={subtitle ? '$xs' : 0}
+        >
+          {value}
+        </TamaguiText>
+      </TamaguiView>
+
       {subtitle && (
         <TamaguiText fontSize="$2" color="$textSecondary">
           {subtitle}
