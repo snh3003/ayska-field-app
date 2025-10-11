@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors, BorderRadius, Spacing } from '@/constants/theme';
+import { View as TamaguiView } from '@tamagui/core'
 
 interface SkeletonProps {
   width?: number | string;

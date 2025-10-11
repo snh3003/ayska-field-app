@@ -54,7 +54,7 @@ export default function CheckInHistory() {
                     )}
                     {visit.notes && (
                       <Text style={{ color: theme.text, opacity: 0.8, fontSize: 14, marginTop: 8, fontStyle: 'italic' }}>
-                        "{visit.notes}"
+                        &ldquo;{visit.notes}&rdquo;
                       </Text>
                     )}
                   </View>

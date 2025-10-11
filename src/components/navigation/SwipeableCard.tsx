@@ -11,6 +11,7 @@ import Animated, {
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { Colors, Spacing, BorderRadius } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
+import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
 
 interface SwipeableCardProps {
   children: React.ReactNode;
@@ -72,7 +73,7 @@ export function SwipeableCard({
   }));
 
   return (
-    <View style={styles.container}>
+    <TamaguiView position="relative">
       {rightAction && (
         <Animated.View
           style={[
@@ -83,7 +84,14 @@ export function SwipeableCard({
           ]}
         >
           <Ionicons name={rightAction.icon} size={24} color="#FFF" />
-          <Text style={styles.actionText}>{rightAction.label}</Text>
+          <TamaguiText 
+            color="white"
+            fontWeight="600"
+            marginTop="$xs"
+            fontSize="$2"
+          >
+            {rightAction.label}
+          </TamaguiText>
         </Animated.View>
       )}
       {leftAction && (
@@ -96,13 +104,20 @@ export function SwipeableCard({
           ]}
         >
           <Ionicons name={leftAction.icon} size={24} color="#FFF" />
-          <Text style={styles.actionText}>{leftAction.label}</Text>
+          <TamaguiText 
+            color="white"
+            fontWeight="600"
+            marginTop="$xs"
+            fontSize="$2"
+          >
+            {leftAction.label}
+          </TamaguiText>
         </Animated.View>
       )}
       <PanGestureHandler onGestureEvent={panGestureEvent}>
         <Animated.View style={rStyle}>{children}</Animated.View>
       </PanGestureHandler>
-    </View>
+    </TamaguiView>
   );
 }
 

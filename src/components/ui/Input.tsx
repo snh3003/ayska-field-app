@@ -2,6 +2,8 @@ import { Colors, Typography, BorderRadius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useState } from 'react';
 import { Text, TextInput, View, StyleSheet } from 'react-native';
+import { Input as TamaguiInput } from '@tamagui/input'
+import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
 
 interface InputProps {
   label?: string;
@@ -46,52 +48,59 @@ export const Input: React.FC<InputProps> = ({
   };
 
   return (
-    <View style={[styles.container, style]}>
+    <TamaguiView style={[styles.container, style]}>
       {label && (
-        <Text style={[Typography.body, { color: theme.text, marginBottom: Spacing.sm, fontWeight: '600' }]}>
+        <TamaguiText 
+          fontSize="$4" 
+          color="$text" 
+          marginBottom="$sm" 
+          fontWeight="600"
+        >
           {label}
-        </Text>
+        </TamaguiText>
       )}
-      <View style={[
-        styles.inputContainer,
-        {
-          borderColor: error ? theme.error : (isFocused ? theme.primary : theme.border),
-          backgroundColor: theme.card,
-        }
-      ]}>
+      <TamaguiView
+        borderColor={error ? '$error' : (isFocused ? '$primary' : '$border')}
+        backgroundColor="$card"
+        borderWidth={1}
+        borderRadius="$md"
+        padding="$sm"
+        flexDirection="row"
+        alignItems="center"
+      >
         {icon && (
-          <View style={styles.iconContainer}>
+          <TamaguiView marginRight="$sm">
             {icon}
-          </View>
+          </TamaguiView>
         )}
-        <TextInput
+        <TamaguiInput
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={theme.textSecondary}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
           multiline={multiline}
           numberOfLines={numberOfLines}
+          color="$text"
+          fontSize="$4"
+          borderWidth={0}
+          backgroundColor="transparent"
+          flex={1}
           onFocus={() => setIsFocused(true)}
           onBlur={handleBlur}
-          style={[
-            Typography.body,
-            styles.input,
-            {
-              color: theme.text,
-            },
-            multiline && { textAlignVertical: 'top' },
-          ]}
         />
-      </View>
+      </TamaguiView>
       {error && (
-        <Text style={[Typography.bodySmall, { color: theme.error, marginTop: Spacing.xs }]}>
+        <TamaguiText 
+          fontSize="$3" 
+          color="$error" 
+          marginTop="$xs"
+        >
           {error}
-        </Text>
+        </TamaguiText>
       )}
-    </View>
+    </TamaguiView>
   );
 };
 

@@ -2,6 +2,7 @@ import { Colors, Typography, BorderRadius, Spacing, Shadows } from '@/constants/
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
+import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
 
 interface StatsCardProps {
   title: string;
@@ -39,31 +40,58 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   const accentColor = getColor();
 
   return (
-    <View style={[
-      styles.container,
-      {
-        backgroundColor: theme.card,
-        borderColor: theme.border,
-      },
-      Shadows.small
-    ]}>
+    <TamaguiView 
+      backgroundColor="$card"
+      borderColor="$border"
+      borderRadius="$md"
+      padding="$md"
+      marginBottom="$md"
+      flex={1}
+      marginHorizontal="$xs"
+      borderWidth={0}
+      shadowColor="$shadow"
+      shadowOffset={{ width: 0, height: 2 }}
+      shadowOpacity={0.08}
+      shadowRadius={4}
+      elevation={2}
+    >
       {icon && (
-        <View style={[styles.iconContainer, { backgroundColor: accentColor + '15' }]}>
+        <TamaguiView 
+          width={40}
+          height={40}
+          borderRadius="$sm"
+          justifyContent="center"
+          alignItems="center"
+          marginBottom="$sm"
+          backgroundColor={accentColor + '15'}
+        >
           {icon}
-        </View>
+        </TamaguiView>
       )}
-      <Text style={[Typography.bodySmall, { color: theme.textSecondary, marginBottom: Spacing.xs }]}>
+      <TamaguiText 
+        fontSize="$3" 
+        color="$textSecondary" 
+        marginBottom="$xs"
+      >
         {title}
-      </Text>
-      <Text style={[Typography.h2, { color: accentColor, marginBottom: subtitle ? Spacing.xs : 0 }]}>
+      </TamaguiText>
+      <TamaguiText 
+        fontSize="$8" 
+        fontWeight="700"
+        color={accentColor} 
+        marginBottom={subtitle ? "$xs" : 0}
+      >
         {value}
-      </Text>
+      </TamaguiText>
       {subtitle && (
-        <Text style={[Typography.caption, { color: theme.textSecondary }]}>
+        <TamaguiText 
+          fontSize="$2" 
+          color="$textSecondary"
+        >
           {subtitle}
-        </Text>
+        </TamaguiText>
       )}
-    </View>
+    </TamaguiView>
   );
 };
 

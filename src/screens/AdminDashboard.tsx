@@ -3,6 +3,7 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
 import { fetchTeamSales, selectAdminError, selectAdminLoading, selectTeamSales } from '../store/slices/adminSlice';
+import { TeamCard } from '../components/business/TeamCard';
 
 interface Props {
   teamId: string;

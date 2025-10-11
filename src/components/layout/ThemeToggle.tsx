@@ -11,6 +11,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { Colors, BorderRadius } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { hapticFeedback } from '../../../utils/haptics';
+import { View as TamaguiView } from '@tamagui/core'
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -71,11 +72,22 @@ export function ThemeToggle() {
       activeOpacity={0.8}
     >
       <Animated.View style={iconAnimatedStyle}>
-        <Ionicons
-          name={isDark ? 'moon' : 'sunny'}
-          size={20}
-          color={theme.primary}
-        />
+        <TamaguiView
+          width={44}
+          height={44}
+          borderRadius="$full"
+          justifyContent="center"
+          alignItems="center"
+          borderWidth={1}
+          backgroundColor="$card"
+          borderColor="$border"
+        >
+          <Ionicons
+            name={isDark ? 'moon' : 'sunny'}
+            size={20}
+            color={theme.primary}
+          />
+        </TamaguiView>
       </Animated.View>
     </AnimatedTouchable>
   );

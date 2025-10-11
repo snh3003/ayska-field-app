@@ -11,6 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { ScrollView as TamaguiScrollView, View as TamaguiView, Text as TamaguiText, YStack } from '@tamagui/core'
 import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
