@@ -1,6 +1,6 @@
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -19,10 +19,12 @@ import { ButtonPrimary } from '../src/components/ui/ButtonPrimary';
 import { Card } from '../src/components/ui/Card';
 import { login } from '../src/store/slices/authSlice';
 import type { RootState } from '../src/store';
-import { localDataService } from '../src/services/LocalDataService';
+import { serviceContainer } from '../src/store/configureStore';
 import { ThemeToggle } from '../src/components/layout/ThemeToggle';
 import { Logo } from '../src/components/layout/Logo';
-import { commonRules, useFormValidation } from '../utils/validation';
+import { CommonValidators } from '../src/validation/CommonValidators';
+import { ValidationContext } from '../src/validation/ValidationContext';
+import { FormValidator } from '../src/validation/FormValidator';
 import { useToast } from '../contexts/ToastContext';
 import { hapticFeedback } from '../utils/haptics';
 
@@ -35,27 +37,60 @@ export default function LoginScreen() {
   const theme = Colors[scheme];
   const toast = useToast();
 
-  const {
-    values,
-    errors,
-    touched,
-    handleChange,
-    handleBlur,
-    validateAll,
-    setValues,
-  } = useFormValidation(
-    { email: '', password: '' },
-    {
-      email: [
-        { required: true, message: 'Email is required' },
-        commonRules.email,
-      ],
-      password: [
-        { required: true, message: 'Password is required' },
-        commonRules.password,
-      ],
+  const [values, setValues] = useState({ email: '', password: '' });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const formValidator = new FormValidator();
+  const validationRules: Record<string, any[]> = {
+    email: [
+      CommonValidators.required('Email is required'),
+      CommonValidators.email,
+    ],
+    password: [
+      CommonValidators.required('Password is required'),
+      CommonValidators.password,
+    ],
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setValues(prev => ({ ...prev, [field]: value }));
+
+    if (touched[field]) {
+      const context = new ValidationContext();
+      validationRules[field]?.forEach((rule: any) => context.addRule(rule));
+      const result = context.validate(value);
+      setErrors(prev => ({
+        ...prev,
+        [field]: result.isValid ? '' : result.error || '',
+      }));
     }
-  );
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+
+    const context = new ValidationContext();
+    validationRules[field]?.forEach((rule: any) => context.addRule(rule));
+    const result = context.validate(values[field as keyof typeof values]);
+    setErrors(prev => ({
+      ...prev,
+      [field]: result.isValid ? '' : result.error || '',
+    }));
+  };
+
+  const validateAll = (): boolean => {
+    const newErrors = formValidator.validateForm(values, validationRules);
+    setErrors(newErrors);
+
+    const allTouched = Object.keys(validationRules).reduce(
+      (acc, key) => ({ ...acc, [key]: true }),
+      {}
+    );
+    setTouched(allTouched);
+
+    return Object.keys(newErrors).length === 0;
+  };
 
   const onSubmit = async () => {
     if (!validateAll()) {
@@ -67,7 +102,8 @@ export default function LoginScreen() {
     const { email, password } = values;
 
     // Check admin
-    const admin = localDataService.validateAdmin(email, password);
+    const authRepository = serviceContainer.get('IAuthRepository') as any;
+    const admin = await authRepository.validateAdmin(email, password);
     if (admin) {
       const action = await dispatch(
         login({
@@ -87,7 +123,7 @@ export default function LoginScreen() {
     }
 
     // Check employee
-    const employee = localDataService.validateEmployee(email, password);
+    const employee = await authRepository.validateEmployee(email, password);
     if (employee) {
       const action = await dispatch(
         login({
