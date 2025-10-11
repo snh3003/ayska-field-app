@@ -12,10 +12,8 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
-import {
-  type Employee,
-  localDataService,
-} from '../../services/LocalDataService';
+import { localDataService } from '../../services/LocalDataService';
+import { Employee } from '../../types';
 
 export default function EmployeeList() {
   const [employees, setEmployees] = useState<Employee[]>([]);

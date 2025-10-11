@@ -9,13 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { BorderRadius, Colors, Spacing } from '@/constants/theme';
-
-interface SkeletonProps {
-  width?: number | string;
-  height?: number;
-  borderRadius?: number;
-  style?: any;
-}
+import { SkeletonProps } from '../../types';
 
 export function Skeleton({
   width = '100%',

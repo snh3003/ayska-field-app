@@ -1,15 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export type UserRole = 'employee' | 'admin' | null;
-
-interface AuthState {
-  token: string | null;
-  role: UserRole;
-  userId: string | null;
-  name: string | null;
-  loading: boolean;
-  error: string | null;
-}
+import { AuthState, UserRole } from '../../types';
 
 const initialState: AuthState = {
   token: null,

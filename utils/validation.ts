@@ -1,22 +1,11 @@
 // Hook for form validation
 import { useState } from 'react';
 
-export interface ValidationRule {
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: RegExp;
-  custom?: (_value: any) => boolean;
-  message?: string;
-}
-
-export interface FieldValidation {
-  [key: string]: ValidationRule[];
-}
-
-export interface ValidationErrors {
-  [key: string]: string;
-}
+import {
+  FieldValidation,
+  ValidationErrors,
+  ValidationRule,
+} from '../src/types';
 
 export function validateField(
   value: any,

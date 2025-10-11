@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { styled, View as TamaguiView } from '@tamagui/core';
+import { CardProps } from '../../types';
 
 const CardContainer = styled(TamaguiView, {
   backgroundColor: '$card',
@@ -32,13 +33,6 @@ const CardContainer = styled(TamaguiView, {
     },
   },
 });
-
-interface CardProps {
-  children: React.ReactNode;
-  onPress?: () => void;
-  style?: any;
-  variant?: 'default' | 'elevated' | 'outlined';
-}
 
 export const Card: React.FC<CardProps> = ({
   children,

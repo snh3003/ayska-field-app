@@ -16,11 +16,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
 import { StatsCard } from '../../components/ui/StatsCard';
-import {
-  type Employee,
-  localDataService,
-  type Visit,
-} from '../../services/LocalDataService';
+import { localDataService } from '../../services/LocalDataService';
+import { Employee, Visit } from '../../types';
 import { ThemeToggle } from '../../components/layout/ThemeToggle';
 import { Logo } from '../../components/layout/Logo';
 import { SearchBar } from '../../components/forms/SearchBar';

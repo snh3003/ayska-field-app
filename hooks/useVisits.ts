@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { localDataService, type Visit } from '../src/services/LocalDataService';
+import { localDataService } from '../src/services/LocalDataService';
+import { Visit } from '../src/types';
 
 export function useVisits(employeeId?: string) {
   const [visits, setVisits] = useState<Visit[]>([]);

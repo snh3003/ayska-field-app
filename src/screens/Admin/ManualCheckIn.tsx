@@ -5,11 +5,8 @@ import { ScrollView, Text, View } from 'react-native';
 import { ButtonPrimary } from '../../components/ui/ButtonPrimary';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
-import {
-  type Doctor,
-  type Employee,
-  localDataService,
-} from '../../services/LocalDataService';
+import { localDataService } from '../../services/LocalDataService';
+import { Doctor, Employee } from '../../types';
 
 export default function ManualCheckIn() {
   const [employees, setEmployees] = useState<Employee[]>([]);
