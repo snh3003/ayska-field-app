@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Card } from '../../components/ui/Card';
-import { localDataService, type Visit } from '../../services/LocalDataService';
+import { localDataService } from '../../services/LocalDataService';
+import { Visit } from '../../types';
 import type { RootState } from '../../store';
 
 export default function CheckInHistory() {

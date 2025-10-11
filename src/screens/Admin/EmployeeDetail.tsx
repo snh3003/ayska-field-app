@@ -13,13 +13,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
 import { StatsCard } from '../../components/ui/StatsCard';
-import {
-  type Attendance,
-  type Doctor,
-  type Employee,
-  localDataService,
-  type Visit,
-} from '../../services/LocalDataService';
+import { localDataService } from '../../services/LocalDataService';
+import { Attendance, Doctor, Employee, Visit } from '../../types';
 
 export default function EmployeeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();

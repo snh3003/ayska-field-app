@@ -1,18 +1,5 @@
-import { AccessibilityRole, AccessibilityState } from 'react-native';
-
-export interface A11yProps {
-  accessible?: boolean;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
-  accessibilityRole?: AccessibilityRole;
-  accessibilityState?: AccessibilityState;
-  accessibilityValue?: {
-    min?: number;
-    max?: number;
-    now?: number;
-    text?: string;
-  };
-}
+import { AccessibilityRole } from 'react-native';
+import { A11yProps } from '../src/types';
 
 /**
  * Generate accessibility props for buttons
@@ -26,7 +13,7 @@ export function getButtonA11yProps(
     accessible: true,
     accessibilityLabel: label,
     accessibilityHint: hint || '',
-    accessibilityRole: 'button',
+    accessibilityRole: 'button' as AccessibilityRole,
     accessibilityState: { disabled: disabled || false },
   };
 }
@@ -125,8 +112,8 @@ export function getCardA11yProps(
     accessible: true,
     accessibilityLabel: label,
     accessibilityHint: hint || 'Double tap to open',
-    accessibilityRole: 'button',
-    accessibilityState: { selected },
+    accessibilityRole: 'button' as AccessibilityRole,
+    accessibilityState: { selected: selected ?? false },
   };
 }
 

@@ -1,5 +1,5 @@
 import { API_ENDPOINTS } from '../constants/constants';
-import type { CheckIn, Doctor } from '../interfaces/interfaces';
+import type { CheckIn, Doctor } from '../types';
 
 /**
  * Fetches doctors assigned to the logged-in employee for the day.
@@ -14,7 +14,9 @@ export const fetchAssignedDoctors = async (): Promise<Doctor[]> => {
  * Performs a check-in for the specified doctor.
  * Later, integrate with POST /checkin
  */
-export const performCheckIn = async (doctorId: string): Promise<{ success: boolean }> => {
+export const performCheckIn = async (
+  doctorId: string
+): Promise<{ success: boolean }> => {
   console.log('API call → POST', API_ENDPOINTS.CHECKIN, { doctorId });
   return { success: true };
 };
@@ -32,9 +34,13 @@ export const fetchCheckInHistory = async (): Promise<CheckIn[]> => {
  * Manually triggers a check-in on behalf of an employee.
  * Later, integrate with POST /manual-checkin
  */
-export const manualCheckIn = async (employeeId: string, doctorId: string): Promise<{ success: boolean }> => {
-  console.log('API call → POST', API_ENDPOINTS.MANUAL_CHECKIN, { employeeId, doctorId });
+export const manualCheckIn = async (
+  employeeId: string,
+  doctorId: string
+): Promise<{ success: boolean }> => {
+  console.log('API call → POST', API_ENDPOINTS.MANUAL_CHECKIN, {
+    employeeId,
+    doctorId,
+  });
   return { success: true };
 };
-
-

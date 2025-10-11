@@ -10,22 +10,7 @@ import Animated, {
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
-
-interface SwipeableCardProps {
-  children: React.ReactNode;
-  onSwipeLeft?: () => void;
-  onSwipeRight?: () => void;
-  leftAction?: {
-    icon: keyof typeof Ionicons.glyphMap;
-    color: string;
-    label: string;
-  };
-  rightAction?: {
-    icon: keyof typeof Ionicons.glyphMap;
-    color: string;
-    label: string;
-  };
-}
+import { SwipeableCardProps } from '../../types';
 
 const SWIPE_THRESHOLD = 120;
 

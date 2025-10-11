@@ -4,15 +4,7 @@ import { hapticFeedback } from '@/utils/haptics';
 import { getButtonA11yProps } from '@/utils/accessibility';
 import { Button as TamaguiButton } from '@tamagui/button';
 import { Text as TamaguiText } from '@tamagui/core';
-
-interface ButtonPrimaryProps {
-  title: string;
-  onPress: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-  style?: any;
-  accessibilityHint?: string;
-}
+import { ButtonPrimaryProps } from '../../types';
 
 export const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
   title,
@@ -41,7 +33,11 @@ export const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
       disabled={disabled || loading}
       onPress={handlePress}
       style={style}
-      {...getButtonA11yProps(title, accessibilityHint, disabled || loading)}
+      {...(getButtonA11yProps(
+        title,
+        accessibilityHint,
+        disabled || loading
+      ) as any)}
     >
       {loading ? (
         <ActivityIndicator color="white" />

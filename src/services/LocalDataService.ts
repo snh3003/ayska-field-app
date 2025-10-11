@@ -1,54 +1,12 @@
 import data from '../fixtures/data.json';
-
-export interface Admin {
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-}
-
-export interface Employee {
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-  role: 'employee';
-}
-
-export interface Doctor {
-  id: string;
-  name: string;
-  specialization: string;
-  location: { lat: number; lng: number };
-  phone?: string;
-}
-
-export interface Assignment {
-  id: string;
-  employeeId: string;
-  doctorId: string;
-  assignedDate: string;
-  status: 'active' | 'completed' | 'cancelled';
-}
-
-export interface Attendance {
-  id: string;
-  employeeId: string;
-  startTime: string;
-  endTime?: string;
-  date: string;
-  status: 'active' | 'completed';
-}
-
-export interface Visit {
-  id: string;
-  employeeId: string;
-  doctorId: string;
-  checkInTime: string;
-  checkOutTime?: string;
-  notes?: string;
-  status: 'in_progress' | 'completed';
-}
+import {
+  Admin,
+  Assignment,
+  Attendance,
+  Doctor,
+  Employee,
+  Visit,
+} from '../types';
 
 export interface Database {
   admins: Admin[];

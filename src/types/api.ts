@@ -1,3 +1,5 @@
+// API request/response types
+
 export interface Activity {
   id: string;
   title?: string;

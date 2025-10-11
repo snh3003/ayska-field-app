@@ -16,15 +16,7 @@ import {
   Typography,
 } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
-
-type ToastType = 'success' | 'error' | 'info' | 'warning';
-
-interface ToastProps {
-  message: string;
-  type?: ToastType;
-  duration?: number;
-  onDismiss: () => void;
-}
+import { ToastProps } from '../../types';
 
 export function Toast({
   message,

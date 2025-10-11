@@ -3,22 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Input as TamaguiInput } from '@tamagui/input';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
-
-interface InputProps {
-  label?: string;
-  placeholder?: string;
-  value: string;
-  onChangeText: (_e: any) => void;
-  onBlur?: () => void;
-  secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
-  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
-  multiline?: boolean;
-  numberOfLines?: number;
-  error?: string;
-  style?: any;
-  icon?: React.ReactNode;
-}
+import { InputProps } from '../../types';
 
 export const Input: React.FC<InputProps> = ({
   label,

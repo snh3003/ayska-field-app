@@ -17,14 +17,7 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
-
-interface BottomSheetProps {
-  isVisible: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  height?: number;
-}
+import { BottomSheetProps } from '../../types';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 

@@ -15,11 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
 import { ButtonPrimary } from '../../components/ui/ButtonPrimary';
 import { ButtonSecondary } from '../../components/ui/ButtonSecondary';
-import {
-  type Doctor,
-  localDataService,
-  type Visit,
-} from '../../services/LocalDataService';
+import { localDataService } from '../../services/LocalDataService';
+import { Doctor, Visit } from '../../types';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 

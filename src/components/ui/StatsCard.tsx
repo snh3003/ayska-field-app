@@ -2,14 +2,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
-
-interface StatsCardProps {
-  title: string;
-  value: string | number;
-  subtitle?: string;
-  color?: 'primary' | 'secondary' | 'success' | 'warning' | 'info';
-  icon?: React.ReactNode;
-}
+import { StatsCardProps } from '../../types';
 
 export const StatsCard: React.FC<StatsCardProps> = ({
   title,

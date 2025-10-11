@@ -1,15 +1,9 @@
 // KEEP existing imports for backward compatibility
-import { type TextProps } from 'react-native';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors, Typography } from '@/constants/theme';
 // ADD Tamagui import alongside existing ones
 import { Text as TamaguiText } from '@tamagui/core';
-
-export type ThemedTextProps = TextProps & {
-  lightColor?: string;
-  darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
-};
+import { ThemedTextProps } from '../../types';
 
 export function ThemedText({
   style,
