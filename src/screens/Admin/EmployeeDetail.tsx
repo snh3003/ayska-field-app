@@ -1,20 +1,40 @@
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View, SafeAreaView, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
 import { StatsCard } from '../../components/ui/StatsCard';
-import { localDataService, type Employee, type Doctor, type Visit, type Attendance } from '../../services/LocalDataService';
+import {
+  type Attendance,
+  type Doctor,
+  type Employee,
+  localDataService,
+  type Visit,
+} from '../../services/LocalDataService';
 
 export default function EmployeeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [employee, setEmployee] = useState<Employee | null>(null);
-  const [stats, setStats] = useState({ totalDays: 0, completedDays: 0, totalVisits: 0, completedVisits: 0 });
+  const [stats, setStats] = useState({
+    totalDays: 0,
+    completedDays: 0,
+    totalVisits: 0,
+    completedVisits: 0,
+  });
   const [assignedDoctors, setAssignedDoctors] = useState<Doctor[]>([]);
   const [recentVisits, setRecentVisits] = useState<Visit[]>([]);
-  const [todayAttendance, setTodayAttendance] = useState<Attendance | null>(null);
+  const [todayAttendance, setTodayAttendance] = useState<Attendance | null>(
+    null
+  );
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
 
@@ -30,23 +50,33 @@ export default function EmployeeDetail() {
       setAssignedDoctors(doctors);
 
       const allVisits = localDataService.getAll<Visit>('visits');
-      const empVisits = allVisits.filter((v: Visit) => v.employeeId === id).slice(-5).reverse();
+      const empVisits = allVisits
+        .filter((v: Visit) => v.employeeId === id)
+        .slice(-5)
+        .reverse();
       setRecentVisits(empVisits);
 
       const today = new Date().toISOString().split('T')[0];
-      const attendance = localDataService.getAll<Attendance>('attendance').find(
-        (a: Attendance) => a.employeeId === id && a.date === today
-      );
+      const attendance = localDataService
+        .getAll<Attendance>('attendance')
+        .find((a: Attendance) => a.employeeId === id && a.date === today);
       setTodayAttendance(attendance || null);
     }
   }, [id]);
 
   if (!employee) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.background }]}
+      >
         <View style={styles.centerContent}>
           <Ionicons name="alert-circle" size={64} color={theme.textSecondary} />
-          <Text style={[Typography.h4, { color: theme.textSecondary, marginTop: Spacing.md }]}>
+          <Text
+            style={[
+              Typography.h4,
+              { color: theme.textSecondary, marginTop: Spacing.md },
+            ]}
+          >
             Employee not found
           </Text>
         </View>
@@ -55,15 +85,17 @@ export default function EmployeeDetail() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <ScrollView 
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => router.back()}
             style={[styles.backButton, { backgroundColor: theme.card }]}
           >
@@ -78,14 +110,24 @@ export default function EmployeeDetail() {
         {/* Employee Profile Card */}
         <Card variant="elevated" style={styles.profileCard}>
           <View style={styles.profileHeader}>
-            <View style={[styles.avatarLarge, { backgroundColor: theme.primary + '15' }]}>
+            <View
+              style={[
+                styles.avatarLarge,
+                { backgroundColor: theme.primary + '15' },
+              ]}
+            >
               <Ionicons name="person" size={48} color={theme.primary} />
             </View>
             <View style={styles.profileInfo}>
               <Text style={[Typography.h2, { color: theme.text }]}>
                 {employee.name}
               </Text>
-              <Text style={[Typography.body, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+              <Text
+                style={[
+                  Typography.body,
+                  { color: theme.textSecondary, marginTop: Spacing.xs },
+                ]}
+              >
                 {employee.email}
               </Text>
             </View>
@@ -93,20 +135,46 @@ export default function EmployeeDetail() {
 
           {/* Status Indicator */}
           {todayAttendance && (
-            <View style={[styles.statusContainer, { 
-              backgroundColor: todayAttendance.status === 'active' ? theme.success + '15' : theme.textSecondary + '15' 
-            }]}>
-              <Ionicons 
-                name={todayAttendance.status === 'active' ? "checkmark-circle" : "time"} 
-                size={20} 
-                color={todayAttendance.status === 'active' ? theme.success : theme.textSecondary} 
+            <View
+              style={[
+                styles.statusContainer,
+                {
+                  backgroundColor:
+                    todayAttendance.status === 'active'
+                      ? theme.success + '15'
+                      : theme.textSecondary + '15',
+                },
+              ]}
+            >
+              <Ionicons
+                name={
+                  todayAttendance.status === 'active'
+                    ? 'checkmark-circle'
+                    : 'time'
+                }
+                size={20}
+                color={
+                  todayAttendance.status === 'active'
+                    ? theme.success
+                    : theme.textSecondary
+                }
               />
-              <Text style={[Typography.bodySmall, { 
-                color: todayAttendance.status === 'active' ? theme.success : theme.textSecondary,
-                marginLeft: Spacing.sm,
-                fontWeight: '600'
-              }]}>
-                {todayAttendance.status === 'active' ? 'Active Today' : 'Day Completed'}
+              <Text
+                style={[
+                  Typography.bodySmall,
+                  {
+                    color:
+                      todayAttendance.status === 'active'
+                        ? theme.success
+                        : theme.textSecondary,
+                    marginLeft: Spacing.sm,
+                    fontWeight: '600',
+                  },
+                ]}
+              >
+                {todayAttendance.status === 'active'
+                  ? 'Active Today'
+                  : 'Day Completed'}
               </Text>
             </View>
           )}
@@ -114,17 +182,19 @@ export default function EmployeeDetail() {
 
         {/* Stats Overview */}
         <View style={styles.statsGrid}>
-          <StatsCard 
-            title="Days Worked" 
-            value={stats.totalDays} 
+          <StatsCard
+            title="Days Worked"
+            value={stats.totalDays}
             color="primary"
             icon={<Ionicons name="calendar" size={20} color={theme.primary} />}
           />
-          <StatsCard 
-            title="Total Visits" 
-            value={stats.totalVisits} 
+          <StatsCard
+            title="Total Visits"
+            value={stats.totalVisits}
             color="secondary"
-            icon={<Ionicons name="bar-chart" size={20} color={theme.secondary} />}
+            icon={
+              <Ionicons name="bar-chart" size={20} color={theme.secondary} />
+            }
           />
         </View>
 
@@ -134,29 +204,63 @@ export default function EmployeeDetail() {
             Assigned Doctors
           </Text>
           <Text style={[Typography.caption, { color: theme.textSecondary }]}>
-            {assignedDoctors.length} doctor{assignedDoctors.length !== 1 ? 's' : ''}
+            {assignedDoctors.length} doctor
+            {assignedDoctors.length !== 1 ? 's' : ''}
           </Text>
         </View>
 
         {assignedDoctors.length === 0 ? (
           <Card style={{ alignItems: 'center', padding: Spacing.xl }}>
-            <Ionicons name="medical" size={48} color={theme.textSecondary} style={{ opacity: 0.3 }} />
-            <Text style={[Typography.body, { color: theme.textSecondary, marginTop: Spacing.md, textAlign: 'center' }]}>
+            <Ionicons
+              name="medical"
+              size={48}
+              color={theme.textSecondary}
+              style={{ opacity: 0.3 }}
+            />
+            <Text
+              style={[
+                Typography.body,
+                {
+                  color: theme.textSecondary,
+                  marginTop: Spacing.md,
+                  textAlign: 'center',
+                },
+              ]}
+            >
               No doctors assigned
             </Text>
           </Card>
         ) : (
-          assignedDoctors.map((doctor) => (
-            <Card key={doctor.id} variant="outlined" style={{ marginBottom: Spacing.sm }}>
+          assignedDoctors.map(doctor => (
+            <Card
+              key={doctor.id}
+              variant="outlined"
+              style={{ marginBottom: Spacing.sm }}
+            >
               <View style={styles.doctorRow}>
-                <View style={[styles.doctorIcon, { backgroundColor: theme.primary + '15' }]}>
+                <View
+                  style={[
+                    styles.doctorIcon,
+                    { backgroundColor: theme.primary + '15' },
+                  ]}
+                >
                   <Ionicons name="person" size={24} color={theme.primary} />
                 </View>
                 <View style={styles.doctorInfo}>
-                  <Text style={[Typography.body, { color: theme.text, fontWeight: '600' }]}>
+                  <Text
+                    style={[
+                      Typography.body,
+                      { color: theme.text, fontWeight: '600' },
+                    ]}
+                  >
                     {doctor.name}
                   </Text>
-                  <Text style={[Typography.caption, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+                  <Text
+                    style={[
+                      Typography.caption,
+                      { color: theme.textSecondary, marginTop: Spacing.xs },
+                    ]}
+                  >
                     {doctor.specialization}
                   </Text>
                 </View>
@@ -178,50 +282,110 @@ export default function EmployeeDetail() {
 
         {recentVisits.length === 0 ? (
           <Card style={{ alignItems: 'center', padding: Spacing.xl }}>
-            <Ionicons name="time-outline" size={48} color={theme.textSecondary} style={{ opacity: 0.3 }} />
-            <Text style={[Typography.body, { color: theme.textSecondary, marginTop: Spacing.md, textAlign: 'center' }]}>
+            <Ionicons
+              name="time-outline"
+              size={48}
+              color={theme.textSecondary}
+              style={{ opacity: 0.3 }}
+            />
+            <Text
+              style={[
+                Typography.body,
+                {
+                  color: theme.textSecondary,
+                  marginTop: Spacing.md,
+                  textAlign: 'center',
+                },
+              ]}
+            >
               No recent activity
             </Text>
           </Card>
         ) : (
-          recentVisits.map((visit) => {
-            const doctor = localDataService.getById<Doctor>('doctors', visit.doctorId);
+          recentVisits.map(visit => {
+            const doctor = localDataService.getById<Doctor>(
+              'doctors',
+              visit.doctorId
+            );
             const isCompleted = visit.status === 'completed';
-            
+
             return (
-              <Card key={visit.id} variant="outlined" style={{ marginBottom: Spacing.sm }}>
+              <Card
+                key={visit.id}
+                variant="outlined"
+                style={{ marginBottom: Spacing.sm }}
+              >
                 <View style={styles.visitRow}>
-                  <View style={[
-                    styles.visitIcon,
-                    { backgroundColor: isCompleted ? theme.success + '15' : theme.warning + '15' }
-                  ]}>
-                    <Ionicons 
-                      name={isCompleted ? "checkmark-circle" : "hourglass"} 
-                      size={24} 
-                      color={isCompleted ? theme.success : theme.warning} 
+                  <View
+                    style={[
+                      styles.visitIcon,
+                      {
+                        backgroundColor: isCompleted
+                          ? theme.success + '15'
+                          : theme.warning + '15',
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name={isCompleted ? 'checkmark-circle' : 'hourglass'}
+                      size={24}
+                      color={isCompleted ? theme.success : theme.warning}
                     />
                   </View>
                   <View style={styles.visitInfo}>
-                    <Text style={[Typography.body, { color: theme.text, fontWeight: '600' }]}>
+                    <Text
+                      style={[
+                        Typography.body,
+                        { color: theme.text, fontWeight: '600' },
+                      ]}
+                    >
                       Visit to {doctor?.name || 'Unknown Doctor'}
                     </Text>
                     <View style={styles.visitMeta}>
-                      <Ionicons name="time-outline" size={14} color={theme.icon} />
-                      <Text style={[Typography.caption, { color: theme.textSecondary, marginLeft: Spacing.xs }]}>
+                      <Ionicons
+                        name="time-outline"
+                        size={14}
+                        color={theme.icon}
+                      />
+                      <Text
+                        style={[
+                          Typography.caption,
+                          {
+                            color: theme.textSecondary,
+                            marginLeft: Spacing.xs,
+                          },
+                        ]}
+                      >
                         {new Date(visit.checkInTime).toLocaleString()}
                       </Text>
                     </View>
                     {visit.notes && (
-                      <Text style={[Typography.bodySmall, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+                      <Text
+                        style={[
+                          Typography.bodySmall,
+                          { color: theme.textSecondary, marginTop: Spacing.xs },
+                        ]}
+                      >
                         {visit.notes}
                       </Text>
                     )}
                   </View>
-                  <View style={[
-                    styles.statusBadge,
-                    { backgroundColor: isCompleted ? theme.success : theme.warning }
-                  ]}>
-                    <Text style={[Typography.caption, { color: '#FFFFFF', fontWeight: '600' }]}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: isCompleted
+                          ? theme.success
+                          : theme.warning,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        Typography.caption,
+                        { color: '#FFFFFF', fontWeight: '600' },
+                      ]}
+                    >
                       {isCompleted ? 'Done' : 'Active'}
                     </Text>
                   </View>
@@ -230,7 +394,7 @@ export default function EmployeeDetail() {
             );
           })
         )}
-    </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 }

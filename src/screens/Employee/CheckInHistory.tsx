@@ -15,58 +15,116 @@ export default function CheckInHistory() {
 
   useEffect(() => {
     if (userId) {
-      const userVisits = localDataService.getAll('visits').filter(v => v.employeeId === userId);
-      setVisits(userVisits);
+      const userVisits = localDataService
+        .getAll('visits')
+        .filter((v: any) => v.employeeId === userId);
+      setVisits(userVisits as Visit[]);
     }
   }, [userId]);
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.background }}>
       <View style={{ padding: 16 }}>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: theme.text, marginBottom: 20 }}>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: '700',
+            color: theme.text,
+            marginBottom: 20,
+          }}
+        >
           Visit History
         </Text>
-        
+
         {visits.length === 0 ? (
           <Card>
-            <Text style={{ color: theme.text, textAlign: 'center' }}>No visits recorded yet</Text>
+            <Text style={{ color: theme.text, textAlign: 'center' }}>
+              No visits recorded yet
+            </Text>
           </Card>
         ) : (
-          visits.map((visit) => {
+          visits.map(visit => {
             const doctor = localDataService.getById('doctors', visit.doctorId);
             return (
               <Card key={visit.id} style={{ marginBottom: 12 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 18, fontWeight: '600', color: theme.text, marginBottom: 4 }}>
-                      {doctor?.name || 'Unknown Doctor'}
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: '600',
+                        color: theme.text,
+                        marginBottom: 4,
+                      }}
+                    >
+                      {(doctor as any)?.name || 'Unknown Doctor'}
                     </Text>
-                    <Text style={{ color: theme.text, opacity: 0.7, marginBottom: 8 }}>
-                      {doctor?.specialization || 'Unknown Specialty'}
+                    <Text
+                      style={{
+                        color: theme.text,
+                        opacity: 0.7,
+                        marginBottom: 8,
+                      }}
+                    >
+                      {(doctor as any)?.specialization || 'Unknown Specialty'}
                     </Text>
-                    <Text style={{ color: theme.text, opacity: 0.6, fontSize: 14 }}>
+                    <Text
+                      style={{ color: theme.text, opacity: 0.6, fontSize: 14 }}
+                    >
                       Check-in: {new Date(visit.checkInTime).toLocaleString()}
                     </Text>
                     {visit.checkOutTime && (
-                      <Text style={{ color: theme.text, opacity: 0.6, fontSize: 14 }}>
-                        Check-out: {new Date(visit.checkOutTime).toLocaleString()}
+                      <Text
+                        style={{
+                          color: theme.text,
+                          opacity: 0.6,
+                          fontSize: 14,
+                        }}
+                      >
+                        Check-out:{' '}
+                        {new Date(visit.checkOutTime).toLocaleString()}
                       </Text>
                     )}
                     {visit.notes && (
-                      <Text style={{ color: theme.text, opacity: 0.8, fontSize: 14, marginTop: 8, fontStyle: 'italic' }}>
+                      <Text
+                        style={{
+                          color: theme.text,
+                          opacity: 0.8,
+                          fontSize: 14,
+                          marginTop: 8,
+                          fontStyle: 'italic',
+                        }}
+                      >
                         &ldquo;{visit.notes}&rdquo;
                       </Text>
                     )}
                   </View>
-                  <View style={{ 
-                    backgroundColor: visit.status === 'completed' ? '#10B981' : '#F59E0B',
-                    paddingHorizontal: 8,
-                    paddingVertical: 4,
-                    borderRadius: 12,
-                    marginLeft: 8
-                  }}>
-                    <Text style={{ color: 'white', fontSize: 12, fontWeight: '600' }}>
-                      {visit.status === 'completed' ? 'Completed' : 'In Progress'}
+                  <View
+                    style={{
+                      backgroundColor:
+                        visit.status === 'completed' ? '#10B981' : '#F59E0B',
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 12,
+                      marginLeft: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 12,
+                        fontWeight: '600',
+                      }}
+                    >
+                      {visit.status === 'completed'
+                        ? 'Completed'
+                        : 'In Progress'}
                     </Text>
                   </View>
                 </View>
@@ -78,5 +136,3 @@ export default function CheckInHistory() {
     </ScrollView>
   );
 }
-
-

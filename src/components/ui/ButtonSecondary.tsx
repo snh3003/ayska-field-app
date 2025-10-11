@@ -1,11 +1,10 @@
-import { Colors, Typography, BorderRadius, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { Colors } from '@/constants/theme';
+import { ActivityIndicator } from 'react-native';
 import { hapticFeedback } from '@/utils/haptics';
 import { getButtonA11yProps } from '@/utils/accessibility';
-import { Button as TamaguiButton } from '@tamagui/button'
-import { Text as TamaguiText } from '@tamagui/core'
+import { Button as TamaguiButton } from '@tamagui/button';
+import { Text as TamaguiText } from '@tamagui/core';
 
 interface ButtonSecondaryProps {
   title: string;
@@ -16,22 +15,22 @@ interface ButtonSecondaryProps {
   accessibilityHint?: string;
 }
 
-export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({ 
-  title, 
-  onPress, 
-  disabled, 
+export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
+  title,
+  onPress,
+  disabled,
   loading,
   style,
-  accessibilityHint 
+  accessibilityHint,
 }) => {
-  const scheme = useColorScheme() ?? 'light';
+  const scheme = 'light'; // Default scheme
   const theme = Colors[scheme];
 
   const handlePress = () => {
     hapticFeedback.light();
     onPress();
   };
-  
+
   return (
     <TamaguiButton
       backgroundColor="transparent"
@@ -44,7 +43,7 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
       alignItems="center"
       justifyContent="center"
       minHeight={48}
-      opacity={(disabled || loading) ? 0.6 : 1}
+      opacity={disabled || loading ? 0.6 : 1}
       disabled={disabled || loading}
       onPress={handlePress}
       style={style}
@@ -53,9 +52,9 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
       {loading ? (
         <ActivityIndicator color={theme.primary} />
       ) : (
-        <TamaguiText 
-          color="$primary" 
-          fontSize="$4" 
+        <TamaguiText
+          color="$primary"
+          fontSize="$4"
           fontWeight="600"
           textAlign="center"
         >
@@ -65,21 +64,3 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
     </TamaguiButton>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: BorderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 48,
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-  },
-  text: {
-    textAlign: 'center',
-  },
-});
-
-

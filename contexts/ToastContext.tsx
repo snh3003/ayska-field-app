@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { Toast } from '../src/components/feedback/Toast';
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -11,11 +11,11 @@ interface ToastData {
 }
 
 interface ToastContextType {
-  showToast: (message: string, type?: ToastType, duration?: number) => void;
-  success: (message: string, duration?: number) => void;
-  error: (message: string, duration?: number) => void;
-  info: (message: string, duration?: number) => void;
-  warning: (message: string, duration?: number) => void;
+  showToast: (_message: string, _type?: ToastType, _duration?: number) => void;
+  success: (_message: string, _duration?: number) => void;
+  error: (_message: string, _duration?: number) => void;
+  info: (_message: string, _duration?: number) => void;
+  warning: (_message: string, _duration?: number) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -23,29 +23,37 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastData[]>([]);
 
-  const showToast = (message: string, type: ToastType = 'info', duration = 3000) => {
+  const showToast = (
+    message: string,
+    type: ToastType = 'info',
+    duration = 3000
+  ) => {
     const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type, duration }]);
+    setToasts(prev => [...prev, { id, message, type, duration }]);
   };
 
   const removeToast = (id: number) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    setToasts(prev => prev.filter(toast => toast.id !== id));
   };
 
-  const success = (message: string, duration?: number) => showToast(message, 'success', duration);
-  const error = (message: string, duration?: number) => showToast(message, 'error', duration);
-  const info = (message: string, duration?: number) => showToast(message, 'info', duration);
-  const warning = (message: string, duration?: number) => showToast(message, 'warning', duration);
+  const success = (message: string, duration?: number) =>
+    showToast(message, 'success', duration);
+  const error = (message: string, duration?: number) =>
+    showToast(message, 'error', duration);
+  const info = (message: string, duration?: number) =>
+    showToast(message, 'info', duration);
+  const warning = (message: string, duration?: number) =>
+    showToast(message, 'warning', duration);
 
   return (
     <ToastContext.Provider value={{ showToast, success, error, info, warning }}>
       {children}
-      {toasts.map((toast) => (
+      {toasts.map(toast => (
         <Toast
           key={toast.id}
           message={toast.message}
           type={toast.type}
-          duration={toast.duration}
+          duration={toast.duration || 3000}
           onDismiss={() => removeToast(toast.id)}
         />
       ))}
@@ -60,4 +68,3 @@ export function useToast() {
   }
   return context;
 }
-

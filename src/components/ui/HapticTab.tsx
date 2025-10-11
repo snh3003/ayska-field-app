@@ -10,9 +10,9 @@ export function HapticTab({ onPress, ...props }: Props) {
   return (
     <TouchableOpacity
       {...props}
-      onPress={(ev) => {
+      onPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        onPress?.(ev);
+        onPress?.();
       }}
     />
   );

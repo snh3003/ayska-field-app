@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 
 interface SearchBarProps {
   placeholder?: string;
-  onSearch: (query: string) => void;
+  onSearch: (_query: string) => void;
   onFilterPress?: () => void;
   showFilter?: boolean;
 }
@@ -18,7 +18,7 @@ export function SearchBar({
   showFilter = false,
 }: SearchBarProps) {
   const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme];
+  const theme = Colors[colorScheme ?? 'light'];
   const [query, setQuery] = useState('');
 
   const handleChange = (text: string) => {
@@ -49,11 +49,7 @@ export function SearchBar({
           style={styles.searchIcon}
         />
         <TextInput
-          style={[
-            Typography.body,
-            styles.input,
-            { color: theme.text },
-          ]}
+          style={[Typography.body, styles.input, { color: theme.text }]}
           placeholder={placeholder}
           placeholderTextColor={theme.textSecondary}
           value={query}
@@ -63,7 +59,11 @@ export function SearchBar({
         />
         {query.length > 0 && (
           <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-            <Ionicons name="close-circle" size={20} color={theme.textSecondary} />
+            <Ionicons
+              name="close-circle"
+              size={20}
+              color={theme.textSecondary}
+            />
           </TouchableOpacity>
         )}
       </View>
@@ -119,4 +119,3 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
   },
 });
-

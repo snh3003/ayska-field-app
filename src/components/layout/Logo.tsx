@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, View, Dimensions, Platform } from 'react-native';
+import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
 
 interface LogoProps {
   size?: 'small' | 'medium' | 'large' | 'responsive';
@@ -7,25 +7,31 @@ interface LogoProps {
   matchCardWidth?: boolean;
 }
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Responsive sizing based on screen dimensions and platform
 const getResponsiveSizes = () => {
   const isTablet = SCREEN_WIDTH >= 768;
   const isSmallScreen = SCREEN_WIDTH < 375;
   const isLargeScreen = SCREEN_WIDTH > 414;
-  
+
   // Base sizes for different screen types
   const baseSizes = {
     small: { width: 80, height: 32 },
     medium: { width: 120, height: 48 },
     large: { width: 160, height: 64 },
   };
-  
+
   // Scale factors based on screen size and platform
-  const scaleFactor = isTablet ? 1.5 : isSmallScreen ? 0.8 : isLargeScreen ? 1.2 : 1;
+  const scaleFactor = isTablet
+    ? 1.5
+    : isSmallScreen
+      ? 0.8
+      : isLargeScreen
+        ? 1.2
+        : 1;
   const platformScale = Platform.OS === 'ios' ? 1.1 : 1;
-  
+
   return {
     small: {
       width: baseSizes.small.width * scaleFactor * platformScale,
@@ -42,9 +48,13 @@ const getResponsiveSizes = () => {
   };
 };
 
-export function Logo({ size = 'large', style, matchCardWidth = false }: LogoProps) {
+export function Logo({
+  size = 'large',
+  style,
+  matchCardWidth = false,
+}: LogoProps) {
   const responsiveSizes = getResponsiveSizes();
-  
+
   let dimensions;
   if (size === 'responsive') {
     // For responsive size, use a percentage of screen width
@@ -52,7 +62,8 @@ export function Logo({ size = 'large', style, matchCardWidth = false }: LogoProp
     const aspectRatio = 2.5; // Logo aspect ratio
     dimensions = {
       width: matchCardWidth ? cardWidth : Math.min(cardWidth, 280),
-      height: (matchCardWidth ? cardWidth : Math.min(cardWidth, 280)) / aspectRatio,
+      height:
+        (matchCardWidth ? cardWidth : Math.min(cardWidth, 280)) / aspectRatio,
     };
   } else {
     dimensions = responsiveSizes[size];
@@ -78,4 +89,3 @@ const styles = StyleSheet.create({
     // Dimensions are set dynamically
   },
 });
-

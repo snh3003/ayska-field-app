@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
-  withSpring,
+  useSharedValue,
   withSequence,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { Colors, BorderRadius } from '@/constants/theme';
+import { BorderRadius, Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { hapticFeedback } from '../../../utils/haptics';
-import { View as TamaguiView } from '@tamagui/core'
+import { View as TamaguiView } from '@tamagui/core';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -29,7 +29,7 @@ export function ThemeToggle() {
       damping: 20,
       stiffness: 90,
     });
-  }, [isDark]);
+  }, [isDark, rotate]);
 
   const handlePress = () => {
     // Quick bounce animation
@@ -37,24 +37,20 @@ export function ThemeToggle() {
       withTiming(0.85, { duration: 100 }),
       withSpring(1, { damping: 12, stiffness: 150 })
     );
-    
+
     hapticFeedback.light();
     toggleTheme();
   };
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: scale.value },
-      ],
+      transform: [{ scale: scale.value }],
     };
   });
 
   const iconAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { rotate: `${rotate.value}deg` },
-      ],
+      transform: [{ rotate: `${rotate.value}deg` }],
     };
   });
 
@@ -103,4 +99,3 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 });
-

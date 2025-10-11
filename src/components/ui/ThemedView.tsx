@@ -1,14 +1,19 @@
-import { View, type ViewProps } from 'react-native';
+import { type ViewProps } from 'react-native';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
-import { View as TamaguiView } from '@tamagui/core'
+import { View as TamaguiView } from '@tamagui/core';
 
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;
   darkColor?: string;
 };
 
-export function ThemedView({ style, lightColor, darkColor, ...otherProps }: ThemedViewProps) {
+export function ThemedView({
+  style,
+  lightColor,
+  darkColor,
+  ...otherProps
+}: ThemedViewProps) {
   const theme = useColorScheme() ?? 'light';
   const backgroundColor = theme === 'light' ? lightColor : darkColor;
 
@@ -16,7 +21,7 @@ export function ThemedView({ style, lightColor, darkColor, ...otherProps }: Them
     <TamaguiView
       backgroundColor={backgroundColor ?? Colors[theme].background}
       style={style}
-      {...otherProps}
+      {...(otherProps as any)}
     />
   );
 }

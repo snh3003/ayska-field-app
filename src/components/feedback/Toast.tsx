@@ -1,16 +1,21 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import Animated, {
-  useSharedValue,
+  runOnJS,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/theme';
+import {
+  BorderRadius,
+  Colors,
+  Shadows,
+  Spacing,
+  Typography,
+} from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
-import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -21,29 +26,40 @@ interface ToastProps {
   onDismiss: () => void;
 }
 
-const { width } = Dimensions.get('window');
-
-export function Toast({ message, type = 'info', duration = 3000, onDismiss }: ToastProps) {
+export function Toast({
+  message,
+  type = 'info',
+  duration = 3000,
+  onDismiss,
+}: ToastProps) {
   const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme];
+  const theme = Colors[colorScheme ?? 'light'];
   const translateY = useSharedValue(-100);
   const opacity = useSharedValue(0);
 
   const getIcon = () => {
     switch (type) {
-      case 'success': return 'checkmark-circle';
-      case 'error': return 'close-circle';
-      case 'warning': return 'warning';
-      default: return 'information-circle';
+      case 'success':
+        return 'checkmark-circle';
+      case 'error':
+        return 'close-circle';
+      case 'warning':
+        return 'warning';
+      default:
+        return 'information-circle';
     }
   };
 
   const getColor = () => {
     switch (type) {
-      case 'success': return theme.success;
-      case 'error': return theme.error;
-      case 'warning': return theme.warning;
-      default: return theme.info;
+      case 'success':
+        return theme.success;
+      case 'error':
+        return theme.error;
+      case 'warning':
+        return theme.warning;
+      default:
+        return theme.info;
     }
   };
 
@@ -55,7 +71,7 @@ export function Toast({ message, type = 'info', duration = 3000, onDismiss }: To
     // Auto dismiss
     const timer = setTimeout(() => {
       translateY.value = withSpring(-100, { damping: 15, stiffness: 150 });
-      opacity.value = withTiming(0, { duration: 200 }, (finished) => {
+      opacity.value = withTiming(0, { duration: 200 }, finished => {
         if (finished) {
           runOnJS(onDismiss)();
         }
@@ -63,7 +79,7 @@ export function Toast({ message, type = 'info', duration = 3000, onDismiss }: To
     }, duration);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [duration, onDismiss, opacity, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -114,4 +130,3 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
 });
-

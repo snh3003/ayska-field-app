@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { useColorScheme as useSystemColorScheme } from 'react-native';
 
 type ColorScheme = 'light' | 'dark';
@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 
   const toggleTheme = () => {
-    setColorScheme(prev => prev === 'light' ? 'dark' : 'light');
+    setColorScheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
   return (
@@ -38,10 +38,11 @@ export function useTheme() {
 // Custom hook for backwards compatibility
 export function useColorScheme() {
   const context = useContext(ThemeContext);
+  const systemColorScheme = useSystemColorScheme();
+
   if (context === undefined) {
     // Fallback to system color scheme if not within ThemeProvider
-    return useSystemColorScheme();
+    return systemColorScheme;
   }
   return context.colorScheme;
 }
-

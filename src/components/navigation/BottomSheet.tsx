@@ -1,23 +1,22 @@
 import React, { useEffect } from 'react';
 import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  StyleSheet,
   Dimensions,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
-import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
 
 interface BottomSheetProps {
   isVisible: boolean;
@@ -37,7 +36,7 @@ export function BottomSheet({
   height = SCREEN_HEIGHT * 0.6,
 }: BottomSheetProps) {
   const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme];
+  const theme = Colors[colorScheme ?? 'light'];
   const translateY = useSharedValue(height);
   const opacity = useSharedValue(0);
 
@@ -55,7 +54,7 @@ export function BottomSheet({
         stiffness: 200,
       });
     }
-  }, [isVisible]);
+  }, [isVisible, height, opacity, translateY]);
 
   const overlayStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -100,7 +99,11 @@ export function BottomSheet({
                   {title}
                 </Text>
                 <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                  <Ionicons name="close" size={24} color={theme.textSecondary} />
+                  <Ionicons
+                    name="close"
+                    size={24}
+                    color={theme.textSecondary}
+                  />
                 </TouchableOpacity>
               </View>
             )}
@@ -150,4 +153,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
 });
-

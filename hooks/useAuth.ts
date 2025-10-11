@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import type { RootState } from '../src/store';
 import { logout as logoutAction } from '../src/store/slices/authSlice';
@@ -32,4 +32,3 @@ export function useAuth() {
     logout,
   };
 }
-

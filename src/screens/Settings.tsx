@@ -1,10 +1,17 @@
-import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { ScrollView, Text, View, SafeAreaView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Card } from '../components/ui/Card';
 import { ThemeToggle } from '../components/layout/ThemeToggle';
 import { Logo } from '../components/layout/Logo';
@@ -12,27 +19,23 @@ import type { RootState } from '../store';
 import { logout } from '../store/slices/authSlice';
 
 export default function Settings() {
-  const { name, email, role } = useSelector((s: RootState) => s.auth);
+  const { name, role } = useSelector((s: RootState) => s.auth);
   const dispatch = useDispatch();
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
 
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: () => {
-            dispatch(logout());
-            router.replace('/login');
-          },
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          dispatch(logout());
+          router.replace('/login');
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const settingsItems = [
@@ -41,7 +44,8 @@ export default function Settings() {
       title: 'Notifications',
       icon: 'notifications-outline',
       iconColor: theme.primary,
-      onPress: () => Alert.alert('Notifications', 'Notification settings coming soon!'),
+      onPress: () =>
+        Alert.alert('Notifications', 'Notification settings coming soon!'),
     },
     {
       id: 'privacy',
@@ -67,17 +71,17 @@ export default function Settings() {
   ];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <ScrollView 
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[Typography.h3, { color: theme.text }]}>
-            Settings
-          </Text>
+          <Text style={[Typography.h3, { color: theme.text }]}>Settings</Text>
           <ThemeToggle />
         </View>
 
@@ -89,18 +93,38 @@ export default function Settings() {
         {/* Profile Card */}
         <Card variant="elevated" style={styles.profileCard}>
           <View style={styles.profileHeader}>
-            <View style={[styles.avatarLarge, { backgroundColor: theme.primary + '15' }]}>
+            <View
+              style={[
+                styles.avatarLarge,
+                { backgroundColor: theme.primary + '15' },
+              ]}
+            >
               <Ionicons name="person" size={48} color={theme.primary} />
             </View>
             <View style={styles.profileInfo}>
               <Text style={[Typography.h3, { color: theme.text }]}>
                 {name || 'User'}
               </Text>
-              <Text style={[Typography.body, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
-                {email}
+              <Text
+                style={[
+                  Typography.body,
+                  { color: theme.textSecondary, marginTop: Spacing.xs },
+                ]}
+              >
+                {name}
               </Text>
-              <View style={[styles.roleBadge, { backgroundColor: theme.primary + '15' }]}>
-                <Text style={[Typography.caption, { color: theme.primary, fontWeight: '600' }]}>
+              <View
+                style={[
+                  styles.roleBadge,
+                  { backgroundColor: theme.primary + '15' },
+                ]}
+              >
+                <Text
+                  style={[
+                    Typography.caption,
+                    { color: theme.primary, fontWeight: '600' },
+                  ]}
+                >
                   {role === 'admin' ? 'Administrator' : 'Employee'}
                 </Text>
               </View>
@@ -109,21 +133,49 @@ export default function Settings() {
         </Card>
 
         {/* Appearance Section */}
-        <Text style={[Typography.h4, { color: theme.text, marginTop: Spacing.lg, marginBottom: Spacing.md }]}>
+        <Text
+          style={[
+            Typography.h4,
+            {
+              color: theme.text,
+              marginTop: Spacing.lg,
+              marginBottom: Spacing.md,
+            },
+          ]}
+        >
           Appearance
         </Text>
 
         <Card variant="elevated">
           <View style={styles.settingRow}>
             <View style={styles.settingLeft}>
-              <View style={[styles.settingIcon, { backgroundColor: theme.warning + '15' }]}>
-                <Ionicons name="color-palette-outline" size={24} color={theme.warning} />
+              <View
+                style={[
+                  styles.settingIcon,
+                  { backgroundColor: theme.warning + '15' },
+                ]}
+              >
+                <Ionicons
+                  name="color-palette-outline"
+                  size={24}
+                  color={theme.warning}
+                />
               </View>
               <View style={styles.settingInfo}>
-                <Text style={[Typography.body, { color: theme.text, fontWeight: '600' }]}>
+                <Text
+                  style={[
+                    Typography.body,
+                    { color: theme.text, fontWeight: '600' },
+                  ]}
+                >
                   Theme
                 </Text>
-                <Text style={[Typography.caption, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+                <Text
+                  style={[
+                    Typography.caption,
+                    { color: theme.textSecondary, marginTop: Spacing.xs },
+                  ]}
+                >
                   {scheme === 'dark' ? 'Dark Mode' : 'Light Mode'}
                 </Text>
               </View>
@@ -133,24 +185,49 @@ export default function Settings() {
         </Card>
 
         {/* General Settings */}
-        <Text style={[Typography.h4, { color: theme.text, marginTop: Spacing.lg, marginBottom: Spacing.md }]}>
+        <Text
+          style={[
+            Typography.h4,
+            {
+              color: theme.text,
+              marginTop: Spacing.lg,
+              marginBottom: Spacing.md,
+            },
+          ]}
+        >
           General
         </Text>
 
         {settingsItems.map((item, index) => (
-          <Card 
-            key={item.id} 
-            variant="elevated" 
+          <Card
+            key={item.id}
+            variant="elevated"
             onPress={item.onPress}
-            style={{ marginBottom: index < settingsItems.length - 1 ? Spacing.sm : 0 }}
+            style={{
+              marginBottom: index < settingsItems.length - 1 ? Spacing.sm : 0,
+            }}
           >
             <View style={styles.settingRow}>
               <View style={styles.settingLeft}>
-                <View style={[styles.settingIcon, { backgroundColor: item.iconColor + '15' }]}>
-                  <Ionicons name={item.icon as any} size={24} color={item.iconColor} />
+                <View
+                  style={[
+                    styles.settingIcon,
+                    { backgroundColor: item.iconColor + '15' },
+                  ]}
+                >
+                  <Ionicons
+                    name={item.icon as any}
+                    size={24}
+                    color={item.iconColor}
+                  />
                 </View>
                 <View style={styles.settingInfo}>
-                  <Text style={[Typography.body, { color: theme.text, fontWeight: '600' }]}>
+                  <Text
+                    style={[
+                      Typography.body,
+                      { color: theme.text, fontWeight: '600' },
+                    ]}
+                  >
                     {item.title}
                   </Text>
                 </View>
@@ -161,18 +238,32 @@ export default function Settings() {
         ))}
 
         {/* Logout Button */}
-        <Card 
-          variant="elevated" 
+        <Card
+          variant="elevated"
           onPress={handleLogout}
           style={{ marginTop: Spacing.xl, backgroundColor: theme.error + '10' }}
         >
           <View style={styles.settingRow}>
             <View style={styles.settingLeft}>
-              <View style={[styles.settingIcon, { backgroundColor: theme.error + '15' }]}>
-                <Ionicons name="log-out-outline" size={24} color={theme.error} />
+              <View
+                style={[
+                  styles.settingIcon,
+                  { backgroundColor: theme.error + '15' },
+                ]}
+              >
+                <Ionicons
+                  name="log-out-outline"
+                  size={24}
+                  color={theme.error}
+                />
               </View>
               <View style={styles.settingInfo}>
-                <Text style={[Typography.body, { color: theme.error, fontWeight: '600' }]}>
+                <Text
+                  style={[
+                    Typography.body,
+                    { color: theme.error, fontWeight: '600' },
+                  ]}
+                >
                   Logout
                 </Text>
               </View>
@@ -182,7 +273,16 @@ export default function Settings() {
         </Card>
 
         {/* App Version */}
-        <Text style={[Typography.caption, { color: theme.textSecondary, textAlign: 'center', marginTop: Spacing.xl }]}>
+        <Text
+          style={[
+            Typography.caption,
+            {
+              color: theme.textSecondary,
+              textAlign: 'center',
+              marginTop: Spacing.xl,
+            },
+          ]}
+        >
           Version 1.0.0
         </Text>
       </ScrollView>
@@ -257,4 +357,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

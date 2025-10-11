@@ -1,17 +1,16 @@
-import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import { ScrollView as TamaguiScrollView, View as TamaguiView, Text as TamaguiText, YStack } from '@tamagui/core'
 import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,14 +22,15 @@ import type { RootState } from '../src/store';
 import { localDataService } from '../src/services/LocalDataService';
 import { ThemeToggle } from '../src/components/layout/ThemeToggle';
 import { Logo } from '../src/components/layout/Logo';
-import { useFormValidation, commonRules } from '../utils/validation';
+import { commonRules, useFormValidation } from '../utils/validation';
 import { useToast } from '../contexts/ToastContext';
 import { hapticFeedback } from '../utils/haptics';
-import { getHeaderA11yProps } from '../utils/accessibility';
 
 export default function LoginScreen() {
   const dispatch = useDispatch();
-  const { loading: loginLoading, error: loginError } = useSelector((s: RootState) => s.auth);
+  const { loading: loginLoading, error: loginError } = useSelector(
+    (s: RootState) => s.auth
+  );
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
   const toast = useToast();
@@ -70,7 +70,13 @@ export default function LoginScreen() {
     const admin = localDataService.validateAdmin(email, password);
     if (admin) {
       const action = await dispatch(
-        login({ email, password, role: 'admin', userId: admin.id, name: admin.name }) as any
+        login({
+          email,
+          password,
+          role: 'admin',
+          userId: admin.id,
+          name: admin.name,
+        }) as any
       );
       if (action.type.endsWith('fulfilled')) {
         hapticFeedback.success();
@@ -84,7 +90,13 @@ export default function LoginScreen() {
     const employee = localDataService.validateEmployee(email, password);
     if (employee) {
       const action = await dispatch(
-        login({ email, password, role: 'employee', userId: employee.id, name: employee.name }) as any
+        login({
+          email,
+          password,
+          role: 'employee',
+          userId: employee.id,
+          name: employee.name,
+        }) as any
       );
       if (action.type.endsWith('fulfilled')) {
         hapticFeedback.success();
@@ -100,7 +112,9 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
@@ -117,71 +131,121 @@ export default function LoginScreen() {
           <Logo size="responsive" matchCardWidth={true} style={styles.logo} />
 
           <Card variant="elevated" style={styles.formCard}>
-            <Text style={[Typography.h3, { color: theme.text, marginBottom: Spacing.xs }]}>
+            <Text
+              style={[
+                Typography.h3,
+                { color: theme.text, marginBottom: Spacing.xs },
+              ]}
+            >
               Welcome Back
             </Text>
-            <Text style={[Typography.body, { color: theme.textSecondary, marginBottom: Spacing.xl }]}>
+            <Text
+              style={[
+                Typography.body,
+                { color: theme.textSecondary, marginBottom: Spacing.xl },
+              ]}
+            >
               Sign in to continue
             </Text>
 
             <Input
               placeholder="Email"
               value={values.email}
-              onChangeText={(text) => handleChange('email', text)}
+              onChangeText={text => handleChange('email', text)}
               onBlur={() => handleBlur('email')}
-              icon={<Ionicons name="mail-outline" size={20} color={theme.textSecondary} />}
+              icon={
+                <Ionicons
+                  name="mail-outline"
+                  size={20}
+                  color={theme.textSecondary}
+                />
+              }
               keyboardType="email-address"
               autoCapitalize="none"
-              error={touched.email ? errors.email : undefined}
+              error={touched.email ? errors.email || '' : ''}
             />
 
             <Input
               placeholder="Password"
               value={values.password}
-              onChangeText={(text) => handleChange('password', text)}
+              onChangeText={text => handleChange('password', text)}
               onBlur={() => handleBlur('password')}
-              icon={<Ionicons name="lock-closed-outline" size={20} color={theme.textSecondary} />}
+              icon={
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={20}
+                  color={theme.textSecondary}
+                />
+              }
               secureTextEntry
-              error={touched.password ? errors.password : undefined}
+              error={touched.password ? errors.password || '' : ''}
             />
 
-            <ButtonPrimary 
-              title="Sign In" 
-              onPress={onSubmit} 
+            <ButtonPrimary
+              title="Sign In"
+              onPress={onSubmit}
               loading={loginLoading}
               accessibilityHint="Double tap to sign in to your account"
             />
-            
+
             {!!loginError && (
-              <Text style={[Typography.bodySmall, { color: theme.error, marginTop: Spacing.md, textAlign: 'center' }]}>
+              <Text
+                style={[
+                  Typography.bodySmall,
+                  {
+                    color: theme.error,
+                    marginTop: Spacing.md,
+                    textAlign: 'center',
+                  },
+                ]}
+              >
                 {loginError}
               </Text>
             )}
           </Card>
 
           <View style={styles.demoCredentials}>
-            <Text style={[Typography.caption, { color: theme.textSecondary, textAlign: 'center', marginBottom: Spacing.sm }]}>
+            <Text
+              style={[
+                Typography.caption,
+                {
+                  color: theme.textSecondary,
+                  textAlign: 'center',
+                  marginBottom: Spacing.sm,
+                },
+              ]}
+            >
               Demo Credentials
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 setValues({ email: 'admin@field.co', password: 'admin123' });
                 onSubmit();
               }}
               style={styles.demoButton}
             >
-              <Text style={[Typography.caption, { color: theme.primary, textAlign: 'center' }]}>
+              <Text
+                style={[
+                  Typography.caption,
+                  { color: theme.primary, textAlign: 'center' },
+                ]}
+              >
                 Admin: admin@field.co / admin123
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 setValues({ email: 'alice@field.co', password: 'password123' });
                 onSubmit();
               }}
               style={styles.demoButton}
             >
-              <Text style={[Typography.caption, { color: theme.primary, textAlign: 'center' }]}>
+              <Text
+                style={[
+                  Typography.caption,
+                  { color: theme.primary, textAlign: 'center' },
+                ]}
+              >
                 Employee: alice@field.co / password123
               </Text>
             </TouchableOpacity>

@@ -1,13 +1,13 @@
-import { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 /**
  * Debounce hook - delays execution until user stops typing/interacting
  */
-export function useDebounce<T extends (...args: any[]) => any>(
+export function useDebounce<T extends (..._args: any[]) => any>(
   callback: T,
   delay: number
-): (...args: Parameters<T>) => void {
-  const timeoutRef = useRef<NodeJS.Timeout>();
+): (..._args: Parameters<T>) => void {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     return () => {
@@ -24,7 +24,7 @@ export function useDebounce<T extends (...args: any[]) => any>(
       }
       timeoutRef.current = setTimeout(() => {
         callback(...args);
-      }, delay);
+      }, delay) as any;
     },
     [callback, delay]
   );
@@ -33,10 +33,10 @@ export function useDebounce<T extends (...args: any[]) => any>(
 /**
  * Throttle hook - limits execution rate
  */
-export function useThrottle<T extends (...args: any[]) => any>(
+export function useThrottle<T extends (..._args: any[]) => any>(
   callback: T,
   delay: number
-): (...args: Parameters<T>) => void {
+): (..._args: Parameters<T>) => void {
   const lastRun = useRef(Date.now());
 
   return useCallback(
@@ -58,10 +58,11 @@ export function useMemoizedValue<T>(
   calculateValue: () => T,
   dependencies: any[]
 ): T {
-  const memoizedValueRef = useRef<T>();
-  const dependenciesRef = useRef<any[]>();
+  const memoizedValueRef = useRef<T | null>(null);
+  const dependenciesRef = useRef<any[] | null>(null);
 
-  const hasChanged = !dependenciesRef.current || 
+  const hasChanged =
+    !dependenciesRef.current ||
     dependencies.some((dep, i) => dep !== dependenciesRef.current![i]);
 
   if (hasChanged) {
@@ -75,7 +76,11 @@ export function useMemoizedValue<T>(
 /**
  * Image optimization helper
  */
-export function getOptimizedImageUri(uri: string, width?: number, height?: number): string {
+export function getOptimizedImageUri(
+  uri: string,
+  _width?: number,
+  _height?: number
+): string {
   // In production, you'd use a CDN service like Cloudinary or imgix
   // For now, we'll just return the original URI
   return uri;
@@ -107,6 +112,7 @@ export function useRenderCount(componentName: string) {
   useEffect(() => {
     renderCount.current += 1;
     if (__DEV__) {
+      // eslint-disable-next-line no-console
       console.log(`${componentName} rendered ${renderCount.current} times`);
     }
   });
@@ -118,20 +124,17 @@ export function useRenderCount(componentName: string) {
  * Measure component render time
  */
 export function useRenderTime(componentName: string) {
-  const startTime = useRef<number>();
+  const startTime = useRef<number | null>(null);
 
   useEffect(() => {
     startTime.current = performance.now();
-    
+
     return () => {
       if (startTime.current && __DEV__) {
         const renderTime = performance.now() - startTime.current;
+        // eslint-disable-next-line no-console
         console.log(`${componentName} render time: ${renderTime.toFixed(2)}ms`);
       }
     };
   });
 }
-
-// Fix the React import
-import React from 'react';
-

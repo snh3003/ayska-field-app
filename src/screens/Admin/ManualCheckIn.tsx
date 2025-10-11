@@ -5,7 +5,11 @@ import { ScrollView, Text, View } from 'react-native';
 import { ButtonPrimary } from '../../components/ui/ButtonPrimary';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
-import { localDataService, type Doctor, type Employee } from '../../services/LocalDataService';
+import {
+  type Doctor,
+  type Employee,
+  localDataService,
+} from '../../services/LocalDataService';
 
 export default function ManualCheckIn() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -22,11 +26,18 @@ export default function ManualCheckIn() {
     const doctorList = localDataService.getAll<Doctor>('doctors');
     setEmployees(employeeList);
     setDoctors(doctorList);
-  }, []);
+    // eslint-disable-next-line no-console
+    console.log(
+      'Loaded employees:',
+      employees.length,
+      'doctors:',
+      doctors.length
+    );
+  }, [setEmployees, setDoctors, employees.length, doctors.length]);
 
   const handleManualCheckIn = async () => {
     if (!selectedEmployee || !selectedDoctor) return;
-    
+
     setIsSubmitting(true);
     const visit = {
       id: `v_${Date.now()}`,
@@ -37,10 +48,11 @@ export default function ManualCheckIn() {
       notes: notes.trim() || undefined,
       status: 'completed' as const,
     };
-    
+
     localDataService.add('visits', visit);
+    // eslint-disable-next-line no-console
     console.log('Manual check-in created:', visit);
-    
+
     // Reset form
     setSelectedEmployee('');
     setSelectedDoctor('');
@@ -51,29 +63,43 @@ export default function ManualCheckIn() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.background }}>
       <View style={{ padding: 16 }}>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: theme.text, marginBottom: 20 }}>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: '700',
+            color: theme.text,
+            marginBottom: 20,
+          }}
+        >
           Manual Check-In
         </Text>
-        
+
         <Card>
-          <Text style={{ fontSize: 18, fontWeight: '600', color: theme.text, marginBottom: 16 }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: '600',
+              color: theme.text,
+              marginBottom: 16,
+            }}
+          >
             Create Manual Visit
           </Text>
-          
+
           <Input
             label="Select Employee"
             placeholder="Choose an employee..."
             value={selectedEmployee}
             onChangeText={setSelectedEmployee}
           />
-          
+
           <Input
             label="Select Doctor"
             placeholder="Choose a doctor..."
             value={selectedDoctor}
             onChangeText={setSelectedDoctor}
           />
-          
+
           <Input
             label="Visit Notes (Optional)"
             placeholder="Add notes about this visit..."
@@ -82,9 +108,9 @@ export default function ManualCheckIn() {
             multiline
             numberOfLines={3}
           />
-          
-          <ButtonPrimary 
-            title={isSubmitting ? "Creating..." : "Create Manual Visit"} 
+
+          <ButtonPrimary
+            title={isSubmitting ? 'Creating...' : 'Create Manual Visit'}
             onPress={handleManualCheckIn}
             disabled={!selectedEmployee || !selectedDoctor || isSubmitting}
           />
@@ -93,5 +119,3 @@ export default function ManualCheckIn() {
     </ScrollView>
   );
 }
-
-

@@ -25,7 +25,7 @@ export function getButtonA11yProps(
   return {
     accessible: true,
     accessibilityLabel: label,
-    accessibilityHint: hint,
+    accessibilityHint: hint || '',
     accessibilityRole: 'button',
     accessibilityState: { disabled: disabled || false },
   };
@@ -38,15 +38,15 @@ export function getInputA11yProps(
   label: string,
   hint?: string,
   value?: string,
-  required?: boolean
+  _required?: boolean
 ): A11yProps {
   return {
     accessible: true,
     accessibilityLabel: label,
-    accessibilityHint: hint,
+    accessibilityHint: hint || '',
     accessibilityRole: 'text',
     accessibilityState: { disabled: false },
-    accessibilityValue: { text: value },
+    accessibilityValue: { text: value || '' },
   };
 }
 
@@ -57,7 +57,7 @@ export function getLinkA11yProps(label: string, hint?: string): A11yProps {
   return {
     accessible: true,
     accessibilityLabel: label,
-    accessibilityHint: hint,
+    accessibilityHint: hint || '',
     accessibilityRole: 'link',
   };
 }
@@ -65,7 +65,10 @@ export function getLinkA11yProps(label: string, hint?: string): A11yProps {
 /**
  * Generate accessibility props for headers
  */
-export function getHeaderA11yProps(text: string, level: number = 1): A11yProps {
+export function getHeaderA11yProps(
+  text: string,
+  _level: number = 1
+): A11yProps {
   return {
     accessible: true,
     accessibilityLabel: text,
@@ -85,7 +88,7 @@ export function getImageA11yProps(
       accessible: false,
     };
   }
-  
+
   return {
     accessible: true,
     accessibilityLabel: description,
@@ -104,7 +107,7 @@ export function getToggleA11yProps(
   return {
     accessible: true,
     accessibilityLabel: label,
-    accessibilityHint: hint,
+    accessibilityHint: hint || '',
     accessibilityRole: 'switch',
     accessibilityState: { checked },
   };
@@ -133,6 +136,7 @@ export function getCardA11yProps(
 export function announceForAccessibility(message: string) {
   // This would use AccessibilityInfo.announceForAccessibility in React Native
   // Implementation varies by platform
+  // eslint-disable-next-line no-console
   console.log('A11y announcement:', message);
 }
 
@@ -155,4 +159,3 @@ export function formatDateA11y(date: Date | string): string {
     day: 'numeric',
   });
 }
-

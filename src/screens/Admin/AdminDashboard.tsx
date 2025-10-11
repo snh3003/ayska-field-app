@@ -1,13 +1,26 @@
-import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React, { useState, useCallback } from 'react';
-import { ScrollView, Text, View, SafeAreaView, TouchableOpacity, StyleSheet, RefreshControl, Dimensions, Platform } from 'react-native';
-import { ScrollView as TamaguiScrollView, View as TamaguiView, Text as TamaguiText, YStack } from '@tamagui/core'
+import React, { useCallback, useState } from 'react';
+import {
+  Dimensions,
+  Platform,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
 import { StatsCard } from '../../components/ui/StatsCard';
-import { localDataService, type Employee, type Visit } from '../../services/LocalDataService';
+import {
+  type Employee,
+  localDataService,
+  type Visit,
+} from '../../services/LocalDataService';
 import { ThemeToggle } from '../../components/layout/ThemeToggle';
 import { Logo } from '../../components/layout/Logo';
 import { SearchBar } from '../../components/forms/SearchBar';
@@ -17,7 +30,6 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../contexts/ToastContext';
 import { formatRelativeTime } from '../../../utils/dateTime';
 import { hapticFeedback } from '../../../utils/haptics';
-import { getHeaderA11yProps } from '../../../utils/accessibility';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -26,11 +38,23 @@ const getResponsiveSpacing = () => {
   const isTablet = SCREEN_WIDTH >= 768;
   const isSmallScreen = SCREEN_WIDTH < 375;
   const platformMultiplier = Platform.OS === 'ios' ? 1.1 : 1;
-  
+
   return {
-    headerMargin: isTablet ? Spacing.xl : isSmallScreen ? Spacing.md : Spacing.lg * platformMultiplier,
-    logoMargin: isTablet ? Spacing.lg : isSmallScreen ? Spacing.sm : Spacing.md * platformMultiplier,
-    buttonGap: isTablet ? Spacing.md : isSmallScreen ? Spacing.xs : Spacing.sm * platformMultiplier,
+    headerMargin: isTablet
+      ? Spacing.xl
+      : isSmallScreen
+        ? Spacing.md
+        : Spacing.lg * platformMultiplier,
+    logoMargin: isTablet
+      ? Spacing.lg
+      : isSmallScreen
+        ? Spacing.sm
+        : Spacing.md * platformMultiplier,
+    buttonGap: isTablet
+      ? Spacing.md
+      : isSmallScreen
+        ? Spacing.xs
+        : Spacing.sm * platformMultiplier,
   };
 };
 
@@ -39,7 +63,7 @@ export default function AdminDashboard() {
   const [recentVisits, setRecentVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const { user, logout: handleLogout } = useAuth();
   const toast = useToast();
   const scheme = useColorScheme() ?? 'light';
@@ -51,12 +75,16 @@ export default function AdminDashboard() {
       const allEmployees = localDataService.getAll<Employee>('employees');
       const allVisits = localDataService.getAll<Visit>('visits');
       const sortedVisits = allVisits
-        .sort((a, b) => new Date(b.checkInTime).getTime() - new Date(a.checkInTime).getTime())
+        .sort(
+          (a, b) =>
+            new Date(b.checkInTime).getTime() -
+            new Date(a.checkInTime).getTime()
+        )
         .slice(0, 5);
-      
+
       setEmployees(allEmployees);
       setRecentVisits(sortedVisits);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load data');
     } finally {
       setLoading(false);
@@ -83,9 +111,10 @@ export default function AdminDashboard() {
   };
 
   // Filter employees based on search
-  const filteredEmployees = employees.filter(employee =>
-    employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    employee.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredEmployees = employees.filter(
+    employee =>
+      employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      employee.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Calculate stats
@@ -93,9 +122,9 @@ export default function AdminDashboard() {
     totalEmployees: employees.length,
     activeToday: employees.filter(e => {
       const today = new Date().toISOString().split('T')[0];
-      const attendance = localDataService.getAll('attendance').find(
-        (a: any) => a.employeeId === e.id && a.date === today
-      );
+      const attendance = localDataService
+        .getAll('attendance')
+        .find((a: any) => a.employeeId === e.id && a.date === today);
       return !!attendance;
     }).length,
     totalVisits: localDataService.getAll<Visit>('visits').length,
@@ -107,8 +136,10 @@ export default function AdminDashboard() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <ScrollView 
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -127,21 +158,27 @@ export default function AdminDashboard() {
           <View style={styles.logoRow}>
             <Logo size="responsive" style={styles.dashboardLogo} />
           </View>
-          
+
           {/* Welcome & Actions Row */}
           <View style={styles.welcomeRow}>
             {user.name && (
-              <Text style={[Typography.bodySmall, { color: theme.textSecondary }]}>
+              <Text
+                style={[Typography.bodySmall, { color: theme.textSecondary }]}
+              >
                 Welcome, {user.name}
               </Text>
             )}
             <View style={styles.headerActions}>
               <ThemeToggle />
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={handleLogoutPress}
                 style={[styles.iconButton, { backgroundColor: theme.card }]}
               >
-                <Ionicons name="log-out-outline" size={20} color={theme.error} />
+                <Ionicons
+                  name="log-out-outline"
+                  size={20}
+                  color={theme.error}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -149,29 +186,49 @@ export default function AdminDashboard() {
 
         {/* Stats Cards */}
         <View style={styles.statsRow}>
-          <StatsCard 
-            icon={<Ionicons name="people-outline" size={24} color={theme.primary} />}
-            title="Total Employees" 
-            value={stats.totalEmployees.toString()} 
+          <StatsCard
+            icon={
+              <Ionicons name="people-outline" size={24} color={theme.primary} />
+            }
+            title="Total Employees"
+            value={stats.totalEmployees.toString()}
           />
-          <StatsCard 
-            icon={<Ionicons name="checkmark-circle-outline" size={24} color={theme.success} />}
-            title="Active Today" 
+          <StatsCard
+            icon={
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={24}
+                color={theme.success}
+              />
+            }
+            title="Active Today"
             value={stats.activeToday.toString()}
             color="success"
           />
         </View>
 
         <View style={styles.statsRow}>
-          <StatsCard 
-            icon={<Ionicons name="location-outline" size={24} color={theme.secondary} />}
-            title="Total Visits" 
+          <StatsCard
+            icon={
+              <Ionicons
+                name="location-outline"
+                size={24}
+                color={theme.secondary}
+              />
+            }
+            title="Total Visits"
             value={stats.totalVisits.toString()}
             color="secondary"
           />
-          <StatsCard 
-            icon={<Ionicons name="trending-up-outline" size={24} color={theme.info} />}
-            title="Today's Visits" 
+          <StatsCard
+            icon={
+              <Ionicons
+                name="trending-up-outline"
+                size={24}
+                color={theme.info}
+              />
+            }
+            title="Today's Visits"
             value={stats.todayVisits.toString()}
             color="info"
           />
@@ -185,7 +242,12 @@ export default function AdminDashboard() {
 
         {/* Employees List */}
         <View style={styles.section}>
-          <Text style={[Typography.h4, { color: theme.text, marginBottom: Spacing.md }]}>
+          <Text
+            style={[
+              Typography.h4,
+              { color: theme.text, marginBottom: Spacing.md },
+            ]}
+          >
             Employees ({filteredEmployees.length})
           </Text>
 
@@ -195,28 +257,51 @@ export default function AdminDashboard() {
             <EmptyState
               icon="people-outline"
               title={searchQuery ? 'No Results' : 'No Employees'}
-              message={searchQuery ? 'Try a different search term' : 'No employees found'}
+              message={
+                searchQuery
+                  ? 'Try a different search term'
+                  : 'No employees found'
+              }
             />
           ) : (
-            filteredEmployees.map((employee) => (
+            filteredEmployees.map(employee => (
               <Card
                 key={employee.id}
                 onPress={() => handleEmployeePress(employee.id)}
                 variant="elevated"
               >
                 <View style={styles.employeeCard}>
-                  <View style={[styles.employeeIcon, { backgroundColor: theme.secondary + '15' }]}>
+                  <View
+                    style={[
+                      styles.employeeIcon,
+                      { backgroundColor: theme.secondary + '15' },
+                    ]}
+                  >
                     <Ionicons name="person" size={24} color={theme.secondary} />
                   </View>
                   <View style={styles.employeeInfo}>
-                    <Text style={[Typography.body, { color: theme.text, fontWeight: '600' }]}>
+                    <Text
+                      style={[
+                        Typography.body,
+                        { color: theme.text, fontWeight: '600' },
+                      ]}
+                    >
                       {employee.name}
                     </Text>
-                    <Text style={[Typography.bodySmall, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+                    <Text
+                      style={[
+                        Typography.bodySmall,
+                        { color: theme.textSecondary, marginTop: Spacing.xs },
+                      ]}
+                    >
                       {employee.email}
                     </Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={20} color={theme.textSecondary} />
+                  <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={theme.textSecondary}
+                  />
                 </View>
               </Card>
             ))
@@ -225,7 +310,12 @@ export default function AdminDashboard() {
 
         {/* Recent Activity */}
         <View style={styles.section}>
-          <Text style={[Typography.h4, { color: theme.text, marginBottom: Spacing.md }]}>
+          <Text
+            style={[
+              Typography.h4,
+              { color: theme.text, marginBottom: Spacing.md },
+            ]}
+          >
             Recent Visits
           </Text>
           {recentVisits.length === 0 ? (
@@ -235,20 +325,32 @@ export default function AdminDashboard() {
               message="Recent visits will appear here"
             />
           ) : (
-            recentVisits.map((visit) => {
+            recentVisits.map(visit => {
               const employee = employees.find(e => e.id === visit.employeeId);
               return (
                 <Card key={visit.id} variant="outlined">
                   <View style={styles.activityItem}>
-                    <View style={[
-                      styles.activityDot, 
-                      { backgroundColor: visit.status === 'completed' ? theme.success : theme.warning }
-                    ]} />
+                    <View
+                      style={[
+                        styles.activityDot,
+                        {
+                          backgroundColor:
+                            visit.status === 'completed'
+                              ? theme.success
+                              : theme.warning,
+                        },
+                      ]}
+                    />
                     <View style={styles.activityContent}>
                       <Text style={[Typography.body, { color: theme.text }]}>
                         {employee?.name || 'Unknown'} - {visit.status}
                       </Text>
-                      <Text style={[Typography.caption, { color: theme.textSecondary, marginTop: Spacing.xs }]}>
+                      <Text
+                        style={[
+                          Typography.caption,
+                          { color: theme.textSecondary, marginTop: Spacing.xs },
+                        ]}
+                      >
                         {formatRelativeTime(visit.checkInTime)}
                       </Text>
                     </View>
