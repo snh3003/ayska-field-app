@@ -2,6 +2,7 @@ import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useState, useCallback } from 'react';
 import { ScrollView, Text, View, SafeAreaView, TouchableOpacity, StyleSheet, RefreshControl, Dimensions, Platform } from 'react-native';
+import { ScrollView as TamaguiScrollView, View as TamaguiView, Text as TamaguiText, YStack } from '@tamagui/core'
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';

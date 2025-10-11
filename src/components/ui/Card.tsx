@@ -1,7 +1,39 @@
 import { Colors, BorderRadius, Spacing, Shadows } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { TouchableOpacity, View, StyleSheet } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { View as TamaguiView, styled } from '@tamagui/core'
+
+const CardContainer = styled(TamaguiView, {
+  backgroundColor: '$card',
+  borderRadius: '$md',
+  padding: '$md',
+  marginBottom: '$md',
+  variants: {
+    variant: {
+      elevated: {
+        shadowColor: '$shadow',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+      outlined: {
+        borderWidth: 1,
+        borderColor: '$border',
+        shadowOpacity: 0,
+        elevation: 0,
+      },
+      default: {
+        shadowColor: '$shadow',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      }
+    }
+  }
+})
 
 interface CardProps {
   children: React.ReactNode;
@@ -11,47 +43,14 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ children, onPress, style, variant = 'default' }) => {
-  const scheme = useColorScheme() ?? 'light';
-  const theme = Colors[scheme];
-
-  const getVariantStyle = () => {
-    switch (variant) {
-      case 'elevated':
-        return {
-          ...Shadows.medium,
-          borderWidth: 0,
-        };
-      case 'outlined':
-        return {
-          borderWidth: 1,
-          borderColor: theme.border,
-          shadowOpacity: 0,
-          elevation: 0,
-        };
-      default:
-        return {
-          ...Shadows.small,
-          borderWidth: 0,
-        };
-    }
-  };
-
-  const cardStyle = {
-    backgroundColor: theme.card,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    ...getVariantStyle(),
-    ...style,
-  };
-
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress} style={cardStyle} activeOpacity={0.7}>
-        {children}
+      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+        <CardContainer variant={variant} style={style}>
+          {children}
+        </CardContainer>
       </TouchableOpacity>
     );
   }
-
-  return <View style={cardStyle}>{children}</View>;
+  return <CardContainer variant={variant} style={style}>{children}</CardContainer>;
 };

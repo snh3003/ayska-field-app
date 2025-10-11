@@ -18,6 +18,13 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "@reduxjs/toolkit": "^2.2.7",
+    "@tamagui/animations-react-native": "^1.135.2",
+    "@tamagui/button": "^1.135.2",
+    "@tamagui/config": "^1.135.2",
+    "@tamagui/core": "^1.135.2",
+    "@tamagui/font-inter": "^1.135.2",
+    "@tamagui/input": "^1.135.2",
+    "@tamagui/theme-base": "^1.135.2",
     "axios": "^1.7.7",
     "expo": "~54.0.12",
     "expo-constants": "~18.0.9",
@@ -43,6 +50,7 @@
     "react-redux": "^9.2.0"
   },
   "devDependencies": {
+    "@tamagui/babel-plugin": "^1.135.2",
     "@types/jest": "^29.5.14",
     "@types/react": "~19.1.0",
     "axios-mock-adapter": "^2.1.0",

@@ -10,6 +10,7 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
+import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 

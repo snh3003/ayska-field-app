@@ -8,6 +8,8 @@ import { ThemeProvider, useColorScheme } from '../contexts/ThemeContext';
 import { ToastProvider } from '../contexts/ToastContext';
 import { ErrorBoundary } from '../src/components/feedback/ErrorBoundary';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { TamaguiProvider } from '@tamagui/core';
+import tamaguiConfig from '../tamagui.config';
 
 export const unstable_settings = {
   anchor: 'login',
@@ -41,7 +43,9 @@ export default function RootLayout() {
         <ThemeProvider>
           <ToastProvider>
             <ErrorBoundary>
-              <RootLayoutContent />
+              <TamaguiProvider config={tamaguiConfig}>
+                <RootLayoutContent />
+              </TamaguiProvider>
             </ErrorBoundary>
           </ToastProvider>
         </ThemeProvider>

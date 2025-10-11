@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
           </View>
           <Text style={[Typography.h3, styles.title]}>Oops! Something went wrong</Text>
           <Text style={[Typography.body, styles.message]}>
-            We're sorry for the inconvenience. Please try again.
+            We&apos;re sorry for the inconvenience. Please try again.
           </Text>
           {__DEV__ && this.state.error && (
             <Text style={[Typography.caption, styles.error]}>

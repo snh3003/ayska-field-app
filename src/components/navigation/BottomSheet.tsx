@@ -17,6 +17,7 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
+import { View as TamaguiView, Text as TamaguiText } from '@tamagui/core'
 
 interface BottomSheetProps {
   isVisible: boolean;

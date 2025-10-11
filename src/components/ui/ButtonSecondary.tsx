@@ -4,6 +4,8 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { hapticFeedback } from '@/utils/haptics';
 import { getButtonA11yProps } from '@/utils/accessibility';
+import { Button as TamaguiButton } from '@tamagui/button'
+import { Text as TamaguiText } from '@tamagui/core'
 
 interface ButtonSecondaryProps {
   title: string;
@@ -31,28 +33,36 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
   };
   
   return (
-    <TouchableOpacity
-      onPress={handlePress}
+    <TamaguiButton
+      backgroundColor="transparent"
+      borderColor="$primary"
+      borderWidth={1.5}
+      color="$primary"
+      paddingVertical="$md"
+      paddingHorizontal="$lg"
+      borderRadius="$md"
+      alignItems="center"
+      justifyContent="center"
+      minHeight={48}
+      opacity={(disabled || loading) ? 0.6 : 1}
       disabled={disabled || loading}
-      style={[
-        styles.button,
-        { 
-          borderColor: theme.primary,
-          opacity: (disabled || loading) ? 0.6 : 1 
-        },
-        style
-      ]}
-      activeOpacity={0.8}
+      onPress={handlePress}
+      style={style}
       {...getButtonA11yProps(title, accessibilityHint, disabled || loading)}
     >
       {loading ? (
         <ActivityIndicator color={theme.primary} />
       ) : (
-        <Text style={[styles.text, Typography.button, { color: theme.primary }]}>
+        <TamaguiText 
+          color="$primary" 
+          fontSize="$4" 
+          fontWeight="600"
+          textAlign="center"
+        >
           {title}
-        </Text>
+        </TamaguiText>
       )}
-    </TouchableOpacity>
+    </TamaguiButton>
   );
 };
 

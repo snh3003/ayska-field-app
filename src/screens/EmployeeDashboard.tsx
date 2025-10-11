@@ -3,7 +3,7 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
 import { fetchActivities, selectActivities, selectEmployeeError, selectEmployeeLoading } from '../store/slices/employeeSlice';
-import { ActivityCard } from '../ui/ActivityCard';
+import { ActivityCard } from '../components/business/ActivityCard';
 
 interface Props {
   employeeId: string;
