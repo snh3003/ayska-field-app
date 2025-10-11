@@ -1,0 +1,592 @@
+# Ayska Field App - Cursor Rules
+
+You are an expert TypeScript/React Native developer working on the Ayska Field App, a field activity tracking application built with Expo, React Native, Redux Toolkit, and Tamagui.
+
+## 🏗️ ARCHITECTURAL PRINCIPLES
+
+### SOLID Principles (MANDATORY)
+- **Single Responsibility**: Each class/function has ONE clear purpose
+- **Open/Closed**: Use interfaces and abstract classes for extension
+- **Liskov Substitution**: All implementations must honor interface contracts
+- **Interface Segregation**: Use focused interfaces (IAuthStorage vs IStorageProvider)
+- **Dependency Inversion**: Depend on abstractions (interfaces), not concrete implementations
+
+### Core Architecture Rules
+1. ALWAYS use dependency injection via `ServiceContainer`
+2. NEVER instantiate services directly - use `serviceContainer.get('IServiceName')`
+3. ALWAYS define interfaces before implementations (I* prefix: IAuthRepository, IHttpClient)
+4. ALWAYS implement repositories for data access (no direct data manipulation)
+5. ALWAYS use strategy pattern for validation (RequiredValidator, PatternValidator, etc.)
+
+## 📁 STRICT FILE STRUCTURE
+
+```
+src/
+├── interfaces/          # ALL interface definitions (I* prefix)
+│   ├── repositories.ts  # Data access interfaces
+│   ├── services.ts      # Service interfaces
+│   └── validation.ts    # Validation interfaces
+├── repositories/        # Data access layer ONLY
+│   ├── LocalDataRepository.ts
+│   ├── AuthRepository.ts
+│   └── StatsRepository.ts
+├── services/           # Business logic services
+│   ├── AdminService.ts
+│   ├── EmployeeService.ts
+│   ├── AuthStorageService.ts
+│   ├── CacheStorageService.ts
+│   └── SettingsStorageService.ts
+├── providers/          # Infrastructure providers
+│   ├── StorageProvider.ts (abstract)
+│   └── AsyncStorageProvider.ts (concrete)
+├── interceptors/       # HTTP middleware ONLY
+│   ├── AuthInterceptor.ts
+│   ├── RetryInterceptor.ts
+│   └── ErrorInterceptor.ts
+├── validation/         # Validation strategies
+│   ├── strategies/
+│   ├── FieldValidator.ts
+│   ├── FormValidator.ts
+│   └── CommonValidators.ts
+├── di/                # Dependency injection container
+│   └── ServiceContainer.ts
+├── store/             # Redux state management
+│   ├── configureStore.ts
+│   └── slices/
+└── components/        # React components
+    ├── ui/           # Reusable UI components
+    ├── business/     # Business-specific components
+    ├── feedback/     # Feedback components
+    └── layout/       # Layout components
+```
+
+### File Placement Rules
+- **Interfaces**: ALWAYS in `src/interfaces/` with I* prefix
+- **Implementations**: In corresponding directories (repositories/, services/, providers/)
+- **Never** mix concerns - each directory has ONE responsibility
+- **Always** create index.ts for directory exports
+
+## 🔧 DEPENDENCY INJECTION PATTERNS
+
+### ServiceContainer Registration (MANDATORY)
+```typescript
+// In ServiceContainer.registerServices():
+
+// 1. Storage providers (Singleton)
+this.registerSingleton('IStorageProvider', () => new AsyncStorageProvider());
+
+// 2. Storage services (Singleton, injected dependencies)
+this.registerSingleton('IAuthStorage', () => 
+  new AuthStorageService(this.get('IStorageProvider'))
+);
+
+// 3. Data repositories (Singleton)
+this.registerSingleton('IDataRepository', () => new LocalDataRepository());
+this.registerSingleton('IAuthRepository', () => 
+  new AuthRepository(this.get('IDataRepository'))
+);
+
+// 4. HTTP services (Factory, new instance each time)
+this.registerFactory('IHttpClient', () => {
+  const client = new HttpClient('', 15000);
+  client.addInterceptor(new AuthInterceptor(getToken));
+  return client;
+});
+
+// 5. Business services (Factory)
+this.registerFactory('IAdminService', () => 
+  new AdminService((this.get('IHttpClient') as any).axios)
+);
+```
+
+### Service Usage in Code
+```typescript
+// WRONG ❌
+const authRepo = new AuthRepository(dataRepo);
+const service = new AdminService(axios);
+
+// CORRECT ✅
+const authRepo = serviceContainer.get('IAuthRepository') as any;
+const service = serviceContainer.get('IAdminService') as any;
+```
+
+## 🎯 REDUX PATTERNS (STRICT)
+
+### Slice Structure (Template)
+```typescript
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { RootState } from '..';
+import { ServiceContainer } from '../../di/ServiceContainer';
+
+interface SliceState {
+  data: DataType | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: SliceState = {
+  data: null,
+  loading: false,
+  error: null,
+};
+
+// ALWAYS use this thunk signature
+export const fetchData = createAsyncThunk<
+  ReturnType,
+  PayloadType,
+  { state: RootState; extra: { serviceContainer: ServiceContainer } }
+>('slice/fetchData', async (payload, thunkAPI) => {
+  const service = thunkAPI.extra.serviceContainer.get('IServiceName') as any;
+  return service.methodName(payload);
+});
+
+const slice = createSlice({
+  name: 'sliceName',
+  initialState,
+  reducers: {},
+  extraReducers: builder => {
+    builder
+      .addCase(fetchData.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(fetchData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to load data';
+      });
+  },
+});
+
+// ALWAYS export selectors with null coalescing
+export const selectData = (state: RootState) => state.slice?.data ?? null;
+export const selectLoading = (state: RootState) => state.slice?.loading ?? false;
+export const selectError = (state: RootState) => state.slice?.error ?? null;
+
+export default slice.reducer;
+```
+
+### Redux Rules
+- NEVER put business logic in reducers
+- ALWAYS use createAsyncThunk for async operations
+- ALWAYS inject serviceContainer via thunkAPI.extra
+- ALWAYS include loading, error, and data states
+- ALWAYS export typed selectors
+- ALWAYS use builder callback notation in extraReducers
+
+## ✅ VALIDATION PATTERNS (STRATEGY PATTERN)
+
+### Creating Validation Strategies
+```typescript
+// 1. Implement IValidationStrategy interface
+export class CustomValidator implements IValidationStrategy {
+  validate(_value: any): ValidationResult {
+    // validation logic
+    return { isValid: true/false, error: 'message' };
+  }
+}
+
+// 2. Add to CommonValidators if reusable
+export const CommonValidators = {
+  email: new PatternValidator(regex, message),
+  password: new MinLengthValidator(6, message),
+  required: (msg?: string) => new RequiredValidator(msg),
+  // Add new validators here
+};
+```
+
+### Using Validation in Forms
+```typescript
+const [values, setValues] = useState({ email: '', password: '' });
+const [errors, setErrors] = useState<Record<string, string>>({});
+const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+const formValidator = new FormValidator();
+const validationRules: Record<string, any[]> = {
+  email: [
+    CommonValidators.required('Email is required'),
+    CommonValidators.email,
+  ],
+  password: [
+    CommonValidators.required('Password is required'),
+    CommonValidators.password,
+  ],
+};
+
+const handleChange = (field: string, value: string) => {
+  setValues(prev => ({ ...prev, [field]: value }));
+  if (touched[field]) {
+    const context = new ValidationContext();
+    validationRules[field]?.forEach((rule: any) => context.addRule(rule));
+    const result = context.validate(value);
+    setErrors(prev => ({ ...prev, [field]: result.error || '' }));
+  }
+};
+
+const validateAll = (): boolean => {
+  const newErrors = formValidator.validateForm(values, validationRules);
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+```
+
+## 🎨 REACT COMPONENT PATTERNS
+
+### Component Structure (Template)
+```typescript
+import React, { useState } from 'react';
+import { View, Text } from 'react-native';
+import { hapticFeedback } from '@/utils/haptics';
+import { getA11yProps } from '@/utils/accessibility';
+
+interface ComponentNameProps {
+  prop1: string;
+  prop2: number;
+  onPress?: () => void;
+  style?: any;
+  accessibilityHint?: string;
+}
+
+export const ComponentName: React.FC<ComponentNameProps> = ({
+  prop1,
+  prop2,
+  onPress,
+  style,
+  accessibilityHint,
+}) => {
+  const [state, setState] = useState(initialValue);
+  
+  const handlePress = () => {
+    hapticFeedback.light(); // ALWAYS for interactions
+    onPress?.();
+  };
+  
+  return (
+    <View style={style} {...getA11yProps(accessibilityHint)}>
+      {/* Component JSX */}
+    </View>
+  );
+};
+```
+
+### Component Rules
+- ALWAYS use React.FC<Props> typing
+- ALWAYS destructure props in parameters
+- ALWAYS use hapticFeedback for user interactions
+- ALWAYS include accessibility props
+- ALWAYS use Tamagui components for styling
+- NEVER include business logic - use hooks/services
+
+## 🔌 HTTP CLIENT & INTERCEPTORS
+
+### Creating HTTP Interceptors
+```typescript
+import { IHttpInterceptor } from '../interfaces/services';
+
+export class CustomInterceptor implements IHttpInterceptor {
+  onRequest?(_config: any): any {
+    // Modify request before sending
+    return config;
+  }
+  
+  onResponse?(_response: any): any {
+    // Process response
+    return response;
+  }
+  
+  onError?(_error: any): any {
+    // Handle errors
+    return Promise.reject(error);
+  }
+}
+
+// Register in ServiceContainer
+httpClient.addInterceptor(new CustomInterceptor());
+```
+
+### HTTP Service Pattern
+```typescript
+export class MyService {
+  private http: AxiosInstance;
+  
+  constructor(http: AxiosInstance) {
+    this.http = http;
+  }
+  
+  async getData(id: string): Promise<DataType> {
+    const { data } = await this.http.get<DataType>(`/api/resource/${id}`);
+    return data;
+  }
+  
+  async postData(payload: PayloadType): Promise<ResponseType> {
+    const { data } = await this.http.post<ResponseType>('/api/resource', payload);
+    return data;
+  }
+}
+```
+
+## 📦 STORAGE PATTERNS
+
+### Creating Storage Services
+```typescript
+import { IStorageInterface, IStorageProvider } from '../interfaces/services';
+
+export class SpecificStorageService implements IStorageInterface {
+  private storageProvider: IStorageProvider;
+  
+  constructor(storageProvider: IStorageProvider) {
+    this.storageProvider = storageProvider;
+  }
+  
+  async saveSpecificData(key: string, data: any): Promise<void> {
+    await this.storageProvider.setItem(`specific_${key}`, data);
+  }
+  
+  async getSpecificData(key: string): Promise<any | null> {
+    return this.storageProvider.getItem(`specific_${key}`);
+  }
+}
+```
+
+### Storage Rules
+- ALWAYS use IStorageProvider interface
+- ALWAYS create focused storage services (Auth, Cache, Draft, Settings)
+- NEVER mix storage concerns in single service
+- ALWAYS prefix keys by concern (`auth_`, `cache_`, `draft_`)
+- ALWAYS wrap console.error in `if (__DEV__)` checks
+
+## 🚫 ANTI-PATTERNS (NEVER DO)
+
+### Code Smells to Avoid
+```typescript
+// ❌ Direct instantiation
+const service = new AdminService(axios);
+
+// ❌ Concrete dependency
+class MyService {
+  private storage: AsyncStorage; // Should be IStorageProvider
+}
+
+// ❌ Business logic in Redux
+builder.addCase(action.fulfilled, (state, action) => {
+  state.data = action.payload.filter(x => x.active); // NO!
+});
+
+// ❌ Multiple responsibilities
+class DataService {
+  getData() {} // OK
+  validateData() {} // Should be in validator
+  saveData() {} // Should be in repository
+}
+
+// ❌ Skipping error handling
+async function fetchData() {
+  const data = await api.get('/data'); // No try-catch!
+  return data;
+}
+
+// ❌ Console in production
+console.log('Debug info'); // Use: if (__DEV__) console.log(...)
+
+// ❌ Duplicate validation logic
+if (email.includes('@')) {} // Use CommonValidators.email
+```
+
+## ✅ BEST PRACTICES (ALWAYS DO)
+
+### Code Quality Checklist
+```typescript
+// ✅ Use dependency injection
+constructor(private authRepo: IAuthRepository) {}
+
+// ✅ Use interfaces for dependencies
+class Service {
+  constructor(private storage: IStorageProvider) {}
+}
+
+// ✅ Handle errors properly
+try {
+  await operation();
+} catch (error) {
+  if (__DEV__) console.error('Error:', error);
+  throw error;
+}
+
+// ✅ Use strategy pattern
+const validator = new ValidationContext()
+  .addRule(CommonValidators.required())
+  .addRule(CommonValidators.email);
+
+// ✅ Export selectors
+export const selectData = (state: RootState) => state.slice?.data ?? null;
+
+// ✅ Use proper typing
+interface DataType { id: string; name: string; }
+
+// ✅ Prefix unused params
+interface IRepository {
+  getData(_id: string): Promise<Data>;
+}
+```
+
+## 📝 NAMING CONVENTIONS (STRICT)
+
+### File Naming
+- **Interfaces**: `I*` prefix (IAuthRepository.ts lives in interfaces/)
+- **Classes**: PascalCase (AuthRepository.ts, ServiceContainer.ts)
+- **Components**: PascalCase (ButtonPrimary.tsx, LoginScreen.tsx)
+- **Utilities**: camelCase (validation.ts, haptics.ts)
+- **Types**: PascalCase (models.ts contains Admin, Employee interfaces)
+
+### Code Naming
+- **Interfaces**: I* (IAuthRepository, IStorageProvider, IValidationStrategy)
+- **Implementations**: Remove I (AuthRepository implements IAuthRepository)
+- **Services**: *Service suffix (AdminService, AuthStorageService)
+- **Repositories**: *Repository suffix (AuthRepository, StatsRepository)
+- **Validators**: *Validator suffix (RequiredValidator, EmailValidator)
+- **Interceptors**: *Interceptor suffix (AuthInterceptor, RetryInterceptor)
+
+### Method Naming
+- **Data fetching**: `get*` (getData, getUser, getTeamSales)
+- **Data mutation**: `create*`, `update*`, `delete*`, `save*`
+- **Validation**: `validate*` (validateEmail, validateForm)
+- **Boolean returns**: `is*`, `has*`, `can*` (isValid, hasError, canSubmit)
+
+## 🧪 TESTING PATTERNS
+
+### Test Structure
+```typescript
+// __tests__/services/ServiceName.test.ts
+import { ServiceName } from '../../src/services/ServiceName';
+
+describe('ServiceName', () => {
+  let service: ServiceName;
+  let mockDependency: jest.Mock;
+  
+  beforeEach(() => {
+    mockDependency = jest.fn();
+    service = new ServiceName(mockDependency as any);
+  });
+  
+  describe('methodName', () => {
+    it('should return data when successful', async () => {
+      mockDependency.mockResolvedValue({ data: 'test' });
+      const result = await service.methodName('param');
+      expect(result).toEqual({ data: 'test' });
+    });
+    
+    it('should handle errors properly', async () => {
+      mockDependency.mockRejectedValue(new Error('Failed'));
+      await expect(service.methodName('param')).rejects.toThrow();
+    });
+  });
+});
+```
+
+## 🔄 ADDING NEW FEATURES (STEP-BY-STEP)
+
+### Checklist for New Feature
+1. ✅ Define interface in `src/interfaces/`
+2. ✅ Implement repository in `src/repositories/` (if data access needed)
+3. ✅ Implement service in `src/services/` (if business logic needed)
+4. ✅ Register in `ServiceContainer.registerServices()`
+5. ✅ Create Redux slice in `src/store/slices/` (if state management needed)
+6. ✅ Create validation strategies if new validation needed
+7. ✅ Create UI components in `src/components/`
+8. ✅ Add tests in `__tests__/`
+9. ✅ Update TypeScript types in `src/types/`
+10. ✅ Run linter: `npm run lint`
+11. ✅ Run tests: `npm test`
+12. ✅ Run TypeScript check: `npx tsc --noEmit`
+
+### Example: Adding "Teams" Feature
+```typescript
+// 1. src/interfaces/repositories.ts
+export interface ITeamsRepository {
+  getTeams(): Promise<Team[]>;
+  getTeamById(_id: string): Promise<Team | null>;
+  createTeam(_team: Team): Promise<Team>;
+}
+
+// 2. src/repositories/TeamsRepository.ts
+export class TeamsRepository implements ITeamsRepository {
+  constructor(private dataRepo: LocalDataRepository<any>) {}
+  
+  async getTeams(): Promise<Team[]> {
+    return this.dataRepo.getAll('teams');
+  }
+}
+
+// 3. src/di/ServiceContainer.ts
+this.registerSingleton('ITeamsRepository', () => 
+  new TeamsRepository(this.get('IDataRepository'))
+);
+
+// 4. src/store/slices/teamsSlice.ts
+export const fetchTeams = createAsyncThunk<
+  Team[],
+  void,
+  { state: RootState; extra: { serviceContainer: ServiceContainer } }
+>('teams/fetchTeams', async (_, thunkAPI) => {
+  const repo = thunkAPI.extra.serviceContainer.get('ITeamsRepository') as any;
+  return repo.getTeams();
+});
+
+// 5. src/components/business/TeamCard.tsx
+export const TeamCard: React.FC<TeamCardProps> = ({ team }) => {
+  // Component implementation
+};
+```
+
+## 🎯 PERFORMANCE OPTIMIZATION
+
+### Rules
+- ALWAYS use React.memo for expensive components
+- ALWAYS use useCallback for event handlers passed as props
+- ALWAYS use useMemo for expensive calculations
+- ALWAYS implement proper loading states (don't leave UI hanging)
+- ALWAYS clean up effects (return cleanup function)
+- NEVER create functions inside render (use useCallback)
+- NEVER perform heavy operations in render
+
+## 📱 REACT NATIVE SPECIFIC
+
+### Rules
+- ALWAYS use Platform-specific code when needed
+- ALWAYS test on both iOS and Android
+- ALWAYS use FlatList/SectionList for long lists (not ScrollView)
+- ALWAYS optimize images (use proper sizes)
+- ALWAYS use proper keyboard handling (KeyboardAvoidingView)
+- ALWAYS implement proper error boundaries
+
+## 🔒 SECURITY RULES
+
+- NEVER store sensitive data unencrypted
+- ALWAYS use secure storage for tokens
+- ALWAYS validate all user inputs
+- ALWAYS sanitize data before display
+- NEVER expose API keys in code
+- ALWAYS use HTTPS for API calls
+
+## 📊 LOGGING & DEBUGGING
+
+```typescript
+// Development only logging
+if (__DEV__) {
+  console.log('Debug info:', data);
+  console.error('Error:', error);
+}
+
+// Production error tracking (implement later)
+// logError(error, { context: 'ServiceName.methodName' });
+```
+
+---
+
+**Remember**: This is a SOLID-principles based architecture. Every decision should respect Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion principles.
+
+**When in doubt**: Create an interface first, implement second, inject dependencies, test thoroughly.
+
