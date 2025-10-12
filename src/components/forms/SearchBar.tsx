@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { View as TamaguiView } from '@tamagui/core';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
+import { Colors } from '@/constants/theme';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -17,9 +18,9 @@ export function SearchBar({
   onFilterPress,
   showFilter = false,
 }: SearchBarProps) {
+  const [query, setQuery] = useState('');
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
-  const [query, setQuery] = useState('');
 
   const handleChange = (text: string) => {
     setQuery(text);
@@ -32,24 +33,31 @@ export function SearchBar({
   };
 
   return (
-    <View style={styles.container}>
-      <View
-        style={[
-          styles.searchContainer,
-          {
-            backgroundColor: theme.card,
-            borderColor: theme.border,
-          },
-        ]}
+    <TamaguiView flexDirection="row" marginBottom="$md">
+      <TamaguiView
+        flex={1}
+        flexDirection="row"
+        alignItems="center"
+        borderRadius="$md"
+        borderWidth={1}
+        paddingHorizontal="$md"
+        height={48}
+        backgroundColor="$card"
+        borderColor="$border"
       >
         <Ionicons
           name="search"
           size={20}
           color={theme.textSecondary}
-          style={styles.searchIcon}
+          style={{ marginRight: 8 }}
         />
         <TextInput
-          style={[Typography.body, styles.input, { color: theme.text }]}
+          style={{
+            flex: 1,
+            height: '100%',
+            fontSize: 16,
+            color: theme.text,
+          }}
           placeholder={placeholder}
           placeholderTextColor={theme.textSecondary}
           value={query}
@@ -58,7 +66,7 @@ export function SearchBar({
           autoCorrect={false}
         />
         {query.length > 0 && (
-          <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
+          <TouchableOpacity onPress={handleClear} style={{ padding: 4 }}>
             <Ionicons
               name="close-circle"
               size={20}
@@ -66,56 +74,25 @@ export function SearchBar({
             />
           </TouchableOpacity>
         )}
-      </View>
+      </TamaguiView>
       {showFilter && onFilterPress && (
         <TouchableOpacity
-          style={[
-            styles.filterButton,
-            {
-              backgroundColor: theme.card,
-              borderColor: theme.border,
-            },
-          ]}
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            borderWidth: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginLeft: 8,
+            backgroundColor: '$card',
+            borderColor: '$border',
+          }}
           onPress={onFilterPress}
         >
           <Ionicons name="options-outline" size={20} color={theme.primary} />
         </TouchableOpacity>
       )}
-    </View>
+    </TamaguiView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    marginBottom: Spacing.md,
-  },
-  searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    height: 48,
-  },
-  searchIcon: {
-    marginRight: Spacing.sm,
-  },
-  input: {
-    flex: 1,
-    height: '100%',
-  },
-  clearButton: {
-    padding: Spacing.xs,
-  },
-  filterButton: {
-    width: 48,
-    height: 48,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: Spacing.sm,
-  },
-});

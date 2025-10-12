@@ -1,7 +1,6 @@
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 
 interface HeaderProps {
   title: string;
@@ -13,37 +12,52 @@ interface HeaderProps {
   };
 }
 
-export const Header: React.FC<HeaderProps> = ({ title, subtitle, onBack, rightAction }) => {
-  const scheme = useColorScheme() ?? 'light';
-  const theme = Colors[scheme];
-
+export const Header: React.FC<HeaderProps> = ({
+  title,
+  subtitle,
+  onBack,
+  rightAction,
+}) => {
   return (
-    <View style={{ 
-      backgroundColor: theme.card, 
-      paddingHorizontal: 20, 
-      paddingVertical: 16, 
-      borderBottomWidth: 1, 
-      borderBottomColor: theme.border,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    }}>
-      <View style={{ flex: 1 }}>
+    <TamaguiView
+      backgroundColor="$card"
+      paddingHorizontal="$lg"
+      paddingVertical="$md"
+      borderBottomWidth={1}
+      borderBottomColor="$border"
+      flexDirection="row"
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <TamaguiView flex={1}>
         {onBack && (
           <TouchableOpacity onPress={onBack} style={{ marginBottom: 4 }}>
-            <Text style={{ color: theme.primary, fontSize: 16, fontWeight: '600' }}>← Back</Text>
+            <TamaguiText color="$primary" fontSize="$4" fontWeight="600">
+              ← Back
+            </TamaguiText>
           </TouchableOpacity>
         )}
-        <Text style={{ fontSize: 24, fontWeight: '700', color: theme.text }}>{title}</Text>
+        <TamaguiText fontSize="$6" fontWeight="700" color="$text">
+          {title}
+        </TamaguiText>
         {subtitle && (
-          <Text style={{ fontSize: 14, color: theme.text, opacity: 0.7, marginTop: 2 }}>{subtitle}</Text>
+          <TamaguiText
+            fontSize="$3"
+            color="$text"
+            opacity={0.7}
+            marginTop="$xs"
+          >
+            {subtitle}
+          </TamaguiText>
         )}
-      </View>
+      </TamaguiView>
       {rightAction && (
         <TouchableOpacity onPress={rightAction.onPress}>
-          <Text style={{ color: theme.primary, fontSize: 16, fontWeight: '600' }}>{rightAction.title}</Text>
+          <TamaguiText color="$primary" fontSize="$4" fontWeight="600">
+            {rightAction.title}
+          </TamaguiText>
         </TouchableOpacity>
       )}
-    </View>
+    </TamaguiView>
   );
 };

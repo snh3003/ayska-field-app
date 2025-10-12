@@ -1,4 +1,8 @@
-import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider as NavigationThemeProvider,
+} from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
@@ -19,20 +23,30 @@ function RootLayoutContent() {
   const colorScheme = useColorScheme();
 
   return (
-    <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName="login">
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="settings" options={{ headerShown: false }} />
-        <Stack.Screen name="doctor/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="employee/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar 
-        style={colorScheme === 'dark' ? 'light' : 'dark'} 
-        animated={true}
-      />
-    </NavigationThemeProvider>
+    <TamaguiProvider
+      config={tamaguiConfig}
+      defaultTheme={colorScheme ?? 'light'}
+    >
+      <NavigationThemeProvider
+        value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      >
+        <Stack initialRouteName="login">
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="settings" options={{ headerShown: false }} />
+          <Stack.Screen name="doctor/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="employee/[id]" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: 'modal', title: 'Modal' }}
+          />
+        </Stack>
+        <StatusBar
+          style={colorScheme === 'dark' ? 'light' : 'dark'}
+          animated={true}
+        />
+      </NavigationThemeProvider>
+    </TamaguiProvider>
   );
 }
 
@@ -43,9 +57,7 @@ export default function RootLayout() {
         <ThemeProvider>
           <ToastProvider>
             <ErrorBoundary>
-              <TamaguiProvider config={tamaguiConfig}>
-                <RootLayoutContent />
-              </TamaguiProvider>
+              <RootLayoutContent />
             </ErrorBoundary>
           </ToastProvider>
         </ThemeProvider>

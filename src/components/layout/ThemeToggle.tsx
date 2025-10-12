@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,7 +8,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { BorderRadius, Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { hapticFeedback } from '../../../utils/haptics';
 import { View as TamaguiView } from '@tamagui/core';
@@ -18,7 +17,6 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 export function ThemeToggle() {
   const { colorScheme, toggleTheme } = useTheme();
   const isDark = colorScheme === 'dark';
-  const theme = Colors[colorScheme];
 
   const scale = useSharedValue(1);
   const rotate = useSharedValue(0);
@@ -58,10 +56,13 @@ export function ThemeToggle() {
     <AnimatedTouchable
       onPress={handlePress}
       style={[
-        styles.container,
         {
-          backgroundColor: theme.card,
-          borderColor: theme.border,
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderWidth: 1,
         },
         animatedStyle,
       ]}
@@ -81,21 +82,10 @@ export function ThemeToggle() {
           <Ionicons
             name={isDark ? 'moon' : 'sunny'}
             size={20}
-            color={theme.primary}
+            color="$primary"
           />
         </TamaguiView>
       </Animated.View>
     </AnimatedTouchable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: 44,
-    height: 44,
-    borderRadius: BorderRadius.full,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-});

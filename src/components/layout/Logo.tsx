@@ -1,5 +1,6 @@
 import React from 'react';
-import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
+import { Dimensions, Image, Platform } from 'react-native';
+import { View as TamaguiView } from '@tamagui/core';
 
 interface LogoProps {
   size?: 'small' | 'medium' | 'large' | 'responsive';
@@ -70,22 +71,12 @@ export function Logo({
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <TamaguiView alignItems="center" justifyContent="center" style={style}>
       <Image
         source={require('../../../assets/images/Ayska.png')}
-        style={[styles.logo, dimensions]}
+        style={dimensions}
         resizeMode="contain"
       />
-    </View>
+    </TamaguiView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: {
-    // Dimensions are set dynamically
-  },
-});

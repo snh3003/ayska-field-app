@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
-import { useColorScheme } from '../../../hooks/use-color-scheme';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 
 interface EmptyStateProps {
   icon?: keyof typeof Ionicons.glyphMap;
@@ -19,75 +18,58 @@ export function EmptyState({
   actionLabel,
   onAction,
 }: EmptyStateProps) {
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? 'light'];
-
   return (
-    <View style={styles.container}>
-      <View
-        style={[
-          styles.iconContainer,
-          { backgroundColor: theme.primary + '15' },
-        ]}
+    <TamaguiView
+      flex={1}
+      justifyContent="center"
+      alignItems="center"
+      padding="$xl"
+    >
+      <TamaguiView
+        width={120}
+        height={120}
+        borderRadius={60}
+        justifyContent="center"
+        alignItems="center"
+        marginBottom="$lg"
+        backgroundColor="$primary"
+        opacity={0.15}
       >
-        <Ionicons name={icon} size={64} color={theme.primary} />
-      </View>
-      <Text style={[Typography.h3, styles.title, { color: theme.text }]}>
+        <Ionicons name={icon} size={64} color="$primary" />
+      </TamaguiView>
+      <TamaguiText
+        fontSize="$6"
+        fontWeight="600"
+        color="$text"
+        marginBottom="$md"
+        textAlign="center"
+      >
         {title}
-      </Text>
-      <Text
-        style={[
-          Typography.body,
-          styles.message,
-          { color: theme.textSecondary },
-        ]}
+      </TamaguiText>
+      <TamaguiText
+        fontSize="$4"
+        color="$textSecondary"
+        textAlign="center"
+        marginBottom="$xl"
+        maxWidth={280}
       >
         {message}
-      </Text>
+      </TamaguiText>
       {actionLabel && onAction && (
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: theme.primary }]}
+          style={{
+            paddingVertical: 16,
+            paddingHorizontal: 24,
+            borderRadius: 12,
+            backgroundColor: '$primary',
+          }}
           onPress={onAction}
         >
-          <Text style={[Typography.button, styles.buttonText]}>
+          <TamaguiText fontSize="$4" fontWeight="600" color="white">
             {actionLabel}
-          </Text>
+          </TamaguiText>
         </TouchableOpacity>
       )}
-    </View>
+    </TamaguiView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.xl,
-  },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-  },
-  title: {
-    marginBottom: Spacing.md,
-    textAlign: 'center',
-  },
-  message: {
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-    maxWidth: 280,
-  },
-  button: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-    borderRadius: BorderRadius.md,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-  },
-});
