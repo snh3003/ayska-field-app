@@ -3,6 +3,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
 import {
   Alert,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -239,9 +240,18 @@ export default function Settings() {
 
         {/* Logout Button */}
         <Card
-          variant="elevated"
+          variant={Platform.OS === 'android' ? 'default' : 'elevated'}
           onPress={handleLogout}
-          style={{ marginTop: Spacing.xl, backgroundColor: theme.error + '10' }}
+          style={{
+            marginTop: Spacing.xl,
+            backgroundColor: theme.error + '10',
+            ...(Platform.OS === 'android'
+              ? {
+                  elevation: 0,
+                  shadowOpacity: 0,
+                }
+              : {}),
+          }}
         >
           <View style={styles.settingRow}>
             <View style={styles.settingLeft}>

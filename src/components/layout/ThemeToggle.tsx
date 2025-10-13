@@ -23,7 +23,7 @@ export function ThemeToggle() {
 
   useEffect(() => {
     // Smooth rotation when theme changes
-    rotate.value = withSpring(isDark ? 180 : 0, {
+    rotate.value = withSpring(isDark ? 360 : 0, {
       damping: 20,
       stiffness: 90,
     });
@@ -82,7 +82,7 @@ export function ThemeToggle() {
           <Ionicons
             name={isDark ? 'moon' : 'sunny'}
             size={20}
-            color="$primary"
+            color={isDark ? '#FCD34D' : '#F59E0B'}
           />
         </TamaguiView>
       </Animated.View>
