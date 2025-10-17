@@ -55,11 +55,13 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
         <ThemeProvider>
-          <ToastProvider>
-            <ErrorBoundary>
-              <RootLayoutContent />
-            </ErrorBoundary>
-          </ToastProvider>
+          <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+            <ToastProvider>
+              <ErrorBoundary>
+                <RootLayoutContent />
+              </ErrorBoundary>
+            </ToastProvider>
+          </TamaguiProvider>
         </ThemeProvider>
       </Provider>
     </GestureHandlerRootView>

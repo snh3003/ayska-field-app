@@ -1,7 +1,8 @@
 import React, { Component, ReactNode } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { Colors } from '@/constants/theme';
 
 interface Props {
   children: ReactNode;
@@ -42,72 +43,65 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <View style={styles.container}>
-          <View style={styles.iconContainer}>
+        <TamaguiView
+          flex={1}
+          justifyContent="center"
+          alignItems="center"
+          padding="$xl"
+          backgroundColor={Colors.light.background}
+        >
+          <TamaguiView marginBottom="$lg">
             <Ionicons
               name="alert-circle"
               size={64}
               color={Colors.light.error}
             />
-          </View>
-          <Text style={[Typography.h3, styles.title]}>
+          </TamaguiView>
+          <TamaguiText
+            fontSize="$6"
+            fontWeight="700"
+            color={Colors.light.text}
+            marginBottom="$md"
+            textAlign="center"
+          >
             Oops! Something went wrong
-          </Text>
-          <Text style={[Typography.body, styles.message]}>
+          </TamaguiText>
+          <TamaguiText
+            fontSize="$4"
+            color={Colors.light.textSecondary}
+            textAlign="center"
+            marginBottom="$lg"
+          >
             We&apos;re sorry for the inconvenience. Please try again.
-          </Text>
+          </TamaguiText>
           {__DEV__ && error && (
-            <Text style={[Typography.caption, styles.error]}>
+            <TamaguiText
+              fontSize="$2"
+              color={Colors.light.error}
+              textAlign="center"
+              marginBottom="$lg"
+              paddingHorizontal="$md"
+            >
               {error.toString()}
-            </Text>
+            </TamaguiText>
           )}
-          <TouchableOpacity style={styles.button} onPress={this.handleReset}>
-            <Text style={[Typography.button, styles.buttonText]}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: Colors.light.primary,
+              paddingVertical: 16,
+              paddingHorizontal: 32,
+              borderRadius: 12,
+            }}
+            onPress={this.handleReset}
+          >
+            <TamaguiText fontSize="$4" fontWeight="600" color="#FFFFFF">
               Try Again
-            </Text>
+            </TamaguiText>
           </TouchableOpacity>
-        </View>
+        </TamaguiView>
       );
     }
 
     return children;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.xl,
-    backgroundColor: Colors.light.background,
-  },
-  iconContainer: {
-    marginBottom: Spacing.lg,
-  },
-  title: {
-    color: Colors.light.text,
-    marginBottom: Spacing.md,
-    textAlign: 'center',
-  },
-  message: {
-    color: Colors.light.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.lg,
-  },
-  error: {
-    color: Colors.light.error,
-    textAlign: 'center',
-    marginBottom: Spacing.lg,
-    paddingHorizontal: Spacing.md,
-  },
-  button: {
-    backgroundColor: Colors.light.primary,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-    borderRadius: BorderRadius.md,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-  },
-});

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -7,6 +6,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import { View as TamaguiView } from '@tamagui/core';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { BorderRadius, Colors, Spacing } from '@/constants/theme';
 import { SkeletonProps } from '../../types';
@@ -33,29 +33,29 @@ export function Skeleton({
   });
 
   return (
-    <View
-      style={[
-        {
-          width,
-          height,
-          borderRadius,
-          backgroundColor: colorScheme === 'dark' ? '#2A2A2A' : '#E0E0E0',
-          overflow: 'hidden',
-        },
-        style,
-      ]}
+    <TamaguiView
+      width={width}
+      height={height}
+      borderRadius={borderRadius}
+      backgroundColor={colorScheme === 'dark' ? '#2A2A2A' : '#E0E0E0'}
+      overflow="hidden"
+      style={style}
     >
       <Animated.View
         style={[
-          StyleSheet.absoluteFill,
           {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             backgroundColor: colorScheme === 'dark' ? '#3A3A3A' : '#F0F0F0',
             opacity: 0.5,
           },
           animatedStyle,
         ]}
       />
-    </View>
+    </TamaguiView>
   );
 }
 
@@ -65,26 +65,22 @@ export function CardSkeleton() {
   const theme = Colors[colorScheme ?? 'light'];
 
   return (
-    <View
-      style={{
-        backgroundColor: theme.card,
-        borderRadius: BorderRadius.md,
-        padding: Spacing.md,
-        marginBottom: Spacing.md,
-      }}
+    <TamaguiView
+      backgroundColor={theme.card}
+      borderRadius={BorderRadius.md}
+      padding="$md"
+      marginBottom="$md"
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <TamaguiView flexDirection="row" alignItems="center">
         <Skeleton width={48} height={48} borderRadius={BorderRadius.md} />
-        <View style={{ flex: 1, marginLeft: Spacing.md }}>
-          <Skeleton
-            width="70%"
-            height={16}
-            style={{ marginBottom: Spacing.sm }}
-          />
+        <TamaguiView flex={1} marginLeft="$md">
+          <TamaguiView marginBottom="$sm">
+            <Skeleton width="70%" height={16} />
+          </TamaguiView>
           <Skeleton width="50%" height={12} />
-        </View>
-      </View>
-    </View>
+        </TamaguiView>
+      </TamaguiView>
+    </TamaguiView>
   );
 }
 
@@ -93,24 +89,21 @@ export function StatCardSkeleton() {
   const theme = Colors[colorScheme ?? 'light'];
 
   return (
-    <View
-      style={{
-        backgroundColor: theme.card,
-        borderRadius: BorderRadius.md,
-        padding: Spacing.md,
-        flex: 1,
-        marginHorizontal: Spacing.xs / 2,
-      }}
+    <TamaguiView
+      backgroundColor={theme.card}
+      borderRadius={BorderRadius.md}
+      padding="$md"
+      flex={1}
+      marginHorizontal={Spacing.xs / 2}
     >
-      <Skeleton
-        width={40}
-        height={40}
-        borderRadius={BorderRadius.sm}
-        style={{ marginBottom: Spacing.sm }}
-      />
-      <Skeleton width="60%" height={12} style={{ marginBottom: Spacing.xs }} />
+      <TamaguiView marginBottom="$sm">
+        <Skeleton width={40} height={40} borderRadius={BorderRadius.sm} />
+      </TamaguiView>
+      <TamaguiView marginBottom="$xs">
+        <Skeleton width="60%" height={12} />
+      </TamaguiView>
       <Skeleton width="80%" height={24} />
-    </View>
+    </TamaguiView>
   );
 }
 

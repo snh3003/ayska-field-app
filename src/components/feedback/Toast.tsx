@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text } from 'react-native';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -8,13 +7,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  BorderRadius,
-  Colors,
-  Shadows,
-  Spacing,
-  Typography,
-} from '@/constants/theme';
+import { Text as TamaguiText } from '@tamagui/core';
+import { Colors, Shadows, Spacing } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { ToastProps } from '../../types';
 
@@ -81,44 +75,35 @@ export function Toast({
   return (
     <Animated.View
       style={[
-        styles.container,
         {
+          position: 'absolute',
+          top: 0,
+          left: 16,
+          right: 16,
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 16,
+          borderRadius: 12,
+          borderLeftWidth: 4,
           backgroundColor: theme.card,
           borderLeftColor: getColor(),
+          zIndex: 9999,
+          ...Shadows.medium,
         },
-        Shadows.medium,
         animatedStyle,
       ]}
     >
       <Ionicons name={getIcon()} size={24} color={getColor()} />
-      <Text
-        style={[
-          Typography.body,
-          {
-            color: theme.text,
-            marginLeft: Spacing.md,
-            flex: 1,
-          },
-        ]}
+      <TamaguiText
+        color={theme.text}
+        marginLeft="$md"
+        flex={1}
         numberOfLines={2}
+        fontSize="$4"
+        lineHeight="$6"
       >
         {message}
-      </Text>
+      </TamaguiText>
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: Spacing.md,
-    right: Spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Spacing.md,
-    borderRadius: BorderRadius.md,
-    borderLeftWidth: 4,
-    zIndex: 9999,
-  },
-});

@@ -2,11 +2,8 @@ import React, { useEffect } from 'react';
 import {
   Dimensions,
   Modal,
-  StyleSheet,
-  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
 } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -15,7 +12,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { BorderRadius, Colors } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { BottomSheetProps } from '../../types';
 
@@ -64,85 +62,69 @@ export function BottomSheet({
       animationType="none"
       onRequestClose={onClose}
     >
-      <View style={styles.container}>
+      <TamaguiView flex={1} justifyContent="flex-end">
         <TouchableWithoutFeedback onPress={onClose}>
           <Animated.View
             style={[
-              styles.overlay,
-              { backgroundColor: theme.overlay },
+              {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: theme.overlay,
+              },
               overlayStyle,
             ]}
           />
         </TouchableWithoutFeedback>
         <Animated.View
           style={[
-            styles.sheet,
             {
+              borderTopLeftRadius: BorderRadius.xl,
+              borderTopRightRadius: BorderRadius.xl,
+              overflow: 'hidden',
               backgroundColor: theme.background,
               height,
             },
             sheetStyle,
           ]}
         >
-          <View style={styles.header}>
-            <View style={[styles.handle, { backgroundColor: theme.border }]} />
+          <TamaguiView paddingTop="$sm">
+            <TamaguiView
+              width={40}
+              height={4}
+              borderRadius={2}
+              alignSelf="center"
+              marginBottom="$md"
+              backgroundColor={theme.border}
+            />
             {title && (
-              <View style={styles.titleContainer}>
-                <Text style={[Typography.h4, { color: theme.text }]}>
+              <TamaguiView
+                flexDirection="row"
+                justifyContent="space-between"
+                alignItems="center"
+                paddingHorizontal="$lg"
+                paddingBottom="$md"
+              >
+                <TamaguiText fontSize="$6" fontWeight="600" color={theme.text}>
                   {title}
-                </Text>
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                </TamaguiText>
+                <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
                   <Ionicons
                     name="close"
                     size={24}
                     color={theme.textSecondary}
                   />
                 </TouchableOpacity>
-              </View>
+              </TamaguiView>
             )}
-          </View>
-          <View style={styles.content}>{children}</View>
+          </TamaguiView>
+          <TamaguiView flex={1} paddingHorizontal="$lg">
+            {children}
+          </TamaguiView>
         </Animated.View>
-      </View>
+      </TamaguiView>
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  sheet: {
-    borderTopLeftRadius: BorderRadius.xl,
-    borderTopRightRadius: BorderRadius.xl,
-    overflow: 'hidden',
-  },
-  header: {
-    paddingTop: Spacing.sm,
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: Spacing.md,
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
-  },
-  closeButton: {
-    padding: Spacing.xs,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: Spacing.lg,
-  },
-});

@@ -1,0 +1,15 @@
+echo "🔍 Running pre-commit checks..."
+
+# Run linter on staged files
+echo "📝 Checking linting errors..."
+npx lint-staged
+
+# Run TypeScript check
+echo "🔧 Running TypeScript check..."
+npx tsc --noEmit
+
+# Check for unused imports specifically
+echo "🧹 Checking for unused imports and variables..."
+npx eslint . --ext .js,.jsx,.ts,.tsx --rule "unused-imports/no-unused-imports: error" --rule "unused-imports/no-unused-vars: warn" --quiet
+
+echo "✅ All pre-commit checks passed!"

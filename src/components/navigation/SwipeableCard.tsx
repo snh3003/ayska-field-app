@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   runOnJS,
@@ -8,7 +7,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { BorderRadius, Spacing } from '@/constants/theme';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { SwipeableCardProps } from '../../types';
 
@@ -57,9 +55,18 @@ export function SwipeableCard({
       {rightAction && (
         <Animated.View
           style={[
-            styles.actionContainer,
-            styles.rightAction,
-            { backgroundColor: rightAction.color },
+            {
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingHorizontal: 32,
+              borderRadius: 12,
+              backgroundColor: rightAction.color,
+            },
             rRightActionStyle,
           ]}
         >
@@ -77,9 +84,18 @@ export function SwipeableCard({
       {leftAction && (
         <Animated.View
           style={[
-            styles.actionContainer,
-            styles.leftAction,
-            { backgroundColor: leftAction.color },
+            {
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingHorizontal: 32,
+              borderRadius: 12,
+              backgroundColor: leftAction.color,
+            },
             rLeftActionStyle,
           ]}
         >
@@ -103,32 +119,3 @@ export function SwipeableCard({
     </TamaguiView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  actionContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    borderRadius: BorderRadius.md,
-  },
-  rightAction: {
-    left: 0,
-    right: 0,
-  },
-  leftAction: {
-    left: 0,
-    right: 0,
-  },
-  actionText: {
-    color: '#FFF',
-    fontWeight: '600',
-    marginTop: Spacing.xs,
-    fontSize: 12,
-  },
-});

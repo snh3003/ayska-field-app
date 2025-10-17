@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Input } from '../src/components/ui/Input';
+import { PasswordInput } from '../src/components/ui/PasswordInput';
 import { ButtonPrimary } from '../src/components/ui/ButtonPrimary';
 import { Card } from '../src/components/ui/Card';
 import { login } from '../src/store/slices/authSlice';
@@ -92,14 +93,11 @@ export default function LoginScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const onSubmit = async () => {
-    if (!validateAll()) {
-      hapticFeedback.error();
-      toast.error('Please fix the errors in the form');
-      return;
-    }
-
-    const { email, password } = values;
+  const performLogin = async (credentials: {
+    email: string;
+    password: string;
+  }) => {
+    const { email, password } = credentials;
 
     // Check admin
     const authRepository = serviceContainer.get('IAuthRepository') as any;
@@ -145,6 +143,16 @@ export default function LoginScreen() {
     // Invalid credentials
     hapticFeedback.error();
     toast.error('Invalid email or password');
+  };
+
+  const onSubmit = async () => {
+    if (!validateAll()) {
+      hapticFeedback.error();
+      toast.error('Please fix the errors in the form');
+      return;
+    }
+
+    await performLogin(values);
   };
 
   return (
@@ -201,7 +209,7 @@ export default function LoginScreen() {
               error={touched.email ? errors.email || '' : ''}
             />
 
-            <Input
+            <PasswordInput
               placeholder="Password"
               value={values.password}
               onChangeText={text => handleChange('password', text)}
@@ -213,7 +221,8 @@ export default function LoginScreen() {
                   color={theme.textSecondary}
                 />
               }
-              secureTextEntry
+              keyboardType="default"
+              autoCapitalize="none"
               error={touched.password ? errors.password || '' : ''}
             />
 
@@ -256,7 +265,7 @@ export default function LoginScreen() {
             <TouchableOpacity
               onPress={() => {
                 setValues({ email: 'admin@field.co', password: 'admin123' });
-                onSubmit();
+                performLogin({ email: 'admin@field.co', password: 'admin123' });
               }}
               style={styles.demoButton}
             >
@@ -272,7 +281,10 @@ export default function LoginScreen() {
             <TouchableOpacity
               onPress={() => {
                 setValues({ email: 'alice@field.co', password: 'password123' });
-                onSubmit();
+                performLogin({
+                  email: 'alice@field.co',
+                  password: 'password123',
+                });
               }}
               style={styles.demoButton}
             >
