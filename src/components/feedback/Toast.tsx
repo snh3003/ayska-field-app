@@ -85,7 +85,7 @@ export function Toast({
           padding: 16,
           borderRadius: 12,
           borderLeftWidth: 4,
-          backgroundColor: theme.card,
+          backgroundColor: '$card',
           borderLeftColor: getColor(),
           zIndex: 9999,
           ...Shadows.medium,
@@ -95,7 +95,7 @@ export function Toast({
     >
       <Ionicons name={getIcon()} size={24} color={getColor()} />
       <TamaguiText
-        color={theme.text}
+        color="$text"
         marginLeft="$md"
         flex={1}
         numberOfLines={2}

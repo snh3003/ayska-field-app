@@ -1,13 +1,23 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 
-export const EmployeeCard: React.FC<{ name: string; email: string }> = ({ name, email }) => {
+export const EmployeeCard: React.FC<{ name: string; email: string }> = ({
+  name,
+  email,
+}) => {
   return (
-    <View style={{ padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', marginBottom: 8 }}>
-      <Text style={{ fontWeight: '600' }}>{name}</Text>
-      <Text>{email}</Text>
-    </View>
+    <TamaguiView
+      padding="$sm"
+      borderRadius="$md"
+      borderWidth={1}
+      borderColor="$border"
+      marginBottom="$sm"
+      backgroundColor="$card"
+    >
+      <TamaguiText fontWeight="600" color="$text">
+        {name}
+      </TamaguiText>
+      <TamaguiText color="$text">{email}</TamaguiText>
+    </TamaguiView>
   );
 };
-
-

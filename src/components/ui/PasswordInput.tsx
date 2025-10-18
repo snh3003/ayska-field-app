@@ -1,6 +1,6 @@
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { TextInput, TouchableOpacity } from 'react-native';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { Ionicons } from '@expo/vector-icons';
 import { InputProps } from '../../types';
@@ -37,7 +37,7 @@ export const PasswordInput: React.FC<InputProps> = ({
   };
 
   return (
-    <TamaguiView style={[styles.container, style]}>
+    <TamaguiView style={style} marginBottom="$md">
       {label && (
         <TamaguiText
           fontSize="$4"
@@ -65,14 +65,27 @@ export const PasswordInput: React.FC<InputProps> = ({
           secureTextEntry={!showPassword}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
-          style={[styles.textInput, { color: theme.text }]}
+          style={{
+            flex: 1,
+            fontSize: 16,
+            paddingVertical: 0,
+            color: theme.text,
+          }}
           onFocus={() => setIsFocused(true)}
           onBlur={handleBlur}
           placeholderTextColor={theme.textSecondary}
         />
         <TouchableOpacity
           onPress={togglePasswordVisibility}
-          style={styles.eyeButton}
+          style={{
+            padding: 4,
+            marginLeft: 4,
+            borderRadius: 4,
+            minWidth: 32,
+            minHeight: 32,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
           accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
           accessibilityHint="Double tap to toggle password visibility"
         >
@@ -91,23 +104,3 @@ export const PasswordInput: React.FC<InputProps> = ({
     </TamaguiView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: Spacing.md,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 16,
-    paddingVertical: 0,
-  },
-  eyeButton: {
-    padding: Spacing.xs,
-    marginLeft: Spacing.xs,
-    borderRadius: 4,
-    minWidth: 32,
-    minHeight: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

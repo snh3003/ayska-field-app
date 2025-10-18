@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from 'react';
+import { ScrollView } from 'react-native';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
 import { ButtonPrimary } from '../../components/ui/ButtonPrimary';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -59,29 +60,25 @@ export default function ManualCheckIn() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.background }}>
-      <View style={{ padding: 16 }}>
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: '700',
-            color: theme.text,
-            marginBottom: 20,
-          }}
+      <TamaguiView padding="$md">
+        <TamaguiText
+          fontSize="$6"
+          fontWeight="700"
+          color="$text"
+          marginBottom="$lg"
         >
           Manual Check-In
-        </Text>
+        </TamaguiText>
 
         <Card>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '600',
-              color: theme.text,
-              marginBottom: 16,
-            }}
+          <TamaguiText
+            fontSize="$5"
+            fontWeight="600"
+            color="$text"
+            marginBottom="$md"
           >
             Create Manual Visit
-          </Text>
+          </TamaguiText>
 
           <Input
             label="Select Employee"
@@ -112,7 +109,7 @@ export default function ManualCheckIn() {
             disabled={!selectedEmployee || !selectedDoctor || isSubmitting}
           />
         </Card>
-      </View>
+      </TamaguiView>
     </ScrollView>
   );
 }

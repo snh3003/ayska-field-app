@@ -1,6 +1,4 @@
-import { BorderRadius, Spacing } from '@/constants/theme';
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
 import { Input as TamaguiInput } from '@tamagui/input';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { InputProps } from '../../types';
@@ -30,7 +28,7 @@ export const Input: React.FC<InputProps> = ({
   };
 
   return (
-    <TamaguiView style={[styles.container, style]}>
+    <TamaguiView style={style} marginBottom="$md">
       {label && (
         <TamaguiText
           fontSize="$4"
@@ -61,6 +59,7 @@ export const Input: React.FC<InputProps> = ({
           multiline={multiline || false}
           numberOfLines={numberOfLines || 1}
           color="$text"
+          placeholderTextColor="$textSecondary"
           borderWidth={0}
           backgroundColor="transparent"
           flex={1}
@@ -76,23 +75,3 @@ export const Input: React.FC<InputProps> = ({
     </TamaguiView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: Spacing.md,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.md,
-  },
-  iconContainer: {
-    marginRight: Spacing.sm,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: Spacing.md,
-  },
-});

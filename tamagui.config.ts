@@ -1,5 +1,5 @@
-import { config } from '@tamagui/config/v3'
-import { createTamagui } from '@tamagui/core'
+import { config } from '@tamagui/config/v3';
+import { createTamagui } from '@tamagui/core';
 
 const tamaguiConfig = createTamagui({
   ...config,
@@ -7,7 +7,7 @@ const tamaguiConfig = createTamagui({
     light: {
       // Map existing Colors.light values
       primary: '#1E40AF',
-      primaryRed: '#B91C1C', 
+      primaryRed: '#B91C1C',
       secondary: '#0891B2',
       accent: '#7C3AED',
       background: '#F9FAFB',
@@ -21,7 +21,7 @@ const tamaguiConfig = createTamagui({
       info: '#0891B2',
       tint: '#1E40AF',
       icon: '#64748B',
-      tabIconDefault: '#94A3B8',
+      tabIconDefault: '#5A6B7D',
       tabIconSelected: '#1E40AF',
       cardShadow: 'rgba(30, 64, 175, 0.08)',
       shadow: 'rgba(0, 0, 0, 0.1)',
@@ -34,12 +34,21 @@ const tamaguiConfig = createTamagui({
       backgroundHover: '#F1F5F9',
       backgroundPress: '#E2E8F0',
       borderColorPress: '#94A3B8',
+      // Semantic background colors for icons and surfaces
+      primaryBg: 'rgba(30, 64, 175, 0.15)',
+      secondaryBg: 'rgba(8, 145, 178, 0.15)',
+      successBg: 'rgba(5, 150, 105, 0.15)',
+      warningBg: 'rgba(217, 119, 6, 0.15)',
+      infoBg: 'rgba(8, 145, 178, 0.15)',
+      errorBg: 'rgba(185, 28, 28, 0.15)',
+      iconBg: 'rgba(90, 107, 125, 0.15)',
+      avatarBg: '#E0E7FF',
     },
     dark: {
-      // Map existing Colors.dark values  
+      // Map existing Colors.dark values
       primary: '#60A5FA',
       primaryRed: '#EF4444',
-      secondary: '#06B6D4', 
+      secondary: '#06B6D4',
       accent: '#A78BFA',
       background: '#0F172A',
       text: '#F1F5F9',
@@ -52,7 +61,7 @@ const tamaguiConfig = createTamagui({
       info: '#06B6D4',
       tint: '#60A5FA',
       icon: '#94A3B8',
-      tabIconDefault: '#64748B',
+      tabIconDefault: '#A1AEC0',
       tabIconSelected: '#60A5FA',
       cardShadow: 'rgba(0, 0, 0, 0.4)',
       shadow: 'rgba(0, 0, 0, 0.3)',
@@ -65,13 +74,22 @@ const tamaguiConfig = createTamagui({
       backgroundHover: '#1E293B',
       backgroundPress: '#334155',
       borderColorPress: '#64748B',
-    }
+      // Semantic background colors for icons and surfaces
+      primaryBg: 'rgba(96, 165, 250, 0.20)',
+      secondaryBg: 'rgba(6, 182, 212, 0.20)',
+      successBg: 'rgba(16, 185, 129, 0.20)',
+      warningBg: 'rgba(245, 158, 11, 0.20)',
+      infoBg: 'rgba(6, 182, 212, 0.20)',
+      errorBg: 'rgba(239, 68, 68, 0.20)',
+      iconBg: 'rgba(161, 174, 192, 0.20)',
+      avatarBg: '#334155',
+    },
   },
   tokens: {
     // Map existing Spacing, BorderRadius, Typography
     space: {
       xs: 4,
-      sm: 8, 
+      sm: 8,
       md: 16,
       lg: 24,
       xl: 32,
@@ -122,8 +140,8 @@ const tamaguiConfig = createTamagui({
       tight: -0.5,
       normal: 0,
       wide: 0.5,
-    }
-  }
-})
+    },
+  },
+});
 
-export default tamaguiConfig
+export default tamaguiConfig;

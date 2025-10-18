@@ -1,17 +1,15 @@
-import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useCallback, useState } from 'react';
 import {
   Dimensions,
   Platform,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
-  StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
@@ -133,13 +131,11 @@ export default function AdminDashboard() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView
-        style={styles.scrollView}
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ padding: Spacing.lg }}
         refreshControl={
           <RefreshControl
             refreshing={loading}
@@ -150,26 +146,43 @@ export default function AdminDashboard() {
         }
       >
         {/* Header */}
-        <View style={styles.header}>
+        <TamaguiView marginBottom={getResponsiveSpacing().headerMargin}>
           {/* Logo Row */}
-          <View style={styles.logoRow}>
-            <Logo size="responsive" style={styles.dashboardLogo} />
-          </View>
+          <TamaguiView
+            alignItems="center"
+            justifyContent="center"
+            marginBottom="$sm"
+          >
+            <Logo size="responsive" style={{ alignSelf: 'center' }} />
+          </TamaguiView>
 
           {/* Welcome & Actions Row */}
-          <View style={styles.welcomeRow}>
+          <TamaguiView
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             {user.name && (
-              <Text
-                style={[Typography.bodySmall, { color: theme.textSecondary }]}
-              >
+              <TamaguiText fontSize="$3" lineHeight="$5" color="$textSecondary">
                 Welcome, {user.name}
-              </Text>
+              </TamaguiText>
             )}
-            <View style={styles.headerActions}>
+            <TamaguiView
+              flexDirection="row"
+              gap={getResponsiveSpacing().buttonGap}
+              alignItems="center"
+            >
               <ThemeToggle />
               <TouchableOpacity
                 onPress={handleLogoutPress}
-                style={[styles.iconButton, { backgroundColor: theme.card }]}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: theme.card,
+                }}
               >
                 <Ionicons
                   name="log-out-outline"
@@ -177,12 +190,12 @@ export default function AdminDashboard() {
                   color={theme.error}
                 />
               </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+            </TamaguiView>
+          </TamaguiView>
+        </TamaguiView>
 
         {/* Stats Cards */}
-        <View style={styles.statsRow}>
+        <TamaguiView flexDirection="row" gap="$md" marginBottom="$md">
           <StatsCard
             icon={
               <Ionicons name="people-outline" size={24} color={theme.primary} />
@@ -202,9 +215,9 @@ export default function AdminDashboard() {
             value={stats.activeToday.toString()}
             color="success"
           />
-        </View>
+        </TamaguiView>
 
-        <View style={styles.statsRow}>
+        <TamaguiView flexDirection="row" gap="$md" marginBottom="$md">
           <StatsCard
             icon={
               <Ionicons
@@ -229,7 +242,7 @@ export default function AdminDashboard() {
             value={stats.todayVisits.toString()}
             color="info"
           />
-        </View>
+        </TamaguiView>
 
         {/* Search Bar */}
         <SearchBar
@@ -238,15 +251,15 @@ export default function AdminDashboard() {
         />
 
         {/* Employees List */}
-        <View style={styles.section}>
-          <Text
-            style={[
-              Typography.h4,
-              { color: theme.text, marginBottom: Spacing.md },
-            ]}
+        <TamaguiView marginTop="$lg">
+          <TamaguiText
+            fontSize="$5"
+            fontWeight="600"
+            color="$text"
+            marginBottom="$md"
           >
             Employees ({filteredEmployees.length})
-          </Text>
+          </TamaguiText>
 
           {loading ? (
             <ListItemSkeleton />
@@ -267,54 +280,57 @@ export default function AdminDashboard() {
                 onPress={() => handleEmployeePress(employee.id)}
                 variant="elevated"
               >
-                <View style={styles.employeeCard}>
-                  <View
-                    style={[
-                      styles.employeeIcon,
-                      { backgroundColor: theme.secondary + '15' },
-                    ]}
+                <TamaguiView flexDirection="row" alignItems="center">
+                  <TamaguiView
+                    width={48}
+                    height={48}
+                    borderRadius="$md"
+                    justifyContent="center"
+                    alignItems="center"
+                    marginRight="$md"
+                    backgroundColor={theme.secondaryBg}
                   >
                     <Ionicons name="person" size={24} color={theme.secondary} />
-                  </View>
-                  <View style={styles.employeeInfo}>
-                    <Text
-                      style={[
-                        Typography.body,
-                        { color: theme.text, fontWeight: '600' },
-                      ]}
+                  </TamaguiView>
+                  <TamaguiView flex={1}>
+                    <TamaguiText
+                      fontSize="$4"
+                      lineHeight="$6"
+                      color="$text"
+                      fontWeight="600"
                     >
                       {employee.name}
-                    </Text>
-                    <Text
-                      style={[
-                        Typography.bodySmall,
-                        { color: theme.textSecondary, marginTop: Spacing.xs },
-                      ]}
+                    </TamaguiText>
+                    <TamaguiText
+                      fontSize="$3"
+                      lineHeight="$5"
+                      color="$textSecondary"
+                      marginTop="$xs"
                     >
                       {employee.email}
-                    </Text>
-                  </View>
+                    </TamaguiText>
+                  </TamaguiView>
                   <Ionicons
                     name="chevron-forward"
                     size={20}
                     color={theme.textSecondary}
                   />
-                </View>
+                </TamaguiView>
               </Card>
             ))
           )}
-        </View>
+        </TamaguiView>
 
         {/* Recent Activity */}
-        <View style={styles.section}>
-          <Text
-            style={[
-              Typography.h4,
-              { color: theme.text, marginBottom: Spacing.md },
-            ]}
+        <TamaguiView marginTop="$lg">
+          <TamaguiText
+            fontSize="$5"
+            fontWeight="600"
+            color="$text"
+            marginBottom="$md"
           >
             Recent Visits
-          </Text>
+          </TamaguiText>
           {recentVisits.length === 0 ? (
             <EmptyState
               icon="time-outline"
@@ -326,115 +342,37 @@ export default function AdminDashboard() {
               const employee = employees.find(e => e.id === visit.employeeId);
               return (
                 <Card key={visit.id} variant="outlined">
-                  <View style={styles.activityItem}>
-                    <View
-                      style={[
-                        styles.activityDot,
-                        {
-                          backgroundColor:
-                            visit.status === 'completed'
-                              ? theme.success
-                              : theme.warning,
-                        },
-                      ]}
+                  <TamaguiView flexDirection="row" alignItems="flex-start">
+                    <TamaguiView
+                      width={8}
+                      height={8}
+                      borderRadius={4}
+                      marginTop={6}
+                      marginRight="$md"
+                      backgroundColor={
+                        visit.status === 'completed' ? '$success' : '$warning'
+                      }
                     />
-                    <View style={styles.activityContent}>
-                      <Text style={[Typography.body, { color: theme.text }]}>
+                    <TamaguiView flex={1}>
+                      <TamaguiText fontSize="$4" lineHeight="$6" color="$text">
                         {employee?.name || 'Unknown'} - {visit.status}
-                      </Text>
-                      <Text
-                        style={[
-                          Typography.caption,
-                          { color: theme.textSecondary, marginTop: Spacing.xs },
-                        ]}
+                      </TamaguiText>
+                      <TamaguiText
+                        fontSize="$2"
+                        lineHeight="$4"
+                        color="$textSecondary"
+                        marginTop="$xs"
                       >
                         {formatRelativeTime(visit.checkInTime)}
-                      </Text>
-                    </View>
-                  </View>
+                      </TamaguiText>
+                    </TamaguiView>
+                  </TamaguiView>
                 </Card>
               );
             })
           )}
-        </View>
+        </TamaguiView>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: Spacing.lg,
-  },
-  header: {
-    marginBottom: getResponsiveSpacing().headerMargin,
-  },
-  logoRow: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.sm,
-  },
-  dashboardLogo: {
-    alignSelf: 'center',
-  },
-  welcomeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: getResponsiveSpacing().buttonGap,
-    alignItems: 'center',
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginBottom: Spacing.md,
-  },
-  section: {
-    marginTop: Spacing.lg,
-  },
-  employeeCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  employeeIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: BorderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.md,
-  },
-  employeeInfo: {
-    flex: 1,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  activityDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginTop: 6,
-    marginRight: Spacing.md,
-  },
-  activityContent: {
-    flex: 1,
-  },
-});

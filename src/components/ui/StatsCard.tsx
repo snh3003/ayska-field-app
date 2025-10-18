@@ -29,7 +29,23 @@ export const StatsCard: React.FC<StatsCardProps> = ({
     }
   };
 
+  const getBackgroundColor = () => {
+    switch (color) {
+      case 'secondary':
+        return theme.secondaryBg;
+      case 'success':
+        return theme.successBg;
+      case 'warning':
+        return theme.warningBg;
+      case 'info':
+        return theme.infoBg;
+      default:
+        return theme.primaryBg;
+    }
+  };
+
   const accentColor = getColor();
+  const accentBgColor = getBackgroundColor();
 
   return (
     <TamaguiView
@@ -61,7 +77,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
             borderRadius="$sm"
             justifyContent="center"
             alignItems="center"
-            backgroundColor={accentColor + '15'}
+            backgroundColor={accentBgColor}
           >
             {icon}
           </TamaguiView>

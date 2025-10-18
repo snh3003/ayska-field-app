@@ -8,45 +8,55 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { Provider } from 'react-redux';
 import { store } from '../src/store';
-import { ThemeProvider, useColorScheme } from '../contexts/ThemeContext';
+import {
+  ThemeProvider,
+  useColorScheme,
+  useTheme,
+} from '../contexts/ThemeContext';
 import { ToastProvider } from '../contexts/ToastContext';
 import { ErrorBoundary } from '../src/components/feedback/ErrorBoundary';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TamaguiProvider } from '@tamagui/core';
 import tamaguiConfig from '../tamagui.config';
+import { ReactNode } from 'react';
 
 export const unstable_settings = {
   anchor: 'login',
 };
 
+function TamaguiWrapper({ children }: { children: ReactNode }) {
+  const { colorScheme } = useTheme();
+
+  return (
+    <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
+      {children}
+    </TamaguiProvider>
+  );
+}
+
 function RootLayoutContent() {
   const colorScheme = useColorScheme();
 
   return (
-    <TamaguiProvider
-      config={tamaguiConfig}
-      defaultTheme={colorScheme ?? 'light'}
+    <NavigationThemeProvider
+      value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
     >
-      <NavigationThemeProvider
-        value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-      >
-        <Stack initialRouteName="login">
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="settings" options={{ headerShown: false }} />
-          <Stack.Screen name="doctor/[id]" options={{ headerShown: false }} />
-          <Stack.Screen name="employee/[id]" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: 'modal', title: 'Modal' }}
-          />
-        </Stack>
-        <StatusBar
-          style={colorScheme === 'dark' ? 'light' : 'dark'}
-          animated={true}
+      <Stack initialRouteName="login">
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="doctor/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="employee/[id]" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="modal"
+          options={{ presentation: 'modal', title: 'Modal' }}
         />
-      </NavigationThemeProvider>
-    </TamaguiProvider>
+      </Stack>
+      <StatusBar
+        style={colorScheme === 'dark' ? 'light' : 'dark'}
+        animated={true}
+      />
+    </NavigationThemeProvider>
   );
 }
 
@@ -55,13 +65,13 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
         <ThemeProvider>
-          <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+          <TamaguiWrapper>
             <ToastProvider>
               <ErrorBoundary>
                 <RootLayoutContent />
               </ErrorBoundary>
             </ToastProvider>
-          </TamaguiProvider>
+          </TamaguiWrapper>
         </ThemeProvider>
       </Provider>
     </GestureHandlerRootView>

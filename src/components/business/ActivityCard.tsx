@@ -1,37 +1,31 @@
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import type { Activity } from '../../types/api';
 
 export const ActivityCard: React.FC<{ activity: Activity }> = ({
   activity,
 }) => {
-  const scheme = useColorScheme() ?? 'light';
-  const theme = Colors[scheme];
   return (
-    <View
-      style={{
-        padding: 14,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: theme.border,
-        backgroundColor: theme.card,
-        marginBottom: 10,
-      }}
+    <TamaguiView
+      padding="$md"
+      borderRadius="$md"
+      borderWidth={1}
+      borderColor="$border"
+      backgroundColor="$card"
+      marginBottom="$sm"
     >
-      <Text style={{ fontWeight: '700', color: theme.text }}>
+      <TamaguiText fontWeight="700" color="$text">
         {activity.type.toUpperCase()}
-      </Text>
-      <Text style={{ color: theme.text }}>
+      </TamaguiText>
+      <TamaguiText color="$text">
         {new Date(activity.timestamp).toLocaleString()}
-      </Text>
+      </TamaguiText>
       {activity.amount != null && (
-        <Text style={{ color: theme.text }}>Amount: {activity.amount}</Text>
+        <TamaguiText color="$text">Amount: {activity.amount}</TamaguiText>
       )}
       {activity.notes && (
-        <Text style={{ color: theme.text }}>{activity.notes}</Text>
+        <TamaguiText color="$text">{activity.notes}</TamaguiText>
       )}
-    </View>
+    </TamaguiView>
   );
 };

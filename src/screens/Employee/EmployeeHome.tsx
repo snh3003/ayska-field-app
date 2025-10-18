@@ -1,17 +1,15 @@
-import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useCallback, useState } from 'react';
 import {
   Dimensions,
   Platform,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
-  StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
@@ -148,13 +146,11 @@ export default function EmployeeHome() {
   );
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView
-        style={styles.scrollView}
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ padding: Spacing.lg }}
         refreshControl={
           <RefreshControl
             refreshing={loading}
@@ -165,26 +161,43 @@ export default function EmployeeHome() {
         }
       >
         {/* Header */}
-        <View style={styles.header}>
+        <TamaguiView marginBottom={getResponsiveSpacing().headerMargin}>
           {/* Logo Row */}
-          <View style={styles.logoRow}>
-            <Logo size="responsive" style={styles.dashboardLogo} />
-          </View>
+          <TamaguiView
+            alignItems="center"
+            justifyContent="center"
+            marginBottom="$sm"
+          >
+            <Logo size="responsive" style={{ alignSelf: 'center' }} />
+          </TamaguiView>
 
           {/* Welcome & Actions Row */}
-          <View style={styles.welcomeRow}>
+          <TamaguiView
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             {user.name && (
-              <Text
-                style={[Typography.bodySmall, { color: theme.textSecondary }]}
-              >
+              <TamaguiText fontSize="$3" lineHeight="$5" color="$textSecondary">
                 Welcome, {user.name}
-              </Text>
+              </TamaguiText>
             )}
-            <View style={styles.headerActions}>
+            <TamaguiView
+              flexDirection="row"
+              gap={getResponsiveSpacing().buttonGap}
+              alignItems="center"
+            >
               <ThemeToggle />
               <TouchableOpacity
                 onPress={handleLogoutPress}
-                style={[styles.iconButton, { backgroundColor: theme.card }]}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: theme.card,
+                }}
               >
                 <Ionicons
                   name="log-out-outline"
@@ -192,12 +205,12 @@ export default function EmployeeHome() {
                   color={theme.error}
                 />
               </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+            </TamaguiView>
+          </TamaguiView>
+        </TamaguiView>
 
         {/* Stats Cards */}
-        <View style={styles.statsRow}>
+        <TamaguiView flexDirection="row" gap="$md" marginBottom="$md">
           <StatsCard
             icon={
               <Ionicons
@@ -221,9 +234,9 @@ export default function EmployeeHome() {
             value={stats.completedDays.toString()}
             color="success"
           />
-        </View>
+        </TamaguiView>
 
-        <View style={styles.statsRow}>
+        <TamaguiView flexDirection="row" gap="$md" marginBottom="$md">
           <StatsCard
             icon={
               <Ionicons
@@ -248,38 +261,42 @@ export default function EmployeeHome() {
             value={stats.completedVisits.toString()}
             color="info"
           />
-        </View>
+        </TamaguiView>
 
         {/* Day Control */}
         <Card variant="elevated">
-          <View style={styles.dayControl}>
-            <View style={styles.dayControlText}>
-              <Text
-                style={[
-                  Typography.h4,
-                  { color: theme.text, marginBottom: Spacing.xs },
-                ]}
+          <TamaguiView
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <TamaguiView flex={1}>
+              <TamaguiText
+                fontSize="$5"
+                fontWeight="600"
+                color="$text"
+                marginBottom="$xs"
               >
                 {isDayStarted ? 'Day In Progress' : 'Start Your Day'}
-              </Text>
-              <Text
-                style={[Typography.bodySmall, { color: theme.textSecondary }]}
-              >
+              </TamaguiText>
+              <TamaguiText fontSize="$3" lineHeight="$5" color="$textSecondary">
                 {isDayStarted
                   ? 'Track your visits and activities'
                   : 'Begin tracking your field activities'}
-              </Text>
-            </View>
+              </TamaguiText>
+            </TamaguiView>
             <TouchableOpacity
               onPress={isDayStarted ? endDay : startDay}
-              style={[
-                styles.dayButton,
-                {
-                  backgroundColor: isDayStarted
-                    ? theme.error + '15'
-                    : theme.success + '15',
-                },
-              ]}
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 16,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: isDayStarted
+                  ? theme.error + '15'
+                  : theme.success + '15',
+              }}
             >
               <Ionicons
                 name={isDayStarted ? 'stop-circle' : 'play-circle'}
@@ -287,22 +304,22 @@ export default function EmployeeHome() {
                 color={isDayStarted ? theme.error : theme.success}
               />
             </TouchableOpacity>
-          </View>
+          </TamaguiView>
         </Card>
 
         {/* Search Bar */}
         <SearchBar placeholder="Search doctors..." onSearch={setSearchQuery} />
 
         {/* Assigned Doctors */}
-        <View style={styles.section}>
-          <Text
-            style={[
-              Typography.h4,
-              { color: theme.text, marginBottom: Spacing.md },
-            ]}
+        <TamaguiView marginTop="$lg">
+          <TamaguiText
+            fontSize="$5"
+            fontWeight="600"
+            color="$text"
+            marginBottom="$md"
           >
             Assigned Doctors ({filteredDoctors.length})
-          </Text>
+          </TamaguiText>
 
           {loading ? (
             <ListItemSkeleton />
@@ -323,168 +340,84 @@ export default function EmployeeHome() {
                 onPress={() => handleDoctorPress(doctor.id)}
                 variant="elevated"
               >
-                <View style={styles.doctorCard}>
-                  <View
-                    style={[
-                      styles.doctorIcon,
-                      { backgroundColor: theme.primary + '15' },
-                    ]}
+                <TamaguiView flexDirection="row" alignItems="center">
+                  <TamaguiView
+                    width={48}
+                    height={48}
+                    borderRadius="$md"
+                    justifyContent="center"
+                    alignItems="center"
+                    marginRight="$md"
+                    backgroundColor={theme.primaryBg}
                   >
                     <Ionicons name="person" size={24} color={theme.primary} />
-                  </View>
-                  <View style={styles.doctorInfo}>
-                    <Text
-                      style={[
-                        Typography.body,
-                        { color: theme.text, fontWeight: '600' },
-                      ]}
+                  </TamaguiView>
+                  <TamaguiView flex={1}>
+                    <TamaguiText
+                      fontSize="$4"
+                      lineHeight="$6"
+                      color="$text"
+                      fontWeight="600"
                     >
                       {doctor.name}
-                    </Text>
-                    <Text
-                      style={[
-                        Typography.bodySmall,
-                        { color: theme.textSecondary, marginTop: Spacing.xs },
-                      ]}
+                    </TamaguiText>
+                    <TamaguiText
+                      fontSize="$3"
+                      lineHeight="$5"
+                      color="$textSecondary"
+                      marginTop="$xs"
                     >
                       {doctor.specialization}
-                    </Text>
-                  </View>
+                    </TamaguiText>
+                  </TamaguiView>
                   <Ionicons
                     name="chevron-forward"
                     size={20}
                     color={theme.textSecondary}
                   />
-                </View>
+                </TamaguiView>
               </Card>
             ))
           )}
-        </View>
+        </TamaguiView>
 
         {/* Recent Activity */}
-        <View style={styles.section}>
-          <Text
-            style={[
-              Typography.h4,
-              { color: theme.text, marginBottom: Spacing.md },
-            ]}
+        <TamaguiView marginTop="$lg">
+          <TamaguiText
+            fontSize="$5"
+            fontWeight="600"
+            color="$text"
+            marginBottom="$md"
           >
             Recent Activity
-          </Text>
+          </TamaguiText>
           <Card variant="outlined">
-            <View style={styles.activityItem}>
-              <View
-                style={[styles.activityDot, { backgroundColor: theme.success }]}
+            <TamaguiView flexDirection="row" alignItems="flex-start">
+              <TamaguiView
+                width={8}
+                height={8}
+                borderRadius={4}
+                marginTop={6}
+                marginRight="$md"
+                backgroundColor="$success"
               />
-              <View style={styles.activityContent}>
-                <Text style={[Typography.body, { color: theme.text }]}>
+              <TamaguiView flex={1}>
+                <TamaguiText fontSize="$4" lineHeight="$6" color="$text">
                   Day started
-                </Text>
-                <Text
-                  style={[
-                    Typography.caption,
-                    { color: theme.textSecondary, marginTop: Spacing.xs },
-                  ]}
+                </TamaguiText>
+                <TamaguiText
+                  fontSize="$2"
+                  lineHeight="$4"
+                  color="$textSecondary"
+                  marginTop="$xs"
                 >
                   {formatRelativeTime(new Date().toISOString())}
-                </Text>
-              </View>
-            </View>
+                </TamaguiText>
+              </TamaguiView>
+            </TamaguiView>
           </Card>
-        </View>
+        </TamaguiView>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: Spacing.lg,
-  },
-  header: {
-    marginBottom: getResponsiveSpacing().headerMargin,
-  },
-  logoRow: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.sm,
-  },
-  dashboardLogo: {
-    alignSelf: 'center',
-  },
-  welcomeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: getResponsiveSpacing().buttonGap,
-    alignItems: 'center',
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginBottom: Spacing.md,
-  },
-  dayControl: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  dayControlText: {
-    flex: 1,
-  },
-  dayButton: {
-    width: 56,
-    height: 56,
-    borderRadius: BorderRadius.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  section: {
-    marginTop: Spacing.lg,
-  },
-  doctorCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  doctorIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: BorderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.md,
-  },
-  doctorInfo: {
-    flex: 1,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  activityDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginTop: 6,
-    marginRight: Spacing.md,
-  },
-  activityContent: {
-    flex: 1,
-  },
-});

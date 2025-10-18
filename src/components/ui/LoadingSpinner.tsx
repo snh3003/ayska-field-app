@@ -1,10 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { View as TamaguiView } from '@tamagui/core';
 
 export const LoadingSpinner: React.FC = () => (
-  <View style={{ padding: 16, alignItems: 'center' }}>
+  <TamaguiView padding="$md" alignItems="center">
     <ActivityIndicator />
-  </View>
+  </TamaguiView>
 );
-
-

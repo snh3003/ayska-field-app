@@ -18,6 +18,7 @@ export function Skeleton({
   style,
 }: SkeletonProps) {
   const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
   const shimmer = useSharedValue(0);
 
   useEffect(() => {
@@ -37,7 +38,8 @@ export function Skeleton({
       width={width}
       height={height}
       borderRadius={borderRadius}
-      backgroundColor={colorScheme === 'dark' ? '#2A2A2A' : '#E0E0E0'}
+      backgroundColor="$card"
+      opacity={0.3}
       overflow="hidden"
       style={style}
     >
@@ -49,8 +51,8 @@ export function Skeleton({
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: colorScheme === 'dark' ? '#3A3A3A' : '#F0F0F0',
-            opacity: 0.5,
+            backgroundColor: theme.textSecondary,
+            opacity: 0.2,
           },
           animatedStyle,
         ]}
@@ -61,12 +63,9 @@ export function Skeleton({
 
 // Pre-built skeleton layouts
 export function CardSkeleton() {
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? 'light'];
-
   return (
     <TamaguiView
-      backgroundColor={theme.card}
+      backgroundColor="$card"
       borderRadius={BorderRadius.md}
       padding="$md"
       marginBottom="$md"
@@ -85,12 +84,9 @@ export function CardSkeleton() {
 }
 
 export function StatCardSkeleton() {
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? 'light'];
-
   return (
     <TamaguiView
-      backgroundColor={theme.card}
+      backgroundColor="$card"
       borderRadius={BorderRadius.md}
       padding="$md"
       flex={1}

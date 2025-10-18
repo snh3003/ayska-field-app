@@ -72,7 +72,7 @@ export function BottomSheet({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: theme.overlay,
+                backgroundColor: '$overlay',
               },
               overlayStyle,
             ]}
@@ -84,7 +84,7 @@ export function BottomSheet({
               borderTopLeftRadius: BorderRadius.xl,
               borderTopRightRadius: BorderRadius.xl,
               overflow: 'hidden',
-              backgroundColor: theme.background,
+              backgroundColor: '$background',
               height,
             },
             sheetStyle,
@@ -97,7 +97,7 @@ export function BottomSheet({
               borderRadius={2}
               alignSelf="center"
               marginBottom="$md"
-              backgroundColor={theme.border}
+              backgroundColor="$border"
             />
             {title && (
               <TamaguiView
@@ -107,7 +107,7 @@ export function BottomSheet({
                 paddingHorizontal="$lg"
                 paddingBottom="$md"
               >
-                <TamaguiText fontSize="$6" fontWeight="600" color={theme.text}>
+                <TamaguiText fontSize="$6" fontWeight="600" color="$text">
                   {title}
                 </TamaguiText>
                 <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>

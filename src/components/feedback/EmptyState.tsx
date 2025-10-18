@@ -2,6 +2,8 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { useColorScheme } from '../../../hooks/use-color-scheme';
+import { Colors } from '@/constants/theme';
 
 interface EmptyStateProps {
   icon?: keyof typeof Ionicons.glyphMap;
@@ -18,6 +20,9 @@ export function EmptyState({
   actionLabel,
   onAction,
 }: EmptyStateProps) {
+  const scheme = useColorScheme() ?? 'light';
+  const theme = Colors[scheme];
+
   return (
     <TamaguiView
       flex={1}
@@ -32,10 +37,9 @@ export function EmptyState({
         justifyContent="center"
         alignItems="center"
         marginBottom="$lg"
-        backgroundColor="$primary"
-        opacity={0.15}
+        backgroundColor={theme.primaryBg}
       >
-        <Ionicons name={icon} size={64} color="$primary" />
+        <Ionicons name={icon} size={64} color={theme.primary} />
       </TamaguiView>
       <TamaguiText
         fontSize="$6"

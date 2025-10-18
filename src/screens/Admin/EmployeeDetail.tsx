@@ -1,14 +1,9 @@
-import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect, useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/Card';
@@ -61,85 +56,104 @@ export default function EmployeeDetail() {
 
   if (!employee) {
     return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.background }]}
-      >
-        <View style={styles.centerContent}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+        <TamaguiView
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
           <Ionicons name="alert-circle" size={64} color={theme.textSecondary} />
-          <Text
-            style={[
-              Typography.h4,
-              { color: theme.textSecondary, marginTop: Spacing.md },
-            ]}
+          <TamaguiText
+            fontSize="$5"
+            fontWeight="600"
+            color="$textSecondary"
+            marginTop="$md"
           >
             Employee not found
-          </Text>
-        </View>
+          </TamaguiText>
+        </TamaguiView>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView
-        style={styles.scrollView}
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{
+          padding: Spacing.lg,
+          paddingBottom: Spacing.xxl,
+        }}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <TamaguiView
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom="$lg"
+        >
           <TouchableOpacity
             onPress={() => router.back()}
-            style={[styles.backButton, { backgroundColor: theme.card }]}
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: BorderRadius.full,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: theme.card,
+            }}
           >
             <Ionicons name="arrow-back" size={24} color={theme.text} />
           </TouchableOpacity>
-          <Text style={[Typography.h3, { color: theme.text }]}>
+          <TamaguiText fontSize="$6" fontWeight="700" color="$text">
             Employee Details
-          </Text>
-          <View style={styles.placeholder} />
-        </View>
+          </TamaguiText>
+          <TamaguiView width={44} />
+        </TamaguiView>
 
         {/* Employee Profile Card */}
-        <Card variant="elevated" style={styles.profileCard}>
-          <View style={styles.profileHeader}>
-            <View
-              style={[
-                styles.avatarLarge,
-                { backgroundColor: theme.primary + '15' },
-              ]}
+        <Card variant="elevated" style={{ padding: Spacing.lg }}>
+          <TamaguiView alignItems="center">
+            <TamaguiView
+              width={96}
+              height={96}
+              borderRadius="$xl"
+              justifyContent="center"
+              alignItems="center"
+              marginBottom="$md"
+              backgroundColor={theme.avatarBg}
             >
               <Ionicons name="person" size={48} color={theme.primary} />
-            </View>
-            <View style={styles.profileInfo}>
-              <Text style={[Typography.h2, { color: theme.text }]}>
+            </TamaguiView>
+            <TamaguiView alignItems="center">
+              <TamaguiText fontSize="$7" fontWeight="700" color="$text">
                 {employee.name}
-              </Text>
-              <Text
-                style={[
-                  Typography.body,
-                  { color: theme.textSecondary, marginTop: Spacing.xs },
-                ]}
+              </TamaguiText>
+              <TamaguiText
+                fontSize="$4"
+                lineHeight="$6"
+                color="$textSecondary"
+                marginTop="$xs"
               >
                 {employee.email}
-              </Text>
-            </View>
-          </View>
+              </TamaguiText>
+            </TamaguiView>
+          </TamaguiView>
 
           {/* Status Indicator */}
           {todayAttendance && (
-            <View
-              style={[
-                styles.statusContainer,
-                {
-                  backgroundColor:
-                    todayAttendance.status === 'active'
-                      ? theme.success + '15'
-                      : theme.textSecondary + '15',
-                },
-              ]}
+            <TamaguiView
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="center"
+              marginTop="$md"
+              paddingHorizontal="$md"
+              paddingVertical="$sm"
+              borderRadius="$md"
+              backgroundColor={
+                todayAttendance.status === 'active'
+                  ? theme.successBg
+                  : theme.iconBg
+              }
             >
               <Ionicons
                 name={
@@ -154,29 +168,32 @@ export default function EmployeeDetail() {
                     : theme.textSecondary
                 }
               />
-              <Text
-                style={[
-                  Typography.bodySmall,
-                  {
-                    color:
-                      todayAttendance.status === 'active'
-                        ? theme.success
-                        : theme.textSecondary,
-                    marginLeft: Spacing.sm,
-                    fontWeight: '600',
-                  },
-                ]}
+              <TamaguiText
+                fontSize="$3"
+                lineHeight="$5"
+                color={
+                  todayAttendance.status === 'active'
+                    ? theme.success
+                    : theme.textSecondary
+                }
+                marginLeft="$sm"
+                fontWeight="600"
               >
                 {todayAttendance.status === 'active'
                   ? 'Active Today'
                   : 'Day Completed'}
-              </Text>
-            </View>
+              </TamaguiText>
+            </TamaguiView>
           )}
         </Card>
 
         {/* Stats Overview */}
-        <View style={styles.statsGrid}>
+        <TamaguiView
+          flexDirection="row"
+          gap="$md"
+          marginTop="$lg"
+          marginBottom="$lg"
+        >
           <StatsCard
             title="Days Worked"
             value={stats.totalDays}
@@ -191,18 +208,18 @@ export default function EmployeeDetail() {
               <Ionicons name="bar-chart" size={20} color={theme.secondary} />
             }
           />
-        </View>
+        </TamaguiView>
 
         {/* Assigned Doctors */}
-        <View style={styles.sectionHeader}>
-          <Text style={[Typography.h4, { color: theme.text }]}>
+        <TamaguiView marginTop="$lg" marginBottom="$md">
+          <TamaguiText fontSize="$5" fontWeight="600" color="$text">
             Assigned Doctors
-          </Text>
-          <Text style={[Typography.caption, { color: theme.textSecondary }]}>
+          </TamaguiText>
+          <TamaguiText fontSize="$2" lineHeight="$4" color="$textSecondary">
             {assignedDoctors.length} doctor
             {assignedDoctors.length !== 1 ? 's' : ''}
-          </Text>
-        </View>
+          </TamaguiText>
+        </TamaguiView>
 
         {assignedDoctors.length === 0 ? (
           <Card style={{ alignItems: 'center', padding: Spacing.xl }}>
@@ -212,18 +229,15 @@ export default function EmployeeDetail() {
               color={theme.textSecondary}
               style={{ opacity: 0.3 }}
             />
-            <Text
-              style={[
-                Typography.body,
-                {
-                  color: theme.textSecondary,
-                  marginTop: Spacing.md,
-                  textAlign: 'center',
-                },
-              ]}
+            <TamaguiText
+              fontSize="$4"
+              lineHeight="$6"
+              color="$textSecondary"
+              marginTop="$md"
+              textAlign="center"
             >
               No doctors assigned
-            </Text>
+            </TamaguiText>
           </Card>
         ) : (
           assignedDoctors.map(doctor => (
@@ -232,48 +246,62 @@ export default function EmployeeDetail() {
               variant="outlined"
               style={{ marginBottom: Spacing.sm }}
             >
-              <View style={styles.doctorRow}>
-                <View
-                  style={[
-                    styles.doctorIcon,
-                    { backgroundColor: theme.primary + '15' },
-                  ]}
+              <TamaguiView
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+              >
+                <TamaguiView
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: BorderRadius.sm,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: theme.primaryBg,
+                  }}
                 >
                   <Ionicons name="person" size={24} color={theme.primary} />
-                </View>
-                <View style={styles.doctorInfo}>
-                  <Text
-                    style={[
-                      Typography.body,
-                      { color: theme.text, fontWeight: '600' },
-                    ]}
+                </TamaguiView>
+                <TamaguiView style={{ flex: 1, marginLeft: Spacing.md }}>
+                  <TamaguiText
+                    fontSize="$4"
+                    lineHeight="$6"
+                    color="$text"
+                    fontWeight="600"
                   >
                     {doctor.name}
-                  </Text>
-                  <Text
-                    style={[
-                      Typography.caption,
-                      { color: theme.textSecondary, marginTop: Spacing.xs },
-                    ]}
+                  </TamaguiText>
+                  <TamaguiText
+                    fontSize="$2"
+                    lineHeight="$4"
+                    color="$textSecondary"
+                    marginTop="$xs"
                   >
                     {doctor.specialization}
-                  </Text>
-                </View>
+                  </TamaguiText>
+                </TamaguiView>
                 <Ionicons name="chevron-forward" size={20} color={theme.icon} />
-              </View>
+              </TamaguiView>
             </Card>
           ))
         )}
 
         {/* Recent Activity */}
-        <View style={styles.sectionHeader}>
-          <Text style={[Typography.h4, { color: theme.text }]}>
+        <TamaguiView
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: Spacing.lg,
+            marginBottom: Spacing.md,
+          }}
+        >
+          <TamaguiText fontSize="$5" fontWeight="600" color="$text">
             Recent Activity
-          </Text>
-          <Text style={[Typography.caption, { color: theme.textSecondary }]}>
+          </TamaguiText>
+          <TamaguiText fontSize="$2" lineHeight="$4" color="$textSecondary">
             Last {recentVisits.length} visits
-          </Text>
-        </View>
+          </TamaguiText>
+        </TamaguiView>
 
         {recentVisits.length === 0 ? (
           <Card style={{ alignItems: 'center', padding: Spacing.xl }}>
@@ -283,18 +311,15 @@ export default function EmployeeDetail() {
               color={theme.textSecondary}
               style={{ opacity: 0.3 }}
             />
-            <Text
-              style={[
-                Typography.body,
-                {
-                  color: theme.textSecondary,
-                  marginTop: Spacing.md,
-                  textAlign: 'center',
-                },
-              ]}
+            <TamaguiText
+              fontSize="$4"
+              lineHeight="$6"
+              color="$textSecondary"
+              marginTop="$md"
+              textAlign="center"
             >
               No recent activity
-            </Text>
+            </TamaguiText>
           </Card>
         ) : (
           recentVisits.map(visit => {
@@ -310,81 +335,86 @@ export default function EmployeeDetail() {
                 variant="outlined"
                 style={{ marginBottom: Spacing.sm }}
               >
-                <View style={styles.visitRow}>
-                  <View
-                    style={[
-                      styles.visitIcon,
-                      {
-                        backgroundColor: isCompleted
-                          ? theme.success + '15'
-                          : theme.warning + '15',
-                      },
-                    ]}
+                <TamaguiView
+                  style={{ flexDirection: 'row', alignItems: 'center' }}
+                >
+                  <TamaguiView
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: BorderRadius.md,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: isCompleted
+                        ? theme.successBg
+                        : theme.warningBg,
+                    }}
                   >
                     <Ionicons
                       name={isCompleted ? 'checkmark-circle' : 'hourglass'}
                       size={24}
                       color={isCompleted ? theme.success : theme.warning}
                     />
-                  </View>
-                  <View style={styles.visitInfo}>
-                    <Text
-                      style={[
-                        Typography.body,
-                        { color: theme.text, fontWeight: '600' },
-                      ]}
+                  </TamaguiView>
+                  <TamaguiView style={{ flex: 1, marginLeft: Spacing.md }}>
+                    <TamaguiText
+                      fontSize="$4"
+                      lineHeight="$6"
+                      color="$text"
+                      fontWeight="600"
                     >
                       Visit to {doctor?.name || 'Unknown Doctor'}
-                    </Text>
-                    <View style={styles.visitMeta}>
+                    </TamaguiText>
+                    <TamaguiView
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: Spacing.xs,
+                      }}
+                    >
                       <Ionicons
                         name="time-outline"
                         size={14}
                         color={theme.icon}
                       />
-                      <Text
-                        style={[
-                          Typography.caption,
-                          {
-                            color: theme.textSecondary,
-                            marginLeft: Spacing.xs,
-                          },
-                        ]}
+                      <TamaguiText
+                        fontSize="$2"
+                        lineHeight="$4"
+                        color="$textSecondary"
+                        marginLeft="$xs"
                       >
                         {new Date(visit.checkInTime).toLocaleString()}
-                      </Text>
-                    </View>
+                      </TamaguiText>
+                    </TamaguiView>
                     {visit.notes && (
-                      <Text
-                        style={[
-                          Typography.bodySmall,
-                          { color: theme.textSecondary, marginTop: Spacing.xs },
-                        ]}
+                      <TamaguiText
+                        fontSize="$3"
+                        lineHeight="$5"
+                        color="$textSecondary"
+                        marginTop="$xs"
                       >
                         {visit.notes}
-                      </Text>
+                      </TamaguiText>
                     )}
-                  </View>
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      {
-                        backgroundColor: isCompleted
-                          ? theme.success
-                          : theme.warning,
-                      },
-                    ]}
+                  </TamaguiView>
+                  <TamaguiView
+                    style={{
+                      paddingHorizontal: Spacing.sm,
+                      paddingVertical: Spacing.xs,
+                      borderRadius: BorderRadius.sm,
+                      backgroundColor: isCompleted ? '$success' : '$warning',
+                    }}
                   >
-                    <Text
-                      style={[
-                        Typography.caption,
-                        { color: '#FFFFFF', fontWeight: '600' },
-                      ]}
+                    <TamaguiText
+                      fontSize="$2"
+                      lineHeight="$4"
+                      color="#FFFFFF"
+                      fontWeight="600"
                     >
                       {isCompleted ? 'Done' : 'Active'}
-                    </Text>
-                  </View>
-                </View>
+                    </TamaguiText>
+                  </TamaguiView>
+                </TamaguiView>
               </Card>
             );
           })
@@ -393,115 +423,3 @@ export default function EmployeeDetail() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: Spacing.lg,
-    paddingBottom: Spacing.xxl,
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: BorderRadius.full,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholder: {
-    width: 44,
-  },
-  profileCard: {
-    padding: Spacing.lg,
-  },
-  profileHeader: {
-    alignItems: 'center',
-  },
-  avatarLarge: {
-    width: 96,
-    height: 96,
-    borderRadius: BorderRadius.xl,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  profileInfo: {
-    alignItems: 'center',
-  },
-  statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: Spacing.md,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.full,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    marginTop: Spacing.lg,
-    gap: Spacing.sm,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.md,
-  },
-  doctorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  doctorIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  doctorInfo: {
-    flex: 1,
-    marginLeft: Spacing.md,
-  },
-  visitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  visitIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: BorderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  visitInfo: {
-    flex: 1,
-    marginLeft: Spacing.md,
-  },
-  visitMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: Spacing.xs,
-  },
-  statusBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-  },
-});

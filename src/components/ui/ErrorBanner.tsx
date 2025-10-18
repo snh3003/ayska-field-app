@@ -1,10 +1,19 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export const ErrorBanner: React.FC<{ message: string }> = ({ message }) => (
-  <View style={{ padding: 12, backgroundColor: '#fee2e2', borderRadius: 8 }}>
-    <Text style={{ color: '#991b1b' }}>{message}</Text>
-  </View>
-);
+export const ErrorBanner: React.FC<{ message: string }> = ({ message }) => {
+  const scheme = useColorScheme() ?? 'light';
+  const theme = Colors[scheme];
 
-
+  return (
+    <TamaguiView
+      padding="$sm"
+      backgroundColor={theme.errorBg}
+      borderRadius="$md"
+    >
+      <TamaguiText color="$error">{message}</TamaguiText>
+    </TamaguiView>
+  );
+};

@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from 'react';
+import { ScrollView } from 'react-native';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
 import { Card } from '../../components/ui/Card';
 import { StatsCard } from '../../components/ui/StatsCard';
 import { localDataService } from '../../services/LocalDataService';
@@ -54,20 +55,18 @@ export default function Reports() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.background }}>
-      <View style={{ padding: 16 }}>
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: '700',
-            color: theme.text,
-            marginBottom: 20,
-          }}
+      <TamaguiView padding="$md">
+        <TamaguiText
+          fontSize="$6"
+          fontWeight="700"
+          color="$text"
+          marginBottom="$lg"
         >
           Reports & Analytics
-        </Text>
+        </TamaguiText>
 
         {/* Summary Stats */}
-        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+        <TamaguiView flexDirection="row" marginBottom="$lg" gap="$md">
           <StatsCard
             title="Total Visits"
             value={reportData.totalVisits}
@@ -78,8 +77,8 @@ export default function Reports() {
             value={reportData.completedVisits}
             color="success"
           />
-        </View>
-        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+        </TamaguiView>
+        <TamaguiView flexDirection="row" marginBottom="$lg" gap="$md">
           <StatsCard
             title="Active Visits"
             value={reportData.activeVisits}
@@ -90,73 +89,57 @@ export default function Reports() {
             value={reportData.activeEmployees}
             color="secondary"
           />
-        </View>
+        </TamaguiView>
 
         {/* Top Performers */}
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: '600',
-            color: theme.text,
-            marginBottom: 12,
-          }}
+        <TamaguiText
+          fontSize="$5"
+          fontWeight="600"
+          color="$text"
+          marginBottom="$md"
         >
           Top Performers
-        </Text>
+        </TamaguiText>
         {topPerformers.length === 0 ? (
           <Card>
-            <Text style={{ color: theme.text, textAlign: 'center' }}>
+            <TamaguiText color="$text" textAlign="center">
               No performance data available
-            </Text>
+            </TamaguiText>
           </Card>
         ) : (
           topPerformers.map((employee, index) => (
             <Card key={employee.id} style={{ marginBottom: 12 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
+              <TamaguiView
+                flexDirection="row"
+                justifyContent="space-between"
+                alignItems="center"
               >
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: '600',
-                      color: theme.text,
-                      marginBottom: 4,
-                    }}
+                <TamaguiView flex={1}>
+                  <TamaguiText
+                    fontSize="$4"
+                    fontWeight="600"
+                    color="$text"
+                    marginBottom="$xs"
                   >
                     #{index + 1} {employee.name}
-                  </Text>
-                  <Text
-                    style={{ color: theme.text, opacity: 0.7, fontSize: 14 }}
-                  >
+                  </TamaguiText>
+                  <TamaguiText color="$text" opacity={0.7} fontSize="$3">
                     {employee.email}
-                  </Text>
-                </View>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontWeight: '700',
-                      color: theme.primary,
-                    }}
-                  >
+                  </TamaguiText>
+                </TamaguiView>
+                <TamaguiView alignItems="flex-end">
+                  <TamaguiText fontSize="$5" fontWeight="700" color="$primary">
                     {employee.totalVisits}
-                  </Text>
-                  <Text
-                    style={{ color: theme.text, opacity: 0.6, fontSize: 12 }}
-                  >
+                  </TamaguiText>
+                  <TamaguiText color="$text" opacity={0.6} fontSize="$2">
                     visits
-                  </Text>
-                </View>
-              </View>
+                  </TamaguiText>
+                </TamaguiView>
+              </TamaguiView>
             </Card>
           ))
         )}
-      </View>
+      </TamaguiView>
     </ScrollView>
   );
 }

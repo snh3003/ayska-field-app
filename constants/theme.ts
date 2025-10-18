@@ -22,7 +22,7 @@ export const Colors = {
     background: lightBg,
     tint: primaryBlue,
     icon: '#64748B',
-    tabIconDefault: '#94A3B8',
+    tabIconDefault: '#5A6B7D',
     tabIconSelected: primaryBlue,
     primary: primaryBlue,
     primaryRed: primaryRed,
@@ -36,6 +36,15 @@ export const Colors = {
     error: primaryRed,
     info: '#0891B2',
     overlay: 'rgba(15, 23, 42, 0.5)',
+    // Semantic background colors for icons and surfaces
+    primaryBg: 'rgba(30, 64, 175, 0.15)',
+    secondaryBg: 'rgba(8, 145, 178, 0.15)',
+    successBg: 'rgba(5, 150, 105, 0.15)',
+    warningBg: 'rgba(217, 119, 6, 0.15)',
+    infoBg: 'rgba(8, 145, 178, 0.15)',
+    errorBg: 'rgba(185, 28, 28, 0.15)',
+    iconBg: 'rgba(90, 107, 125, 0.15)',
+    avatarBg: '#E0E7FF',
   },
   dark: {
     text: textLight,
@@ -43,7 +52,7 @@ export const Colors = {
     background: darkBg,
     tint: '#60A5FA', // Lighter blue for dark mode
     icon: '#94A3B8',
-    tabIconDefault: '#64748B',
+    tabIconDefault: '#A1AEC0',
     tabIconSelected: '#60A5FA',
     primary: '#60A5FA', // Lighter blue for visibility
     primaryRed: '#EF4444', // Lighter red for visibility
@@ -57,6 +66,15 @@ export const Colors = {
     error: '#EF4444',
     info: '#06B6D4',
     overlay: 'rgba(0, 0, 0, 0.7)',
+    // Semantic background colors for icons and surfaces
+    primaryBg: 'rgba(96, 165, 250, 0.20)',
+    secondaryBg: 'rgba(6, 182, 212, 0.20)',
+    successBg: 'rgba(16, 185, 129, 0.20)',
+    warningBg: 'rgba(245, 158, 11, 0.20)',
+    infoBg: 'rgba(6, 182, 212, 0.20)',
+    errorBg: 'rgba(239, 68, 68, 0.20)',
+    iconBg: 'rgba(161, 174, 192, 0.20)',
+    avatarBg: '#334155',
   },
 };
 
@@ -80,7 +98,8 @@ export const Fonts = Platform.select({
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
+    rounded:
+      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });

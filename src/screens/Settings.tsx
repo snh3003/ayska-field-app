@@ -1,15 +1,9 @@
-import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import {
-  Alert,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Platform, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -45,6 +39,7 @@ export default function Settings() {
       title: 'Notifications',
       icon: 'notifications-outline',
       iconColor: theme.primary,
+      iconBgColor: theme.primaryBg,
       onPress: () =>
         Alert.alert('Notifications', 'Notification settings coming soon!'),
     },
@@ -53,6 +48,7 @@ export default function Settings() {
       title: 'Privacy & Security',
       icon: 'shield-checkmark-outline',
       iconColor: theme.success,
+      iconBgColor: theme.successBg,
       onPress: () => Alert.alert('Privacy', 'Privacy settings coming soon!'),
     },
     {
@@ -60,6 +56,7 @@ export default function Settings() {
       title: 'Help & Support',
       icon: 'help-circle-outline',
       iconColor: theme.info,
+      iconBgColor: theme.infoBg,
       onPress: () => Alert.alert('Help', 'Help center coming soon!'),
     },
     {
@@ -67,137 +64,147 @@ export default function Settings() {
       title: 'About',
       icon: 'information-circle-outline',
       iconColor: theme.secondary,
+      iconBgColor: theme.secondaryBg,
       onPress: () => Alert.alert('About', 'Field Sales Tracker v1.0.0'),
     },
   ];
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView
-        style={styles.scrollView}
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ padding: Spacing.lg }}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={[Typography.h3, { color: theme.text }]}>Settings</Text>
+        <TamaguiView
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom="$lg"
+        >
+          <TamaguiText fontSize="$6" fontWeight="700" color="$text">
+            Settings
+          </TamaguiText>
           <ThemeToggle />
-        </View>
+        </TamaguiView>
 
         {/* Logo & Brand */}
-        <View style={styles.brandSection}>
+        <TamaguiView alignItems="center" marginBottom="$xl" marginTop="$md">
           <Logo size="responsive" matchCardWidth={true} />
-        </View>
+        </TamaguiView>
 
         {/* Profile Card */}
-        <Card variant="elevated" style={styles.profileCard}>
-          <View style={styles.profileHeader}>
-            <View
-              style={[
-                styles.avatarLarge,
-                { backgroundColor: theme.primary + '15' },
-              ]}
+        <Card variant="elevated" style={{ padding: Spacing.lg }}>
+          <TamaguiView alignItems="center">
+            <TamaguiView
+              width={96}
+              height={96}
+              borderRadius="$xl"
+              justifyContent="center"
+              alignItems="center"
+              marginBottom="$md"
+              backgroundColor={theme.avatarBg}
             >
               <Ionicons name="person" size={48} color={theme.primary} />
-            </View>
-            <View style={styles.profileInfo}>
-              <Text style={[Typography.h3, { color: theme.text }]}>
+            </TamaguiView>
+            <TamaguiView alignItems="center">
+              <TamaguiText fontSize="$6" fontWeight="700" color="$text">
                 {name || 'User'}
-              </Text>
-              <Text
-                style={[
-                  Typography.body,
-                  { color: theme.textSecondary, marginTop: Spacing.xs },
-                ]}
+              </TamaguiText>
+              <TamaguiText
+                fontSize="$4"
+                lineHeight="$6"
+                color="$textSecondary"
+                marginTop="$xs"
               >
                 {name}
-              </Text>
-              <View
-                style={[
-                  styles.roleBadge,
-                  { backgroundColor: theme.primary + '15' },
-                ]}
+              </TamaguiText>
+              <TamaguiView
+                marginTop="$md"
+                paddingHorizontal="$md"
+                paddingVertical="$sm"
+                borderRadius="$full"
+                backgroundColor={theme.primaryBg}
               >
-                <Text
-                  style={[
-                    Typography.caption,
-                    { color: theme.primary, fontWeight: '600' },
-                  ]}
+                <TamaguiText
+                  fontSize="$2"
+                  lineHeight="$4"
+                  color="$primary"
+                  fontWeight="600"
                 >
                   {role === 'admin' ? 'Administrator' : 'Employee'}
-                </Text>
-              </View>
-            </View>
-          </View>
+                </TamaguiText>
+              </TamaguiView>
+            </TamaguiView>
+          </TamaguiView>
         </Card>
 
         {/* Appearance Section */}
-        <Text
-          style={[
-            Typography.h4,
-            {
-              color: theme.text,
-              marginTop: Spacing.lg,
-              marginBottom: Spacing.md,
-            },
-          ]}
+        <TamaguiText
+          fontSize="$5"
+          fontWeight="600"
+          color="$text"
+          marginTop="$lg"
+          marginBottom="$md"
         >
           Appearance
-        </Text>
+        </TamaguiText>
 
         <Card variant="elevated">
-          <View style={styles.settingRow}>
-            <View style={styles.settingLeft}>
-              <View
-                style={[
-                  styles.settingIcon,
-                  { backgroundColor: theme.warning + '15' },
-                ]}
+          <TamaguiView
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <TamaguiView flexDirection="row" alignItems="center" flex={1}>
+              <TamaguiView
+                width={48}
+                height={48}
+                borderRadius="$md"
+                justifyContent="center"
+                alignItems="center"
+                backgroundColor={theme.warningBg}
               >
                 <Ionicons
                   name="color-palette-outline"
                   size={24}
                   color={theme.warning}
                 />
-              </View>
-              <View style={styles.settingInfo}>
-                <Text
-                  style={[
-                    Typography.body,
-                    { color: theme.text, fontWeight: '600' },
-                  ]}
+              </TamaguiView>
+              <TamaguiView marginLeft="$md" flex={1}>
+                <TamaguiText
+                  fontSize="$4"
+                  lineHeight="$6"
+                  color="$text"
+                  fontWeight="600"
                 >
                   Theme
-                </Text>
-                <Text
-                  style={[
-                    Typography.caption,
-                    { color: theme.textSecondary, marginTop: Spacing.xs },
-                  ]}
+                </TamaguiText>
+                <TamaguiText
+                  fontSize="$2"
+                  lineHeight="$4"
+                  color="$textSecondary"
+                  marginTop="$xs"
                 >
                   {scheme === 'dark' ? 'Dark Mode' : 'Light Mode'}
-                </Text>
-              </View>
-            </View>
+                </TamaguiText>
+              </TamaguiView>
+            </TamaguiView>
             <ThemeToggle />
-          </View>
+          </TamaguiView>
         </Card>
 
         {/* General Settings */}
-        <Text
-          style={[
-            Typography.h4,
-            {
-              color: theme.text,
-              marginTop: Spacing.lg,
-              marginBottom: Spacing.md,
-            },
-          ]}
+        <TamaguiText
+          fontSize="$5"
+          fontWeight="600"
+          color="$text"
+          marginTop="$lg"
+          marginBottom="$md"
         >
           General
-        </Text>
+        </TamaguiText>
 
         {settingsItems.map((item, index) => (
           <Card
@@ -208,33 +215,39 @@ export default function Settings() {
               marginBottom: index < settingsItems.length - 1 ? Spacing.sm : 0,
             }}
           >
-            <View style={styles.settingRow}>
-              <View style={styles.settingLeft}>
-                <View
-                  style={[
-                    styles.settingIcon,
-                    { backgroundColor: item.iconColor + '15' },
-                  ]}
+            <TamaguiView
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <TamaguiView flexDirection="row" alignItems="center" flex={1}>
+                <TamaguiView
+                  width={48}
+                  height={48}
+                  borderRadius="$md"
+                  justifyContent="center"
+                  alignItems="center"
+                  backgroundColor={item.iconBgColor}
                 >
                   <Ionicons
                     name={item.icon as any}
                     size={24}
                     color={item.iconColor}
                   />
-                </View>
-                <View style={styles.settingInfo}>
-                  <Text
-                    style={[
-                      Typography.body,
-                      { color: theme.text, fontWeight: '600' },
-                    ]}
+                </TamaguiView>
+                <TamaguiView marginLeft="$md" flex={1}>
+                  <TamaguiText
+                    fontSize="$4"
+                    lineHeight="$6"
+                    color="$text"
+                    fontWeight="600"
                   >
                     {item.title}
-                  </Text>
-                </View>
-              </View>
+                  </TamaguiText>
+                </TamaguiView>
+              </TamaguiView>
               <Ionicons name="chevron-forward" size={20} color={theme.icon} />
-            </View>
+            </TamaguiView>
           </Card>
         ))}
 
@@ -244,7 +257,7 @@ export default function Settings() {
           onPress={handleLogout}
           style={{
             marginTop: Spacing.xl,
-            backgroundColor: theme.error + '10',
+            backgroundColor: '$error',
             ...(Platform.OS === 'android'
               ? {
                   elevation: 0,
@@ -253,117 +266,52 @@ export default function Settings() {
               : {}),
           }}
         >
-          <View style={styles.settingRow}>
-            <View style={styles.settingLeft}>
-              <View
-                style={[
-                  styles.settingIcon,
-                  { backgroundColor: theme.error + '15' },
-                ]}
+          <TamaguiView
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <TamaguiView flexDirection="row" alignItems="center" flex={1}>
+              <TamaguiView
+                width={48}
+                height={48}
+                borderRadius="$md"
+                justifyContent="center"
+                alignItems="center"
+                backgroundColor={theme.errorBg}
               >
                 <Ionicons
                   name="log-out-outline"
                   size={24}
                   color={theme.error}
                 />
-              </View>
-              <View style={styles.settingInfo}>
-                <Text
-                  style={[
-                    Typography.body,
-                    { color: theme.error, fontWeight: '600' },
-                  ]}
+              </TamaguiView>
+              <TamaguiView marginLeft="$md" flex={1}>
+                <TamaguiText
+                  fontSize="$4"
+                  lineHeight="$6"
+                  color="$error"
+                  fontWeight="600"
                 >
                   Logout
-                </Text>
-              </View>
-            </View>
+                </TamaguiText>
+              </TamaguiView>
+            </TamaguiView>
             <Ionicons name="chevron-forward" size={20} color={theme.error} />
-          </View>
+          </TamaguiView>
         </Card>
 
         {/* App Version */}
-        <Text
-          style={[
-            Typography.caption,
-            {
-              color: theme.textSecondary,
-              textAlign: 'center',
-              marginTop: Spacing.xl,
-            },
-          ]}
+        <TamaguiText
+          fontSize="$2"
+          lineHeight="$4"
+          color="$textSecondary"
+          textAlign="center"
+          marginTop="$xl"
         >
           Version 1.0.0
-        </Text>
+        </TamaguiText>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: Spacing.lg,
-    paddingBottom: Spacing.xxl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-  },
-  brandSection: {
-    alignItems: 'center',
-    marginBottom: Spacing.xl,
-    marginTop: Spacing.md,
-  },
-  profileCard: {
-    padding: Spacing.lg,
-  },
-  profileHeader: {
-    alignItems: 'center',
-  },
-  avatarLarge: {
-    width: 96,
-    height: 96,
-    borderRadius: BorderRadius.xl,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  profileInfo: {
-    alignItems: 'center',
-  },
-  roleBadge: {
-    marginTop: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.full,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  settingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  settingIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: BorderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  settingInfo: {
-    marginLeft: Spacing.md,
-    flex: 1,
-  },
-});

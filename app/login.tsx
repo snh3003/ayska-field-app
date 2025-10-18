@@ -1,16 +1,14 @@
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
-  StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -156,41 +154,55 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+        style={{ flex: 1 }}
       >
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            padding: Spacing.xl,
+          }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
+          <TamaguiView
+            flexDirection="row"
+            justifyContent="flex-end"
+            alignItems="center"
+            marginBottom="$md"
+          >
             <ThemeToggle />
-          </View>
+          </TamaguiView>
 
-          <Logo size="responsive" matchCardWidth={true} style={styles.logo} />
+          <Logo
+            size="responsive"
+            matchCardWidth={true}
+            style={{
+              marginBottom: Spacing.xl,
+              marginTop: Spacing.lg,
+            }}
+          />
 
-          <Card variant="elevated" style={styles.formCard}>
-            <Text
-              style={[
-                Typography.h3,
-                { color: theme.text, marginBottom: Spacing.xs },
-              ]}
+          <Card variant="elevated" style={{ marginBottom: Spacing.xl }}>
+            <TamaguiText
+              fontSize="$6"
+              fontWeight="700"
+              color={theme.text}
+              marginBottom="$xs"
             >
               Welcome Back
-            </Text>
-            <Text
-              style={[
-                Typography.body,
-                { color: theme.textSecondary, marginBottom: Spacing.xl },
-              ]}
+            </TamaguiText>
+            <TamaguiText
+              fontSize="$4"
+              lineHeight="$6"
+              color={theme.textSecondary}
+              marginBottom="$xl"
             >
               Sign in to continue
-            </Text>
+            </TamaguiText>
 
             <Input
               placeholder="Email"
@@ -234,49 +246,47 @@ export default function LoginScreen() {
             />
 
             {!!loginError && (
-              <Text
-                style={[
-                  Typography.bodySmall,
-                  {
-                    color: theme.error,
-                    marginTop: Spacing.md,
-                    textAlign: 'center',
-                  },
-                ]}
+              <TamaguiText
+                fontSize="$3"
+                lineHeight="$5"
+                color={theme.error}
+                marginTop="$md"
+                textAlign="center"
               >
                 {loginError}
-              </Text>
+              </TamaguiText>
             )}
           </Card>
 
-          <View style={styles.demoCredentials}>
-            <Text
-              style={[
-                Typography.caption,
-                {
-                  color: theme.textSecondary,
-                  textAlign: 'center',
-                  marginBottom: Spacing.sm,
-                },
-              ]}
+          <TamaguiView style={{ marginTop: Spacing.lg }}>
+            <TamaguiText
+              fontSize="$2"
+              lineHeight="$4"
+              color={theme.textSecondary}
+              textAlign="center"
+              marginBottom="$sm"
             >
               Demo Credentials
-            </Text>
+            </TamaguiText>
             <TouchableOpacity
               onPress={() => {
                 setValues({ email: 'admin@field.co', password: 'admin123' });
                 performLogin({ email: 'admin@field.co', password: 'admin123' });
               }}
-              style={styles.demoButton}
+              style={{
+                paddingVertical: Spacing.sm,
+                paddingHorizontal: Spacing.md,
+                marginBottom: Spacing.xs,
+              }}
             >
-              <Text
-                style={[
-                  Typography.caption,
-                  { color: theme.primary, textAlign: 'center' },
-                ]}
+              <TamaguiText
+                fontSize="$2"
+                lineHeight="$4"
+                color={theme.primary}
+                textAlign="center"
               >
                 Admin: admin@field.co / admin123
-              </Text>
+              </TamaguiText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -286,55 +296,24 @@ export default function LoginScreen() {
                   password: 'password123',
                 });
               }}
-              style={styles.demoButton}
+              style={{
+                paddingVertical: Spacing.sm,
+                paddingHorizontal: Spacing.md,
+                marginBottom: Spacing.xs,
+              }}
             >
-              <Text
-                style={[
-                  Typography.caption,
-                  { color: theme.primary, textAlign: 'center' },
-                ]}
+              <TamaguiText
+                fontSize="$2"
+                lineHeight="$4"
+                color={theme.primary}
+                textAlign="center"
               >
                 Employee: alice@field.co / password123
-              </Text>
+              </TamaguiText>
             </TouchableOpacity>
-          </View>
+          </TamaguiView>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: Spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  logo: {
-    marginBottom: Spacing.xl,
-    marginTop: Spacing.lg,
-  },
-  formCard: {
-    marginBottom: Spacing.xl,
-  },
-  demoCredentials: {
-    marginTop: Spacing.lg,
-  },
-  demoButton: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.xs,
-  },
-});

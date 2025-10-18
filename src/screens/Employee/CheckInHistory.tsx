@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from 'react';
+import { ScrollView } from 'react-native';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Card } from '../../components/ui/Card';
 import { localDataService } from '../../services/LocalDataService';
@@ -25,115 +26,86 @@ export default function CheckInHistory() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.background }}>
-      <View style={{ padding: 16 }}>
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: '700',
-            color: theme.text,
-            marginBottom: 20,
-          }}
+      <TamaguiView padding="$md">
+        <TamaguiText
+          fontSize="$6"
+          fontWeight="700"
+          color="$text"
+          marginBottom="$lg"
         >
           Visit History
-        </Text>
+        </TamaguiText>
 
         {visits.length === 0 ? (
           <Card>
-            <Text style={{ color: theme.text, textAlign: 'center' }}>
+            <TamaguiText color="$text" textAlign="center">
               No visits recorded yet
-            </Text>
+            </TamaguiText>
           </Card>
         ) : (
           visits.map(visit => {
             const doctor = localDataService.getById('doctors', visit.doctorId);
             return (
               <Card key={visit.id} style={{ marginBottom: 12 }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                  }}
+                <TamaguiView
+                  flexDirection="row"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
                 >
-                  <View style={{ flex: 1 }}>
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        fontWeight: '600',
-                        color: theme.text,
-                        marginBottom: 4,
-                      }}
+                  <TamaguiView flex={1}>
+                    <TamaguiText
+                      fontSize="$5"
+                      fontWeight="600"
+                      color="$text"
+                      marginBottom="$xs"
                     >
                       {(doctor as any)?.name || 'Unknown Doctor'}
-                    </Text>
-                    <Text
-                      style={{
-                        color: theme.text,
-                        opacity: 0.7,
-                        marginBottom: 8,
-                      }}
-                    >
+                    </TamaguiText>
+                    <TamaguiText color="$text" opacity={0.7} marginBottom="$sm">
                       {(doctor as any)?.specialization || 'Unknown Specialty'}
-                    </Text>
-                    <Text
-                      style={{ color: theme.text, opacity: 0.6, fontSize: 14 }}
-                    >
+                    </TamaguiText>
+                    <TamaguiText color="$text" opacity={0.6} fontSize="$3">
                       Check-in: {new Date(visit.checkInTime).toLocaleString()}
-                    </Text>
+                    </TamaguiText>
                     {visit.checkOutTime && (
-                      <Text
-                        style={{
-                          color: theme.text,
-                          opacity: 0.6,
-                          fontSize: 14,
-                        }}
-                      >
+                      <TamaguiText color="$text" opacity={0.6} fontSize="$3">
                         Check-out:{' '}
                         {new Date(visit.checkOutTime).toLocaleString()}
-                      </Text>
+                      </TamaguiText>
                     )}
                     {visit.notes && (
-                      <Text
-                        style={{
-                          color: theme.text,
-                          opacity: 0.8,
-                          fontSize: 14,
-                          marginTop: 8,
-                          fontStyle: 'italic',
-                        }}
+                      <TamaguiText
+                        color="$text"
+                        opacity={0.8}
+                        fontSize="$3"
+                        marginTop="$sm"
+                        fontStyle="italic"
                       >
                         &ldquo;{visit.notes}&rdquo;
-                      </Text>
+                      </TamaguiText>
                     )}
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor:
-                        visit.status === 'completed' ? '#10B981' : '#F59E0B',
-                      paddingHorizontal: 8,
-                      paddingVertical: 4,
-                      borderRadius: 12,
-                      marginLeft: 8,
-                    }}
+                  </TamaguiView>
+                  <TamaguiView
+                    backgroundColor={
+                      visit.status === 'completed' ? '$success' : '$warning'
+                    }
+                    paddingHorizontal="$sm"
+                    paddingVertical="$xs"
+                    borderRadius="$md"
+                    marginLeft="$sm"
                   >
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontSize: 12,
-                        fontWeight: '600',
-                      }}
-                    >
+                    <TamaguiText color="white" fontSize="$2" fontWeight="600">
                       {visit.status === 'completed'
                         ? 'Completed'
                         : 'In Progress'}
-                    </Text>
-                  </View>
-                </View>
+                    </TamaguiText>
+                  </TamaguiView>
+                </TamaguiView>
               </Card>
             );
           })
         )}
-      </View>
+      </TamaguiView>
     </ScrollView>
   );
 }

@@ -8,6 +8,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '../../../contexts/ThemeContext';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import { hapticFeedback } from '../../../utils/haptics';
 import { View as TamaguiView } from '@tamagui/core';
@@ -17,6 +19,8 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 export function ThemeToggle() {
   const { colorScheme, toggleTheme } = useTheme();
   const isDark = colorScheme === 'dark';
+  const scheme = useColorScheme() ?? 'light';
+  const theme = Colors[scheme];
 
   const scale = useSharedValue(1);
   const rotate = useSharedValue(0);
@@ -82,7 +86,7 @@ export function ThemeToggle() {
           <Ionicons
             name={isDark ? 'moon' : 'sunny'}
             size={20}
-            color={isDark ? '#FCD34D' : '#F59E0B'}
+            color={theme.warning}
           />
         </TamaguiView>
       </Animated.View>

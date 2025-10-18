@@ -1,23 +1,24 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import type { Doctor } from '../../types';
 
 export const DoctorCard: React.FC<{ doctor: Doctor }> = ({ doctor }) => {
   return (
-    <View
-      style={{
-        padding: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        marginBottom: 8,
-      }}
+    <TamaguiView
+      padding="$sm"
+      borderRadius="$md"
+      borderWidth={1}
+      borderColor="$border"
+      marginBottom="$sm"
+      backgroundColor="$card"
     >
-      <Text style={{ fontWeight: '600' }}>{doctor.name}</Text>
-      <Text>{doctor.specialization}</Text>
-      <Text>
+      <TamaguiText fontWeight="600" color="$text">
+        {doctor.name}
+      </TamaguiText>
+      <TamaguiText color="$text">{doctor.specialization}</TamaguiText>
+      <TamaguiText color="$text">
         Loc: {doctor.location.lat}, {doctor.location.lng}
-      </Text>
-    </View>
+      </TamaguiText>
+    </TamaguiView>
   );
 };
