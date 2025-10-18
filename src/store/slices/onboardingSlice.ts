@@ -23,7 +23,6 @@ export const onboardEmployee = createAsyncThunk<
     name: string;
     email: string;
     age: number;
-    dateOfBirth: string;
     areaOfOperation: string;
     adminId: string;
   },
@@ -36,7 +35,6 @@ export const onboardEmployee = createAsyncThunk<
     payload.name,
     payload.email,
     payload.age,
-    payload.dateOfBirth,
     payload.areaOfOperation,
     payload.adminId
   );
@@ -47,7 +45,6 @@ export const onboardDoctor = createAsyncThunk<
   {
     name: string;
     age: number;
-    dateOfBirth: string;
     specialization: string;
     location: { lat: number; lng: number };
     phone: string;
@@ -61,7 +58,6 @@ export const onboardDoctor = createAsyncThunk<
   return service.onboardDoctor(
     payload.name,
     payload.age,
-    payload.dateOfBirth,
     payload.specialization,
     payload.location,
     payload.phone,

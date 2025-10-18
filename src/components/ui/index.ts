@@ -12,3 +12,5 @@ export { ThemedText } from './ThemedText';
 export { ThemedView } from './ThemedView';
 export { HapticTab } from './HapticTab';
 export { Dropdown } from './Dropdown';
+export { DatePicker } from './DatePicker';
+export { PickerWheel } from './PickerWheel';

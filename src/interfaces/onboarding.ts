@@ -114,14 +114,12 @@ export interface IOnboardingService {
     _name: string,
     _email: string,
     _age: number,
-    _dateOfBirth: string,
     _areaOfOperation: string,
     _adminId: string
   ): Promise<Employee>;
   onboardDoctor(
     _name: string,
     _age: number,
-    _dateOfBirth: string,
     _specialization: string,
     _location: { lat: number; lng: number },
     _phone: string,

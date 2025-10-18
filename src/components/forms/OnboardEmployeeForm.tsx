@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { View as TamaguiView } from '@tamagui/core';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +12,7 @@ import { Input } from '../ui/Input';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '../../../constants/theme';
+import { useToast } from '../../../contexts/ToastContext';
 // import { hapticFeedback } from '../../utils/haptics';
 
 interface OnboardEmployeeFormProps {
@@ -30,7 +31,6 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
     name: '',
     email: '',
     age: '',
-    dateOfBirth: '',
     areaOfOperation: '',
   });
 
@@ -44,7 +44,6 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
       CommonValidators.email,
     ],
     age: [CommonValidators.required('Age is required'), CommonValidators.age],
-    dateOfBirth: [CommonValidators.required('Date of birth is required')],
     areaOfOperation: [CommonValidators.areaOfOperation],
   };
 
@@ -74,11 +73,23 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
       name: true,
       email: true,
       age: true,
-      dateOfBirth: true,
       areaOfOperation: true,
     });
     return Object.keys(newErrors).length === 0;
   };
+
+  const isFormValid = useMemo(() => {
+    // Check all required fields are filled
+    const allFieldsFilled = Object.keys(validationRules).every(
+      field =>
+        formData[field as keyof typeof formData]?.toString().trim() !== ''
+    );
+    // Check no validation errors exist
+    const noErrors = Object.values(errors).every(err => !err);
+    return allFieldsFilled && noErrors;
+  }, [formData, errors, validationRules]);
+
+  const toast = useToast();
 
   const handleSubmit = async () => {
     // hapticFeedback.light();
@@ -97,16 +108,24 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
           name: formData.name,
           email: formData.email,
           age: parseInt(formData.age),
-          dateOfBirth: formData.dateOfBirth,
           areaOfOperation: formData.areaOfOperation,
           adminId: 'a1', // Default admin ID
         })
       ).unwrap();
 
-      Alert.alert(
-        'Success',
-        'Employee onboarded successfully! Check console for mock email.'
-      );
+      // Show success toast
+      toast.success(`New Employee ${formData.name} created successfully`);
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        age: '',
+        areaOfOperation: '',
+      });
+      setErrors({});
+      setTouched({});
+
       onSuccess?.();
     } catch {
       Alert.alert('Error', 'Failed to onboard employee');
@@ -162,22 +181,6 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
       />
 
       <Input
-        label="Date of Birth"
-        value={formData.dateOfBirth}
-        onChangeText={value => handleFieldChange('dateOfBirth', value)}
-        onBlur={() => handleFieldBlur('dateOfBirth')}
-        placeholder="YYYY-MM-DD"
-        icon={
-          <Ionicons
-            name="calendar-outline"
-            size={20}
-            color={theme.textSecondary}
-          />
-        }
-        error={touched.dateOfBirth ? errors.dateOfBirth || '' : ''}
-      />
-
-      <Input
         label="Area of Operation"
         value={formData.areaOfOperation}
         onChangeText={value => handleFieldChange('areaOfOperation', value)}
@@ -197,6 +200,7 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
         title={loading ? 'Onboarding...' : 'Onboard Employee'}
         onPress={handleSubmit}
         loading={loading}
+        disabled={!isFormValid}
         accessibilityHint="Double tap to onboard the new employee"
       />
     </TamaguiView>

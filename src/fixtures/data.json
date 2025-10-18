@@ -15,7 +15,6 @@
       "name": "Alice",
       "role": "employee",
       "age": 28,
-      "dateOfBirth": "1995-06-15",
       "areaOfOperation": "North Delhi",
       "isFirstLogin": false,
       "createdAt": "2024-01-15T10:00:00Z",
@@ -28,7 +27,6 @@
       "name": "Bob",
       "role": "employee",
       "age": 32,
-      "dateOfBirth": "1991-03-22",
       "areaOfOperation": "South Delhi",
       "isFirstLogin": false,
       "createdAt": "2024-01-15T10:30:00Z",
@@ -43,7 +41,6 @@
       "location": { "lat": 28.6139, "lng": 77.209 },
       "phone": "+91-98765-43210",
       "age": 45,
-      "dateOfBirth": "1978-08-10",
       "createdAt": "2024-01-15T11:00:00Z",
       "createdBy": "a1"
     },
@@ -54,7 +51,6 @@
       "location": { "lat": 28.5355, "lng": 77.391 },
       "phone": "+91-98765-43211",
       "age": 52,
-      "dateOfBirth": "1971-12-05",
       "createdAt": "2024-01-15T11:15:00Z",
       "createdBy": "a1"
     },
@@ -65,7 +61,6 @@
       "location": { "lat": 28.4595, "lng": 77.0266 },
       "phone": "+91-98765-43212",
       "age": 38,
-      "dateOfBirth": "1985-04-18",
       "createdAt": "2024-01-15T11:30:00Z",
       "createdBy": "a1"
     },

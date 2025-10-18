@@ -59,7 +59,6 @@ describe('OnboardingService', () => {
         name: 'John Doe',
         email: 'john@example.com',
         age: 25,
-        dateOfBirth: '1998-01-01',
         areaOfOperation: 'Delhi',
         adminId: 'admin1',
       };
@@ -71,7 +70,6 @@ describe('OnboardingService', () => {
         password: 'temp123',
         role: 'employee',
         age: employeeData.age,
-        dateOfBirth: employeeData.dateOfBirth,
         areaOfOperation: employeeData.areaOfOperation,
         isFirstLogin: true,
         createdAt: new Date().toISOString(),
@@ -88,7 +86,6 @@ describe('OnboardingService', () => {
         employeeData.name,
         employeeData.email,
         employeeData.age,
-        employeeData.dateOfBirth,
         employeeData.areaOfOperation,
         employeeData.adminId
       );
@@ -120,7 +117,6 @@ describe('OnboardingService', () => {
         name: 'John Doe',
         email: 'john@example.com',
         age: 25,
-        dateOfBirth: '1998-01-01',
         areaOfOperation: 'Delhi',
         adminId: 'admin1',
       };
@@ -132,7 +128,6 @@ describe('OnboardingService', () => {
         password: 'password',
         role: 'employee',
         age: 30,
-        dateOfBirth: '1993-01-01',
         areaOfOperation: 'Mumbai',
         isFirstLogin: false,
         createdAt: new Date().toISOString(),
@@ -147,7 +142,6 @@ describe('OnboardingService', () => {
           employeeData.name,
           employeeData.email,
           employeeData.age,
-          employeeData.dateOfBirth,
           employeeData.areaOfOperation,
           employeeData.adminId
         )
@@ -161,7 +155,6 @@ describe('OnboardingService', () => {
       const doctorData = {
         name: 'Dr. Smith',
         age: 35,
-        dateOfBirth: '1988-01-01',
         specialization: 'Cardiology',
         location: { lat: 28.6139, lng: 77.209 },
         phone: '1234567890',
@@ -172,7 +165,6 @@ describe('OnboardingService', () => {
         id: 'doc1',
         name: doctorData.name,
         age: doctorData.age,
-        dateOfBirth: doctorData.dateOfBirth,
         specialization: doctorData.specialization,
         location: doctorData.location,
         phone: doctorData.phone,
@@ -187,11 +179,10 @@ describe('OnboardingService', () => {
       const result = await onboardingService.onboardDoctor(
         doctorData.name,
         doctorData.age,
-        doctorData.dateOfBirth,
         doctorData.specialization,
         doctorData.location,
-        doctorData.adminId,
-        doctorData.phone
+        doctorData.phone,
+        doctorData.adminId
       );
 
       // Assert

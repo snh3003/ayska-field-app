@@ -19,7 +19,6 @@ export class OnboardingService implements IOnboardingService {
     _name: string,
     _email: string,
     _age: number,
-    _dateOfBirth: string,
     _areaOfOperation: string,
     _adminId: string
   ): Promise<Employee> {
@@ -33,7 +32,6 @@ export class OnboardingService implements IOnboardingService {
       name: _name,
       role: 'employee',
       age: _age,
-      dateOfBirth: _dateOfBirth,
       areaOfOperation: _areaOfOperation,
       isFirstLogin: true,
       createdAt: new Date().toISOString(),
@@ -63,7 +61,6 @@ export class OnboardingService implements IOnboardingService {
   async onboardDoctor(
     _name: string,
     _age: number,
-    _dateOfBirth: string,
     _specialization: string,
     _location: { lat: number; lng: number },
     _phone: string,
@@ -76,7 +73,6 @@ export class OnboardingService implements IOnboardingService {
       location: _location,
       phone: _phone,
       age: _age,
-      dateOfBirth: _dateOfBirth,
       createdAt: new Date().toISOString(),
       createdBy: _adminId,
     };

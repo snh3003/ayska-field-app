@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Modal, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
@@ -24,6 +24,7 @@ import { ValidationContext } from '../../validation/ValidationContext';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '../../../constants/theme';
 import { hapticFeedback } from '../../../utils/haptics';
+import { useToast } from '../../../contexts/ToastContext';
 
 export default function AssignDoctorsScreen() {
   const dispatch = useDispatch<AppDispatch>();
@@ -87,6 +88,19 @@ export default function AssignDoctorsScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const isFormValid = useMemo(() => {
+    // Check all required fields are filled
+    const allFieldsFilled = Object.keys(validationRules).every(
+      field =>
+        formData[field as keyof typeof formData]?.toString().trim() !== ''
+    );
+    // Check no validation errors exist
+    const noErrors = Object.values(errors).every(err => !err);
+    return allFieldsFilled && noErrors;
+  }, [formData, errors, validationRules]);
+
+  const toast = useToast();
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       Alert.alert(
@@ -106,11 +120,21 @@ export default function AssignDoctorsScreen() {
         })
       ).unwrap();
 
-      Alert.alert('Success', 'Doctor assigned successfully!');
+      // Get employee and doctor names for toast
+      const employee = employees.find(emp => emp.id === formData.employeeId);
+      const doctor = doctors.find(doc => doc.id === formData.doctorId);
+
+      // Show success toast with names and specialization
+      toast.success(
+        `Doctor ${doctor?.name || 'Unknown'} (${doctor?.specialization || 'Unknown'}) assigned to Employee ${employee?.name || 'Unknown'}`
+      );
       hapticFeedback.success();
       setFormData({ employeeId: '', doctorId: '', target: '' });
       setErrors({});
       setTouched({});
+
+      // Close modal instantly after successful assignment
+      router.back();
     } catch {
       Alert.alert('Error', 'Failed to assign doctor');
     }
@@ -268,6 +292,7 @@ export default function AssignDoctorsScreen() {
                 title={loading ? 'Assigning...' : 'Assign Doctor'}
                 onPress={handleSubmit}
                 loading={loading}
+                disabled={!isFormValid}
                 accessibilityHint="Double tap to assign the doctor"
               />
             </TamaguiView>

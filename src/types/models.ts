@@ -14,7 +14,6 @@ export interface Employee {
   name: string;
   role: 'employee';
   age: number;
-  dateOfBirth: string;
   areaOfOperation: string;
   isFirstLogin: boolean;
   createdAt: string;
@@ -28,7 +27,6 @@ export interface Doctor {
   location: Location;
   phone?: string;
   age: number;
-  dateOfBirth: string;
   createdAt: string;
   createdBy: string;
 }

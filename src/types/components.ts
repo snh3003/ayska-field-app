@@ -37,6 +37,19 @@ export interface InputProps {
   icon?: React.ReactNode;
 }
 
+export interface DatePickerProps {
+  label?: string;
+  placeholder?: string;
+  value: string;
+  onChange: (_date: string) => void;
+  onBlur?: () => void;
+  error?: string;
+  style?: any;
+  icon?: React.ReactNode;
+  minDate?: string | undefined;
+  maxDate?: string | undefined;
+}
+
 export interface CardProps {
   children: React.ReactNode;
   onPress?: () => void;

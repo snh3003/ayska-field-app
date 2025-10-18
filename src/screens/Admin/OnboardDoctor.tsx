@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Alert, Modal, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
@@ -17,6 +17,7 @@ import { Location } from '../../types/models';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '../../../constants/theme';
 import { hapticFeedback } from '../../../utils/haptics';
+import { useToast } from '../../../contexts/ToastContext';
 
 export default function OnboardDoctorScreen() {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,7 +28,6 @@ export default function OnboardDoctorScreen() {
   const [formData, setFormData] = useState({
     name: '',
     age: '',
-    dateOfBirth: '',
     specialization: '',
     phone: '',
   });
@@ -41,7 +41,6 @@ export default function OnboardDoctorScreen() {
   const validationRules = {
     name: [CommonValidators.required('Name is required')],
     age: [CommonValidators.required('Age is required'), CommonValidators.age],
-    dateOfBirth: [CommonValidators.required('Date of birth is required')],
     specialization: [CommonValidators.required('Specialization is required')],
     phone: [CommonValidators.phone],
   };
@@ -76,12 +75,26 @@ export default function OnboardDoctorScreen() {
     setTouched({
       name: true,
       age: true,
-      dateOfBirth: true,
       specialization: true,
       phone: true,
     });
     return Object.keys(newErrors).length === 0;
   };
+
+  const isFormValid = useMemo(() => {
+    // Check all required fields are filled
+    const allFieldsFilled = Object.keys(validationRules).every(
+      field =>
+        formData[field as keyof typeof formData]?.toString().trim() !== ''
+    );
+    // Check no validation errors exist
+    const noErrors = Object.values(errors).every(err => !err);
+    // Check location is selected
+    const locationSelected = selectedLocation !== null;
+    return allFieldsFilled && noErrors && locationSelected;
+  }, [formData, errors, selectedLocation, validationRules]);
+
+  const toast = useToast();
 
   const handleSubmit = async () => {
     if (!validateForm()) {
@@ -97,7 +110,6 @@ export default function OnboardDoctorScreen() {
         onboardDoctor({
           name: formData.name,
           age: parseInt(formData.age),
-          dateOfBirth: formData.dateOfBirth,
           specialization: formData.specialization,
           location: selectedLocation!,
           phone: formData.phone,
@@ -105,7 +117,10 @@ export default function OnboardDoctorScreen() {
         })
       ).unwrap();
 
-      Alert.alert('Success', 'Doctor onboarded successfully!');
+      // Show success toast
+      toast.success(
+        `Doctor ${formData.name} (${formData.specialization}) onboarded successfully`
+      );
       hapticFeedback.success();
       router.back();
     } catch {
@@ -217,45 +232,22 @@ export default function OnboardDoctorScreen() {
                 error={touched.name ? errors.name || '' : ''}
               />
 
-              <TamaguiView flexDirection="row" gap="$sm">
-                <TamaguiView flex={1}>
-                  <Input
-                    label="Age"
-                    value={formData.age}
-                    onChangeText={value => handleFieldChange('age', value)}
-                    onBlur={() => handleFieldBlur('age')}
-                    placeholder="Enter age"
-                    keyboardType="numeric"
-                    icon={
-                      <Ionicons
-                        name="calendar-outline"
-                        size={20}
-                        color={theme.textSecondary}
-                      />
-                    }
-                    error={touched.age ? errors.age || '' : ''}
+              <Input
+                label="Age"
+                value={formData.age}
+                onChangeText={value => handleFieldChange('age', value)}
+                onBlur={() => handleFieldBlur('age')}
+                placeholder="Enter age"
+                keyboardType="numeric"
+                icon={
+                  <Ionicons
+                    name="calendar-outline"
+                    size={20}
+                    color={theme.textSecondary}
                   />
-                </TamaguiView>
-                <TamaguiView flex={1}>
-                  <Input
-                    label="Date of Birth"
-                    value={formData.dateOfBirth}
-                    onChangeText={value =>
-                      handleFieldChange('dateOfBirth', value)
-                    }
-                    onBlur={() => handleFieldBlur('dateOfBirth')}
-                    placeholder="YYYY-MM-DD"
-                    icon={
-                      <Ionicons
-                        name="calendar-outline"
-                        size={20}
-                        color={theme.textSecondary}
-                      />
-                    }
-                    error={touched.dateOfBirth ? errors.dateOfBirth || '' : ''}
-                  />
-                </TamaguiView>
-              </TamaguiView>
+                }
+                error={touched.age ? errors.age || '' : ''}
+              />
 
               <Input
                 label="Specialization"
@@ -310,6 +302,7 @@ export default function OnboardDoctorScreen() {
                 title={loading ? 'Onboarding...' : 'Onboard Doctor'}
                 onPress={handleSubmit}
                 loading={loading}
+                disabled={!isFormValid}
                 accessibilityHint="Double tap to onboard the new doctor"
               />
             </TamaguiView>
