@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Alert, TouchableOpacity } from 'react-native';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
 import { Button } from '@tamagui/button';
 import { Input } from '@tamagui/input';
+import { AyskaTextComponent } from './AyskaTextComponent';
+import { AyskaCaptionComponent } from './AyskaCaptionComponent';
+import { AyskaTitleComponent } from './AyskaTitleComponent';
 import { Location } from '../../types/AyskaModelsType';
 import { MapsConfig } from '../../config/maps';
 import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from '../../../hooks/use-color-scheme';
-import { Colors } from '../../../constants/theme';
+import { useTheme } from '../../../utils/theme';
 
 interface MapPickerProps {
   onLocationSelect: (_location: Location) => void;
@@ -25,8 +27,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({
   );
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
-  const scheme = useColorScheme() ?? 'light';
-  const theme = Colors[scheme];
+  const theme = useTheme();
 
   // Mock map component - in real app, this would be react-native-maps
   const MockMapView = () => (
@@ -38,13 +39,17 @@ export const MapPicker: React.FC<MapPickerProps> = ({
       alignItems="center"
       marginBottom="$md"
     >
-      <Ionicons name="map" size={48} color="#666" />
-      <TamaguiText fontSize="$3" color="$textSecondary" marginTop="$sm">
+      <Ionicons name="map" size={48} color={theme.textSecondary} />
+      <AyskaTextComponent
+        variant="body"
+        color="textSecondary"
+        style={{ marginTop: 8 }}
+      >
         Map View ({MapsConfig.provider})
-      </TamaguiText>
-      <TamaguiText fontSize="$2" color="$textSecondary" marginTop="$xs">
+      </AyskaTextComponent>
+      <AyskaCaptionComponent color="textSecondary" style={{ marginTop: 4 }}>
         Tap to select location
-      </TamaguiText>
+      </AyskaCaptionComponent>
     </TamaguiView>
   );
 
@@ -122,19 +127,23 @@ export const MapPicker: React.FC<MapPickerProps> = ({
 
   return (
     <TamaguiView>
-      <TamaguiText
-        fontSize="$5"
-        fontWeight="bold"
-        marginBottom="$md"
-        color="$text"
+      <AyskaTitleComponent
+        level={3}
+        weight="bold"
+        color="textSecondary"
+        style={{ marginBottom: 16 }}
       >
         {title}
-      </TamaguiText>
+      </AyskaTitleComponent>
 
       <TamaguiView marginBottom="$md">
-        <TamaguiText fontSize="$4" marginBottom="$sm" color="$text">
+        <AyskaTextComponent
+          variant="bodyLarge"
+          color="textSecondary"
+          style={{ marginBottom: 8 }}
+        >
           Search Address
-        </TamaguiText>
+        </AyskaTextComponent>
         <TamaguiView flexDirection="row" gap="$sm">
           <Input
             value={address}
@@ -156,14 +165,14 @@ export const MapPicker: React.FC<MapPickerProps> = ({
             }}
           >
             <Ionicons name="search" size={18} color="white" />
-            <TamaguiText
-              color="white"
-              fontSize="$4"
-              fontWeight="600"
-              marginLeft="$xs"
+            <AyskaTextComponent
+              color="textSecondary"
+              variant="bodyLarge"
+              weight="semibold"
+              style={{ color: 'white', marginLeft: 4 }}
             >
               Search
-            </TamaguiText>
+            </AyskaTextComponent>
           </TouchableOpacity>
         </TamaguiView>
       </TamaguiView>
@@ -175,9 +184,9 @@ export const MapPicker: React.FC<MapPickerProps> = ({
           alignItems="center"
           marginBottom="$sm"
         >
-          <TamaguiText fontSize="$4" color="$text">
+          <AyskaTextComponent variant="bodyLarge" color="text">
             Map View
-          </TamaguiText>
+          </AyskaTextComponent>
           <TamaguiView flexDirection="row" gap="$xs">
             <TouchableOpacity
               onPress={handleGetCurrentLocation}
@@ -207,14 +216,12 @@ export const MapPicker: React.FC<MapPickerProps> = ({
               }}
             >
               <Ionicons name="logo-google" size={16} color="white" />
-              <TamaguiText
-                fontSize="$2"
-                color="white"
-                marginLeft="$xs"
-                fontWeight="600"
+              <AyskaCaptionComponent
+                color="textSecondary"
+                style={{ color: 'white', marginLeft: 4, fontWeight: '600' }}
               >
                 {MapsConfig.provider.toUpperCase()}
-              </TamaguiText>
+              </AyskaCaptionComponent>
             </TouchableOpacity>
           </TamaguiView>
         </TamaguiView>
@@ -226,9 +233,13 @@ export const MapPicker: React.FC<MapPickerProps> = ({
 
       {selectedLocation && (
         <TamaguiView marginBottom="$md">
-          <TamaguiText fontSize="$4" marginBottom="$sm" color="$text">
+          <AyskaTextComponent
+            variant="bodyLarge"
+            color="textSecondary"
+            style={{ marginBottom: 8 }}
+          >
             Selected Location
-          </TamaguiText>
+          </AyskaTextComponent>
           <TamaguiView
             backgroundColor="$background"
             padding="$md"
@@ -241,16 +252,24 @@ export const MapPicker: React.FC<MapPickerProps> = ({
               alignItems="center"
               marginBottom="$xs"
             >
-              <Ionicons name="location" size={16} color="#4CAF50" />
-              <TamaguiText fontSize="$3" color="$text" marginLeft="$sm">
+              <Ionicons name="location" size={16} color={theme.success} />
+              <AyskaTextComponent
+                variant="body"
+                color="textSecondary"
+                style={{ marginLeft: 8 }}
+              >
                 Latitude: {selectedLocation.lat.toFixed(6)}
-              </TamaguiText>
+              </AyskaTextComponent>
             </TamaguiView>
             <TamaguiView flexDirection="row" alignItems="center">
-              <Ionicons name="location" size={16} color="#4CAF50" />
-              <TamaguiText fontSize="$3" color="$text" marginLeft="$sm">
+              <Ionicons name="location" size={16} color={theme.success} />
+              <AyskaTextComponent
+                variant="body"
+                color="textSecondary"
+                style={{ marginLeft: 8 }}
+              >
                 Longitude: {selectedLocation.lng.toFixed(6)}
-              </TamaguiText>
+              </AyskaTextComponent>
             </TamaguiView>
           </TamaguiView>
         </TamaguiView>
@@ -258,7 +277,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({
 
       <Button
         onPress={handleConfirmLocation}
-        backgroundColor={selectedLocation ? '#4CAF50' : '#9E9E9E'}
+        backgroundColor={selectedLocation ? theme.success : theme.textSecondary}
         color="white"
         disabled={!selectedLocation || loading}
       >

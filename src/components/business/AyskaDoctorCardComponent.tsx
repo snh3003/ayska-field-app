@@ -1,24 +1,35 @@
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
+import { AyskaStackComponent } from '../ui/AyskaStackComponent';
+import { useTheme } from '../../../utils/theme';
 import type { Doctor } from '../../types';
 
 export const DoctorCard: React.FC<{ doctor: Doctor }> = ({ doctor }) => {
+  const theme = useTheme();
+
   return (
-    <TamaguiView
-      padding="$sm"
-      borderRadius="$md"
-      borderWidth={1}
-      borderColor="$border"
-      marginBottom="$sm"
-      backgroundColor="$card"
+    <AyskaStackComponent
+      direction="vertical"
+      spacing="xs"
+      padding="sm"
+      backgroundColor="card"
+      borderRadius="md"
+      style={{
+        borderWidth: 1,
+        borderColor: theme.border,
+        marginBottom: 8,
+      }}
     >
-      <TamaguiText fontWeight="600" color="$text">
+      <AyskaTextComponent weight="semibold" color="text">
         {doctor.name}
-      </TamaguiText>
-      <TamaguiText color="$text">{doctor.specialization}</TamaguiText>
-      <TamaguiText color="$text">
+      </AyskaTextComponent>
+      <AyskaTextComponent color="text">
+        {doctor.specialization}
+      </AyskaTextComponent>
+      <AyskaCaptionComponent color="textSecondary">
         Loc: {doctor.location.lat}, {doctor.location.lng}
-      </TamaguiText>
-    </TamaguiView>
+      </AyskaCaptionComponent>
+    </AyskaStackComponent>
   );
 };

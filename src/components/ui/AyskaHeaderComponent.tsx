@@ -1,6 +1,10 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { AyskaTitleComponent } from './AyskaTitleComponent';
+import { AyskaTextComponent } from './AyskaTextComponent';
+import { AyskaCaptionComponent } from './AyskaCaptionComponent';
+import { AyskaStackComponent } from './AyskaStackComponent';
+import { useTheme } from '../../../utils/theme';
 
 interface HeaderProps {
   title: string;
@@ -18,46 +22,44 @@ export const Header: React.FC<HeaderProps> = ({
   onBack,
   rightAction,
 }) => {
+  const theme = useTheme();
+
   return (
-    <TamaguiView
-      backgroundColor="$card"
-      paddingHorizontal="$lg"
-      paddingVertical="$md"
-      borderBottomWidth={1}
-      borderBottomColor="$border"
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="space-between"
+    <AyskaStackComponent
+      direction="horizontal"
+      align="center"
+      justify="space-between"
+      padding="lg"
+      backgroundColor="card"
+      style={{
+        borderBottomWidth: 1,
+        borderBottomColor: theme.border,
+      }}
     >
-      <TamaguiView flex={1}>
+      <AyskaStackComponent direction="vertical" style={{ flex: 1 }}>
         {onBack && (
           <TouchableOpacity onPress={onBack} style={{ marginBottom: 4 }}>
-            <TamaguiText color="$primary" fontSize="$4" fontWeight="600">
+            <AyskaTextComponent color="primary" weight="semibold">
               ← Back
-            </TamaguiText>
+            </AyskaTextComponent>
           </TouchableOpacity>
         )}
-        <TamaguiText fontSize="$6" fontWeight="700" color="$text">
+        <AyskaTitleComponent level={3} weight="bold" color="text">
           {title}
-        </TamaguiText>
+        </AyskaTitleComponent>
         {subtitle && (
-          <TamaguiText
-            fontSize="$3"
-            color="$text"
-            opacity={0.7}
-            marginTop="$xs"
-          >
+          <AyskaCaptionComponent color="textSecondary" style={{ marginTop: 4 }}>
             {subtitle}
-          </TamaguiText>
+          </AyskaCaptionComponent>
         )}
-      </TamaguiView>
+      </AyskaStackComponent>
       {rightAction && (
         <TouchableOpacity onPress={rightAction.onPress}>
-          <TamaguiText color="$primary" fontSize="$4" fontWeight="600">
+          <AyskaTextComponent color="primary" weight="semibold">
             {rightAction.title}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TouchableOpacity>
       )}
-    </TamaguiView>
+    </AyskaStackComponent>
   );
 };

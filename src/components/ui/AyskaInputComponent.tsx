@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Input as TamaguiInput } from '@tamagui/input';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaLabelComponent } from './AyskaLabelComponent';
+import { AyskaCaptionComponent } from './AyskaCaptionComponent';
 import { InputProps } from '../../types';
 
 export const Input: React.FC<InputProps> = ({
@@ -30,14 +32,9 @@ export const Input: React.FC<InputProps> = ({
   return (
     <TamaguiView style={style} marginBottom="$md">
       {label && (
-        <TamaguiText
-          fontSize="$4"
-          color="$text"
-          marginBottom="$sm"
-          fontWeight="600"
-        >
+        <AyskaLabelComponent style={{ marginBottom: 8 }}>
           {label}
-        </TamaguiText>
+        </AyskaLabelComponent>
       )}
       <TamaguiView
         borderColor={error ? '$error' : isFocused ? '$primary' : '$border'}
@@ -68,9 +65,9 @@ export const Input: React.FC<InputProps> = ({
         />
       </TamaguiView>
       {error && (
-        <TamaguiText fontSize="$3" color="$error" marginTop="$xs">
+        <AyskaCaptionComponent color="error" style={{ marginTop: 4 }}>
           {error}
-        </TamaguiText>
+        </AyskaCaptionComponent>
       )}
     </TamaguiView>
   );

@@ -12,7 +12,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaTitleComponent } from '../ui/AyskaTitleComponent';
 import { BorderRadius, Colors } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { BottomSheetProps } from '../../types';
@@ -107,9 +108,9 @@ export function BottomSheet({
                 paddingHorizontal="$lg"
                 paddingBottom="$md"
               >
-                <TamaguiText fontSize="$6" fontWeight="600" color="$text">
+                <AyskaTitleComponent level={3} weight="semibold" color="text">
                   {title}
-                </TamaguiText>
+                </AyskaTitleComponent>
                 <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
                   <Ionicons
                     name="close"

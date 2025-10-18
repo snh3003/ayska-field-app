@@ -1,6 +1,8 @@
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
 import { Card } from '../ui/AyskaCardComponent';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
 import { Assignment } from '../../types/AyskaModelsType';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
@@ -47,12 +49,12 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
         marginBottom="$sm"
       >
         <TamaguiView flex={1}>
-          <TamaguiText fontSize="$5" fontWeight="bold" color="$text">
+          <AyskaTextComponent variant="bodyLarge" weight="bold" color="text">
             {doctorName || `Doctor ${assignment.doctorId}`}
-          </TamaguiText>
-          <TamaguiText fontSize="$3" color="$textSecondary">
+          </AyskaTextComponent>
+          <AyskaCaptionComponent color="textSecondary">
             Assigned: {new Date(assignment.assignedDate).toLocaleDateString()}
-          </TamaguiText>
+          </AyskaCaptionComponent>
         </TamaguiView>
         <TamaguiView
           backgroundColor={getStatusColor(assignment.status)}
@@ -60,9 +62,9 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
           paddingVertical="$xs"
           borderRadius="$sm"
         >
-          <TamaguiText fontSize="$2" color="white" fontWeight="bold">
+          <AyskaCaptionComponent style={{ color: 'white', fontWeight: 'bold' }}>
             {assignment.status.toUpperCase()}
-          </TamaguiText>
+          </AyskaCaptionComponent>
         </TamaguiView>
       </TamaguiView>
 
@@ -72,12 +74,12 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
           justifyContent="space-between"
           marginBottom="$xs"
         >
-          <TamaguiText fontSize="$4" color="$text">
+          <AyskaTextComponent color="text">
             Progress: {assignment.currentProgress}/{assignment.target}
-          </TamaguiText>
-          <TamaguiText fontSize="$4" color="$text" fontWeight="bold">
+          </AyskaTextComponent>
+          <AyskaTextComponent color="text" weight="bold">
             {Math.round(progressPercentage)}%
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
 
         <TamaguiView
@@ -96,9 +98,9 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
 
       <TamaguiView flexDirection="row" alignItems="center">
         <Ionicons name="flag-outline" size={16} color={theme.textSecondary} />
-        <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+        <AyskaCaptionComponent color="textSecondary" style={{ marginLeft: 4 }}>
           Target: {assignment.target} visits
-        </TamaguiText>
+        </AyskaCaptionComponent>
       </TamaguiView>
     </Card>
   );

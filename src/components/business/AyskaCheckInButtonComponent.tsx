@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
 import { Button } from '@tamagui/button';
 import { Input } from '@tamagui/input';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
+import { useTheme } from '../../../utils/theme';
 import { Doctor } from '../../types/AyskaModelsType';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -22,6 +25,8 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
   onCheckIn,
   loading = false,
 }) => {
+  const theme = useTheme();
+
   const [notes, setNotes] = useState('');
   const [currentLocation, setCurrentLocation] = useState<{
     lat: number;
@@ -86,26 +91,26 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
       borderRadius="$md"
       marginBottom="$md"
     >
-      <TamaguiText
-        fontSize="$5"
-        fontWeight="bold"
-        marginBottom="$md"
-        color="$text"
+      <AyskaTextComponent
+        variant="bodyLarge"
+        weight="bold"
+        color="text"
+        style={{ marginBottom: 16 }}
       >
         Check-in with {doctor.name}
-      </TamaguiText>
+      </AyskaTextComponent>
 
       <TamaguiView marginBottom="$md">
         <TamaguiView flexDirection="row" alignItems="center" marginBottom="$sm">
-          <Ionicons name="location" size={20} color="#666" />
-          <TamaguiText fontSize="$4" color="$text" marginLeft="$sm">
+          <Ionicons name="location" size={20} color={theme.textSecondary} />
+          <AyskaTextComponent color="text" style={{ marginLeft: 8 }}>
             Doctor Location
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
-        <TamaguiText fontSize="$3" color="$textSecondary">
+        <AyskaCaptionComponent color="textSecondary">
           Lat: {doctor.location.lat.toFixed(4)}, Lng:{' '}
           {doctor.location.lng.toFixed(4)}
-        </TamaguiText>
+        </AyskaCaptionComponent>
       </TamaguiView>
 
       {currentLocation && (
@@ -118,31 +123,33 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
             <Ionicons
               name={isValidLocation ? 'checkmark-circle' : 'close-circle'}
               size={20}
-              color={isValidLocation ? '#4CAF50' : '#F44336'}
+              color={isValidLocation ? theme.success : theme.error}
             />
-            <TamaguiText fontSize="$4" color="$text" marginLeft="$sm">
+            <AyskaTextComponent color="text" style={{ marginLeft: 8 }}>
               Your Location
-            </TamaguiText>
+            </AyskaTextComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$3" color="$textSecondary" marginBottom="$xs">
+          <AyskaCaptionComponent
+            color="textSecondary"
+            style={{ marginBottom: 4 }}
+          >
             Lat: {currentLocation.lat.toFixed(4)}, Lng:{' '}
             {currentLocation.lng.toFixed(4)}
-          </TamaguiText>
-          <TamaguiText
-            fontSize="$3"
-            color={isValidLocation ? '#4CAF50' : '#F44336'}
-            fontWeight="bold"
+          </AyskaCaptionComponent>
+          <AyskaCaptionComponent
+            color={isValidLocation ? 'success' : 'error'}
+            style={{ fontWeight: 'bold' }}
           >
             Distance: {Math.round(distance || 0)}m{' '}
             {isValidLocation ? '(Valid)' : '(Too far)'}
-          </TamaguiText>
+          </AyskaCaptionComponent>
         </TamaguiView>
       )}
 
       <TamaguiView marginBottom="$md">
-        <TamaguiText fontSize="$4" marginBottom="$sm" color="$text">
+        <AyskaTextComponent color="text" style={{ marginBottom: 8 }}>
           Notes (Optional)
-        </TamaguiText>
+        </AyskaTextComponent>
         <Input
           value={notes}
           onChangeText={(e: any) => setNotes(e)}
@@ -165,7 +172,9 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
 
         <Button
           onPress={handleCheckIn}
-          backgroundColor={isValidLocation ? '#4CAF50' : '#9E9E9E'}
+          backgroundColor={
+            isValidLocation ? theme.success : theme.textSecondary
+          }
           color="white"
           flex={1}
           disabled={!isValidLocation || loading}

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaTextComponent } from './AyskaTextComponent';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -13,7 +14,7 @@ export const ErrorBanner: React.FC<{ message: string }> = ({ message }) => {
       backgroundColor={theme.errorBg}
       borderRadius="$md"
     >
-      <TamaguiText color={theme.error}>{message}</TamaguiText>
+      <AyskaTextComponent color="error">{message}</AyskaTextComponent>
     </TamaguiView>
   );
 };

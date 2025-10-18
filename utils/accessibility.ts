@@ -2,6 +2,22 @@ import { AccessibilityRole } from 'react-native';
 import { A11yProps } from '../src/types';
 
 /**
+ * Generate basic accessibility props for any element
+ */
+export function getA11yProps(
+  label?: string,
+  hint?: string,
+  role?: AccessibilityRole
+): A11yProps {
+  return {
+    accessible: true,
+    accessibilityLabel: label || '',
+    accessibilityHint: hint || '',
+    accessibilityRole: role || 'text',
+  };
+}
+
+/**
  * Generate accessibility props for buttons
  */
 export function getButtonA11yProps(

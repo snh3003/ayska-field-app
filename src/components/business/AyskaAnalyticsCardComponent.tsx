@@ -1,6 +1,9 @@
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
 import { Card } from '../ui/AyskaCardComponent';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
+import { useTheme } from '../../../utils/theme';
 import { EmployeeAnalytics } from '../../types/AyskaModelsType';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -15,10 +18,12 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
   employeeName,
   onPress,
 }) => {
+  const theme = useTheme();
+
   const getAchievementColor = (rate: number) => {
-    if (rate >= 80) return '#4CAF50';
-    if (rate >= 60) return '#FF9800';
-    return '#F44336';
+    if (rate >= 80) return theme.success;
+    if (rate >= 60) return theme.warning;
+    return theme.error;
   };
 
   const formatDate = (dateString: string | null) => {
@@ -34,18 +39,18 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
         alignItems="center"
         marginBottom="$md"
       >
-        <TamaguiText fontSize="$5" fontWeight="bold" color="$text">
+        <AyskaTextComponent variant="bodyLarge" weight="bold" color="text">
           {employeeName || `Employee ${analytics.employeeId}`}
-        </TamaguiText>
+        </AyskaTextComponent>
         <TamaguiView
           backgroundColor={getAchievementColor(analytics.targetAchievementRate)}
           paddingHorizontal="$sm"
           paddingVertical="$xs"
           borderRadius="$sm"
         >
-          <TamaguiText fontSize="$2" color="white" fontWeight="bold">
+          <AyskaCaptionComponent style={{ color: 'white', fontWeight: 'bold' }}>
             {Math.round(analytics.targetAchievementRate)}%
-          </TamaguiText>
+          </AyskaCaptionComponent>
         </TamaguiView>
       </TamaguiView>
 
@@ -60,14 +65,17 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <Ionicons name="list" size={16} color="#666" />
-            <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+            <Ionicons name="list" size={16} color={theme.textSecondary} />
+            <AyskaCaptionComponent
+              color="textSecondary"
+              style={{ marginLeft: 4 }}
+            >
               Assignments
-            </TamaguiText>
+            </AyskaCaptionComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$4" fontWeight="bold" color="$text">
+          <AyskaTextComponent weight="bold" color="text">
             {analytics.completedAssignments}/{analytics.totalAssignments}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
 
         <TamaguiView flex={1} marginLeft="$sm">
@@ -76,14 +84,21 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <Ionicons name="checkmark-circle" size={16} color="#666" />
-            <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+            <Ionicons
+              name="checkmark-circle"
+              size={16}
+              color={theme.textSecondary}
+            />
+            <AyskaCaptionComponent
+              color="textSecondary"
+              style={{ marginLeft: 4 }}
+            >
               Check-ins
-            </TamaguiText>
+            </AyskaCaptionComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$4" fontWeight="bold" color="$text">
+          <AyskaTextComponent weight="bold" color="text">
             {analytics.totalCheckIns}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
       </TamaguiView>
 
@@ -98,14 +113,17 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <Ionicons name="calendar" size={16} color="#666" />
-            <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+            <Ionicons name="calendar" size={16} color={theme.textSecondary} />
+            <AyskaCaptionComponent
+              color="textSecondary"
+              style={{ marginLeft: 4 }}
+            >
               Daily Avg
-            </TamaguiText>
+            </AyskaCaptionComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$4" fontWeight="bold" color="$text">
+          <AyskaTextComponent weight="bold" color="text">
             {analytics.averageCheckInsPerDay.toFixed(1)}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
 
         <TamaguiView flex={1} marginLeft="$sm">
@@ -114,14 +132,17 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <Ionicons name="time" size={16} color="#666" />
-            <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+            <Ionicons name="time" size={16} color={theme.textSecondary} />
+            <AyskaCaptionComponent
+              color="textSecondary"
+              style={{ marginLeft: 4 }}
+            >
               Last Check-in
-            </TamaguiText>
+            </AyskaCaptionComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$4" fontWeight="bold" color="$text">
+          <AyskaTextComponent weight="bold" color="text">
             {formatDate(analytics.lastCheckIn)}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
       </TamaguiView>
     </Card>

@@ -1,4 +1,5 @@
 // Shared utility types and common interfaces
+import { AccessibilityRole } from 'react-native';
 
 // Validation types
 export interface ValidationRule {
@@ -19,11 +20,12 @@ export interface ValidationErrors {
 }
 
 // Accessibility types
+
 export interface A11yProps {
   accessible?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
-  accessibilityRole?: string;
+  accessibilityRole?: AccessibilityRole;
   accessibilityState?: {
     disabled?: boolean;
     checked?: boolean;

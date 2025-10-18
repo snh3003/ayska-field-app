@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaTextComponent } from './AyskaTextComponent';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '../../../constants/theme';
 
@@ -129,15 +130,21 @@ export const PickerWheel: React.FC<PickerWheelProps> = ({
             alignItems="center"
             paddingHorizontal={16}
           >
-            <TamaguiText
-              fontSize={18}
-              color={getItemColor(index)}
-              fontWeight={getItemFontWeight(index)}
-              opacity={getItemOpacity(index)}
-              textAlign="center"
+            <AyskaTextComponent
+              variant="bodyLarge"
+              color={
+                getItemColor(index) === theme.primary
+                  ? 'primary'
+                  : 'textSecondary'
+              }
+              weight={
+                getItemFontWeight(index) === '600' ? 'semibold' : 'normal'
+              }
+              align="center"
+              style={{ opacity: getItemOpacity(index) }}
             >
               {item}
-            </TamaguiText>
+            </AyskaTextComponent>
           </TamaguiView>
         ))}
       </ScrollView>

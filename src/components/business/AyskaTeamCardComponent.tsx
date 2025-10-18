@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
 import type { TeamSales } from '../../types/AyskaApiType';
 
 export const TeamCard: React.FC<{ team: TeamSales }> = ({ team }) => {
@@ -12,17 +13,21 @@ export const TeamCard: React.FC<{ team: TeamSales }> = ({ team }) => {
       backgroundColor="$card"
       marginBottom="$sm"
     >
-      <TamaguiText fontWeight="700" marginBottom="$xs" color="$text">
+      <AyskaTextComponent
+        weight="bold"
+        color="text"
+        style={{ marginBottom: 4 }}
+      >
         Team {team.teamId}
-      </TamaguiText>
-      <TamaguiText marginBottom="$sm" color="$text">
+      </AyskaTextComponent>
+      <AyskaTextComponent color="text" style={{ marginBottom: 8 }}>
         Total Sales: {team.totalSales}
-      </TamaguiText>
+      </AyskaTextComponent>
       {team.members.map((m: any) => (
         <TamaguiView key={m.employeeId} paddingVertical="$xs">
-          <TamaguiText color="$text">
+          <AyskaTextComponent color="text">
             {m.name}: {m.sales}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
       ))}
     </TamaguiView>

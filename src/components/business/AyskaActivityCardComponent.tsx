@@ -1,31 +1,42 @@
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
+import { AyskaStackComponent } from '../ui/AyskaStackComponent';
+import { useTheme } from '../../../utils/theme';
 import type { Activity } from '../../types/AyskaApiType';
 
 export const ActivityCard: React.FC<{ activity: Activity }> = ({
   activity,
 }) => {
+  const theme = useTheme();
+
   return (
-    <TamaguiView
-      padding="$md"
-      borderRadius="$md"
-      borderWidth={1}
-      borderColor="$border"
-      backgroundColor="$card"
-      marginBottom="$sm"
+    <AyskaStackComponent
+      direction="vertical"
+      spacing="xs"
+      padding="md"
+      backgroundColor="card"
+      borderRadius="md"
+      style={{
+        borderWidth: 1,
+        borderColor: theme.border,
+        marginBottom: 8,
+      }}
     >
-      <TamaguiText fontWeight="700" color="$text">
+      <AyskaTextComponent weight="bold" color="text">
         {activity.type.toUpperCase()}
-      </TamaguiText>
-      <TamaguiText color="$text">
+      </AyskaTextComponent>
+      <AyskaCaptionComponent color="textSecondary">
         {new Date(activity.timestamp).toLocaleString()}
-      </TamaguiText>
+      </AyskaCaptionComponent>
       {activity.amount != null && (
-        <TamaguiText color="$text">Amount: {activity.amount}</TamaguiText>
+        <AyskaTextComponent color="text">
+          Amount: {activity.amount}
+        </AyskaTextComponent>
       )}
       {activity.notes && (
-        <TamaguiText color="$text">{activity.notes}</TamaguiText>
+        <AyskaTextComponent color="text">{activity.notes}</AyskaTextComponent>
       )}
-    </TamaguiView>
+    </AyskaStackComponent>
   );
 };

@@ -3,7 +3,7 @@ import { ActivityIndicator } from 'react-native';
 import { hapticFeedback } from '@/utils/haptics';
 import { getButtonA11yProps } from '@/utils/accessibility';
 import { Button as TamaguiButton } from '@tamagui/button';
-import { Text as TamaguiText } from '@tamagui/core';
+import { AyskaTextComponent } from './AyskaTextComponent';
 import { ButtonPrimaryProps } from '../../types';
 
 export const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
@@ -42,14 +42,9 @@ export const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
       {loading ? (
         <ActivityIndicator color="white" />
       ) : (
-        <TamaguiText
-          color="white"
-          fontSize="$4"
-          fontWeight="600"
-          textAlign="center"
-        >
+        <AyskaTextComponent color="text" weight="semibold" align="center">
           {title}
-        </TamaguiText>
+        </AyskaTextComponent>
       )}
     </TamaguiButton>
   );
