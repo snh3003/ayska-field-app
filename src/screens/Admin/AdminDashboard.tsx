@@ -244,6 +244,130 @@ export default function AdminDashboard() {
           />
         </TamaguiView>
 
+        {/* Quick Actions */}
+        <TamaguiView marginBottom="$md">
+          <TamaguiText
+            fontSize="$5"
+            fontWeight="600"
+            color="$text"
+            marginBottom="$md"
+          >
+            Quick Actions
+          </TamaguiText>
+
+          <TamaguiView flexDirection="row" gap="$sm" marginBottom="$sm">
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                backgroundColor: theme.primary,
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                borderRadius: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                hapticFeedback.light();
+                router.push('/admin/onboard-employee' as any);
+              }}
+            >
+              <Ionicons name="person-add" size={20} color="white" />
+              <TamaguiText
+                color="white"
+                fontSize="$4"
+                fontWeight="600"
+                marginLeft="$xs"
+              >
+                Add Employee
+              </TamaguiText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                backgroundColor: theme.secondary,
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                borderRadius: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                hapticFeedback.light();
+                router.push('/admin/onboard-doctor' as any);
+              }}
+            >
+              <Ionicons name="medical" size={20} color="white" />
+              <TamaguiText
+                color="white"
+                fontSize="$4"
+                fontWeight="600"
+                marginLeft="$xs"
+              >
+                Add Doctor
+              </TamaguiText>
+            </TouchableOpacity>
+          </TamaguiView>
+
+          <TamaguiView flexDirection="row" gap="$sm">
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                backgroundColor: theme.info,
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                borderRadius: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                hapticFeedback.light();
+                router.push('/admin/analytics' as any);
+              }}
+            >
+              <Ionicons name="analytics" size={20} color="white" />
+              <TamaguiText
+                color="white"
+                fontSize="$4"
+                fontWeight="600"
+                marginLeft="$xs"
+              >
+                Analytics
+              </TamaguiText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                backgroundColor: theme.warning,
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                borderRadius: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                hapticFeedback.light();
+                router.push('/admin/assign-doctors' as any);
+              }}
+            >
+              <Ionicons name="link" size={20} color="white" />
+              <TamaguiText
+                color="white"
+                fontSize="$4"
+                fontWeight="600"
+                marginLeft="$xs"
+              >
+                Assign Doctors
+              </TamaguiText>
+            </TouchableOpacity>
+          </TamaguiView>
+        </TamaguiView>
+
         {/* Search Bar */}
         <SearchBar
           placeholder="Search employees..."

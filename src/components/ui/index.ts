@@ -11,3 +11,4 @@ export { Header } from './Header';
 export { ThemedText } from './ThemedText';
 export { ThemedView } from './ThemedView';
 export { HapticTab } from './HapticTab';
+export { Dropdown } from './Dropdown';

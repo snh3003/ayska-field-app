@@ -10,7 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.Ayskafieldapp"
+      "bundleIdentifier": "com.anonymous.Ayskafieldapp",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs location access to verify employee check-ins with doctors.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs location access to verify employee check-ins with doctors."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +25,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.Ayskafieldapp"
+      "package": "com.anonymous.Ayskafieldapp",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
     },
     "web": {
       "output": "static",
@@ -40,6 +45,12 @@
             "image": "./assets/images/Ayska.png",
             "backgroundColor": "#0F172A"
           }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Ayska Field App to use your location to verify check-ins with doctors."
         }
       ]
     ],

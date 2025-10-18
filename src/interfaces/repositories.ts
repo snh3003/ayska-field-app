@@ -83,7 +83,14 @@ export interface Notification {
   id: string;
   userId: string;
   userRole: 'admin' | 'employee';
-  type: 'visit' | 'assignment' | 'attendance' | 'system' | 'alert';
+  type:
+    | 'visit'
+    | 'assignment'
+    | 'attendance'
+    | 'system'
+    | 'alert'
+    | 'checkin'
+    | 'roundup';
   title: string;
   message: string;
   timestamp: string;
@@ -92,5 +99,10 @@ export interface Notification {
   actionData?: {
     targetId?: string;
     route?: string;
+    visitId?: string;
+    employeeId?: string;
+    doctorId?: string;
+    attendanceId?: string;
+    assignmentId?: string;
   };
 }

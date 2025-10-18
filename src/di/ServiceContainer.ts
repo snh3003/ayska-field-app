@@ -7,6 +7,11 @@ import { LocalDataRepository } from '../repositories/LocalDataRepository';
 import { AuthRepository } from '../repositories/AuthRepository';
 import { StatsRepository } from '../repositories/StatsRepository';
 import { NotificationsRepository } from '../repositories/NotificationsRepository';
+import { EmployeeRepository } from '../repositories/EmployeeRepository';
+import { DoctorRepository } from '../repositories/DoctorRepository';
+import { AssignmentRepository } from '../repositories/AssignmentRepository';
+import { CheckInRepository } from '../repositories/CheckInRepository';
+import { AnalyticsRepository } from '../repositories/AnalyticsRepository';
 import { HttpClient } from '../api/HttpClient';
 import { AuthInterceptor } from '../interceptors/AuthInterceptor';
 import { RetryInterceptor } from '../interceptors/RetryInterceptor';
@@ -15,6 +20,22 @@ import { AdminService } from '../services/AdminService';
 import { EmployeeService } from '../services/EmployeeService';
 import { ReportService } from '../services/ReportService';
 import { NotificationsService } from '../services/NotificationsService';
+import { EmailService } from '../services/EmailService';
+import { OnboardingService } from '../services/OnboardingService';
+import { AssignmentService } from '../services/AssignmentService';
+import { CheckInService } from '../services/CheckInService';
+import { AnalyticsService } from '../services/AnalyticsService';
+import { GeolocationService } from '../services/GeolocationService';
+import {
+  AdminDashboardObserver,
+  EmployeeFeedObserver,
+  NotificationObserverService,
+  PushNotificationObserver,
+} from '../services/NotificationObserver';
+import { ProximityValidator } from '../validation/strategies/LocationValidator';
+import { GoogleMapProvider } from '../providers/GoogleMapProvider';
+import { MapplsMapProvider } from '../providers/MapplsMapProvider';
+import { MapsConfig } from '../config/maps';
 
 export class ServiceContainer {
   private services = new Map<string, any>();
@@ -53,6 +74,65 @@ export class ServiceContainer {
       () => new NotificationsService(this.get('INotificationsRepository'))
     );
 
+    // Pattern implementations
+    this.registerSingleton('INotificationSubject', () => {
+      const subject = new NotificationObserverService();
+      subject.attach(new AdminDashboardObserver());
+      subject.attach(new EmployeeFeedObserver());
+      subject.attach(new PushNotificationObserver());
+      return subject;
+    });
+    this.registerSingleton(
+      'ILocationValidator',
+      () => new ProximityValidator()
+    );
+
+    // New services
+    this.registerSingleton('IEmailService', () => new EmailService());
+    this.registerSingleton(
+      'IGeolocationService',
+      () => new GeolocationService()
+    );
+    this.registerFactory(
+      'IOnboardingService',
+      () =>
+        new OnboardingService(
+          this.get('IEmployeeRepository'),
+          this.get('IDoctorRepository'),
+          this.get('IEmailService'),
+          this.get('INotificationSubject')
+        )
+    );
+    this.registerFactory(
+      'IAssignmentService',
+      () =>
+        new AssignmentService(
+          this.get('IAssignmentRepository'),
+          this.get('INotificationSubject')
+        )
+    );
+    this.registerFactory(
+      'ICheckInService',
+      () =>
+        new CheckInService(
+          this.get('ICheckInRepository'),
+          this.get('IDoctorRepository'),
+          this.get('IAssignmentRepository'),
+          this.get('ILocationValidator'),
+          this.get('INotificationSubject'),
+          this.get('IGeolocationService')
+        )
+    );
+    this.registerFactory(
+      'IAnalyticsService',
+      () => new AnalyticsService(this.get('IAnalyticsRepository'))
+    );
+    this.registerFactory('IMapProvider', () => {
+      return MapsConfig.provider === 'google'
+        ? new GoogleMapProvider()
+        : new MapplsMapProvider();
+    });
+
     // Data repositories
     this.registerSingleton('IDataRepository', () => new LocalDataRepository());
     this.registerSingleton(
@@ -66,6 +146,26 @@ export class ServiceContainer {
     this.registerSingleton(
       'INotificationsRepository',
       () => new NotificationsRepository(this.get('IDataRepository'))
+    );
+    this.registerSingleton(
+      'IEmployeeRepository',
+      () => new EmployeeRepository(this.get('IDataRepository'))
+    );
+    this.registerSingleton(
+      'IDoctorRepository',
+      () => new DoctorRepository(this.get('IDataRepository'))
+    );
+    this.registerSingleton(
+      'IAssignmentRepository',
+      () => new AssignmentRepository(this.get('IDataRepository'))
+    );
+    this.registerSingleton(
+      'ICheckInRepository',
+      () => new CheckInRepository(this.get('IDataRepository'))
+    );
+    this.registerSingleton(
+      'IAnalyticsRepository',
+      () => new AnalyticsRepository(this.get('IDataRepository'))
     );
 
     // HTTP client and interceptors

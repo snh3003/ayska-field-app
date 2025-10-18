@@ -2,6 +2,8 @@ import { RequiredValidator } from './strategies/RequiredValidator';
 import { MinLengthValidator } from './strategies/MinLengthValidator';
 import { PatternValidator } from './strategies/PatternValidator';
 
+import { AgeValidator } from './strategies/AgeValidator';
+
 export const CommonValidators = {
   email: new PatternValidator(
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -22,4 +24,8 @@ export const CommonValidators = {
 
   pattern: (pattern: RegExp, message?: string) =>
     new PatternValidator(pattern, message),
+
+  age: new AgeValidator(),
+
+  areaOfOperation: new RequiredValidator('Area of operation is required'),
 };

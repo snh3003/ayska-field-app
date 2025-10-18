@@ -43,6 +43,12 @@ const tamaguiConfig = createTamagui({
       errorBg: 'rgba(185, 28, 28, 0.15)',
       iconBg: 'rgba(90, 107, 125, 0.15)',
       avatarBg: '#E0E7FF',
+      // Additional color tokens for buttons
+      red10: '#B91C1C',
+      blue10: '#1E40AF',
+      green10: '#059669',
+      purple10: '#7C3AED',
+      orange10: '#EA580C',
     },
     dark: {
       // Map existing Colors.dark values
@@ -83,6 +89,12 @@ const tamaguiConfig = createTamagui({
       errorBg: 'rgba(239, 68, 68, 0.20)',
       iconBg: 'rgba(161, 174, 192, 0.20)',
       avatarBg: '#334155',
+      // Additional color tokens for buttons
+      red10: '#EF4444',
+      blue10: '#60A5FA',
+      green10: '#10B981',
+      purple10: '#A78BFA',
+      orange10: '#FB923C',
     },
   },
   tokens: {

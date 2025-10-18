@@ -51,7 +51,7 @@ export const Input: React.FC<InputProps> = ({
         {icon && <TamaguiView marginRight="$sm">{icon}</TamaguiView>}
         <TamaguiInput
           value={value}
-          onChangeText={(_e: any) => onChangeText(_e.nativeEvent?.text || _e)}
+          onChangeText={onChangeText}
           placeholder={placeholder}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}

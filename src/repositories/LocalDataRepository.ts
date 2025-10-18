@@ -1,8 +1,10 @@
 import data from '../fixtures/data.json';
 import {
+  ActivityRoundup,
   Admin,
   Assignment,
   Attendance,
+  CheckIn,
   Doctor,
   Employee,
   Notification,
@@ -17,6 +19,8 @@ export interface Database {
   attendance: Attendance[];
   visits: Visit[];
   notifications: Notification[];
+  checkIns: CheckIn[];
+  roundups: ActivityRoundup[];
 }
 
 export class LocalDataRepository<T> {

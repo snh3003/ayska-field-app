@@ -13,14 +13,26 @@
       "email": "alice@field.co",
       "password": "password123",
       "name": "Alice",
-      "role": "employee"
+      "role": "employee",
+      "age": 28,
+      "dateOfBirth": "1995-06-15",
+      "areaOfOperation": "North Delhi",
+      "isFirstLogin": false,
+      "createdAt": "2024-01-15T10:00:00Z",
+      "createdBy": "a1"
     },
     {
       "id": "e2",
       "email": "bob@field.co",
       "password": "password123",
       "name": "Bob",
-      "role": "employee"
+      "role": "employee",
+      "age": 32,
+      "dateOfBirth": "1991-03-22",
+      "areaOfOperation": "South Delhi",
+      "isFirstLogin": false,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "createdBy": "a1"
     }
   ],
   "doctors": [
@@ -28,22 +40,34 @@
       "id": "d1",
       "name": "Dr. Smith",
       "specialization": "Cardiology",
-      "location": { "lat": 40.7128, "lng": -74.006 },
-      "phone": "+1-555-0101"
+      "location": { "lat": 28.6139, "lng": 77.209 },
+      "phone": "+91-98765-43210",
+      "age": 45,
+      "dateOfBirth": "1978-08-10",
+      "createdAt": "2024-01-15T11:00:00Z",
+      "createdBy": "a1"
     },
     {
       "id": "d2",
       "name": "Dr. Johnson",
       "specialization": "Neurology",
-      "location": { "lat": 40.7589, "lng": -73.9851 },
-      "phone": "+1-555-0102"
+      "location": { "lat": 28.5355, "lng": 77.391 },
+      "phone": "+91-98765-43211",
+      "age": 52,
+      "dateOfBirth": "1971-12-05",
+      "createdAt": "2024-01-15T11:15:00Z",
+      "createdBy": "a1"
     },
     {
       "id": "d3",
       "name": "Dr. Williams",
       "specialization": "Orthopedics",
-      "location": { "lat": 40.7505, "lng": -73.9934 },
-      "phone": "+1-555-0103"
+      "location": { "lat": 28.4595, "lng": 77.0266 },
+      "phone": "+91-98765-43212",
+      "age": 38,
+      "dateOfBirth": "1985-04-18",
+      "createdAt": "2024-01-15T11:30:00Z",
+      "createdBy": "a1"
     },
     {
       "id": "d4",
@@ -58,28 +82,40 @@
       "id": "as1",
       "employeeId": "e1",
       "doctorId": "d1",
+      "target": 10,
+      "currentProgress": 3,
       "assignedDate": "2025-01-15",
+      "assignedBy": "a1",
       "status": "active"
     },
     {
       "id": "as2",
       "employeeId": "e1",
       "doctorId": "d2",
+      "target": 8,
+      "currentProgress": 2,
       "assignedDate": "2025-01-15",
+      "assignedBy": "a1",
       "status": "active"
     },
     {
       "id": "as3",
       "employeeId": "e1",
       "doctorId": "d3",
+      "target": 12,
+      "currentProgress": 5,
       "assignedDate": "2025-01-15",
+      "assignedBy": "a1",
       "status": "active"
     },
     {
       "id": "as4",
       "employeeId": "e1",
       "doctorId": "d4",
+      "target": 6,
+      "currentProgress": 1,
       "assignedDate": "2025-01-15",
+      "assignedBy": "a1",
       "status": "active"
     }
   ],
@@ -268,5 +304,7 @@
       "read": true,
       "actionable": false
     }
-  ]
+  ],
+  "checkIns": [],
+  "roundups": []
 }

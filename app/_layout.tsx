@@ -55,6 +55,62 @@ function RootLayoutContent() {
           name="modal"
           options={{ presentation: 'modal', title: 'Modal' }}
         />
+        <Stack.Screen
+          name="admin/onboard-employee"
+          options={{
+            presentation: 'modal',
+            title: 'Add Employee',
+            headerShown: true,
+            headerStyle: { backgroundColor: 'transparent' },
+            headerTintColor: 'transparent',
+            headerTitleStyle: { fontWeight: '600' },
+            headerTransparent: true,
+            headerLeft: () => null,
+            headerRight: () => null,
+          }}
+        />
+        <Stack.Screen
+          name="admin/onboard-doctor"
+          options={{
+            presentation: 'modal',
+            title: 'Add Doctor',
+            headerShown: true,
+            headerStyle: { backgroundColor: 'transparent' },
+            headerTintColor: 'transparent',
+            headerTitleStyle: { fontWeight: '600' },
+            headerTransparent: true,
+            headerLeft: () => null,
+            headerRight: () => null,
+          }}
+        />
+        <Stack.Screen
+          name="admin/analytics"
+          options={{
+            presentation: 'modal',
+            title: 'Employee Analytics',
+            headerShown: true,
+            headerStyle: { backgroundColor: 'transparent' },
+            headerTintColor: 'transparent',
+            headerTitleStyle: { fontWeight: '600' },
+            headerTransparent: true,
+            headerLeft: () => null,
+            headerRight: () => null,
+          }}
+        />
+        <Stack.Screen
+          name="admin/assign-doctors"
+          options={{
+            presentation: 'modal',
+            title: 'Assign Doctors',
+            headerShown: true,
+            headerStyle: { backgroundColor: 'transparent' },
+            headerTintColor: 'transparent',
+            headerTitleStyle: { fontWeight: '600' },
+            headerTransparent: true,
+            headerLeft: () => null,
+            headerRight: () => null,
+          }}
+        />
       </Stack>
       <StatusBar
         style={colorScheme === 'dark' ? 'light' : 'dark'}
