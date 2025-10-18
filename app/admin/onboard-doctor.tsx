@@ -1,3 +1,3 @@
-import OnboardDoctorScreen from '../../src/screens/Admin/OnboardDoctor';
+import OnboardDoctorScreen from '../../src/screens/Admin/AyskaOnboardDoctorScreen';
 
 export default OnboardDoctorScreen;

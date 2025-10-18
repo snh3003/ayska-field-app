@@ -1,5 +1,5 @@
 // Business Logic Components
-export { DoctorCard } from './DoctorCard';
-export { EmployeeCard } from './EmployeeCard';
-export { ActivityCard } from './ActivityCard';
-export { TeamCard } from './TeamCard';
+export { DoctorCard } from './AyskaDoctorCardComponent';
+export { EmployeeCard } from './AyskaEmployeeCardComponent';
+export { ActivityCard } from './AyskaActivityCardComponent';
+export { TeamCard } from './AyskaTeamCardComponent';

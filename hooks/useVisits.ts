@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { localDataService } from '../src/services/LocalDataService';
+import { localDataService } from '../src/services/AyskaLocalDataServiceService';
 import { Visit } from '../src/types';
 
 export function useVisits(employeeId?: string) {

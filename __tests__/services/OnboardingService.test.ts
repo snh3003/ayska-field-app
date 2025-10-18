@@ -1,11 +1,11 @@
-import { OnboardingService } from '../../src/services/OnboardingService';
+import { OnboardingService } from '../../src/services/AyskaOnboardingServiceService';
 import {
   IDoctorRepository,
   IEmailService,
   IEmployeeRepository,
-} from '../../src/interfaces/onboarding';
-import { INotificationSubject } from '../../src/interfaces/patterns';
-import { Doctor, Employee } from '../../src/types/models';
+} from '../../src/interfaces/AyskaOnboardingInterface';
+import { INotificationSubject } from '../../src/interfaces/AyskaPatternsInterface';
+import { Doctor, Employee } from '../../src/types/AyskaModelsType';
 
 // Mock implementations
 const mockEmployeeRepository: jest.Mocked<IEmployeeRepository> = {

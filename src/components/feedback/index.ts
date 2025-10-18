@@ -1,9 +1,9 @@
 // User Feedback Components
-export { Toast } from './Toast';
-export { ErrorBoundary } from './ErrorBoundary';
-export { EmptyState } from './EmptyState';
+export { Toast } from './AyskaToastComponent';
+export { ErrorBoundary } from './AyskaErrorBoundaryComponent';
+export { EmptyState } from './AyskaEmptyStateComponent';
 export {
   CardSkeleton,
   StatCardSkeleton,
   ListItemSkeleton,
-} from './SkeletonLoader';
+} from './AyskaSkeletonLoaderComponent';

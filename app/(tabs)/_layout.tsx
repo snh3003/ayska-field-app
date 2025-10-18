@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 
-import { HapticTab } from '@/src/components/ui/HapticTab';
+import { HapticTab } from '@/src/components/ui/AyskaHapticTabComponent';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { RootState } from '@/src/store';

@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { Redirect } from 'expo-router';
-import NotificationsScreen from '../../src/screens/NotificationsScreen';
+import NotificationsScreen from '../../src/screens/AyskaNotificationsScreenScreen';
 import type { RootState } from '../../src/store';
 
 export default function NotificationsTab() {

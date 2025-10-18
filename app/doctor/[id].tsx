@@ -1,4 +1,3 @@
-import DoctorDetail from '../../src/screens/Employee/DoctorDetail';
+import DoctorDetail from '../../src/screens/Employee/AyskaDoctorDetailScreen';
 
 export default DoctorDetail;
-

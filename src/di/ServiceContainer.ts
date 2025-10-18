@@ -1,40 +1,40 @@
-import { AsyncStorageProvider } from '../providers/AsyncStorageProvider';
-import { AuthStorageService } from '../services/AuthStorageService';
-import { CacheStorageService } from '../services/CacheStorageService';
-import { DraftStorageService } from '../services/DraftStorageService';
-import { SettingsStorageService } from '../services/SettingsStorageService';
-import { LocalDataRepository } from '../repositories/LocalDataRepository';
-import { AuthRepository } from '../repositories/AuthRepository';
-import { StatsRepository } from '../repositories/StatsRepository';
-import { NotificationsRepository } from '../repositories/NotificationsRepository';
-import { EmployeeRepository } from '../repositories/EmployeeRepository';
-import { DoctorRepository } from '../repositories/DoctorRepository';
-import { AssignmentRepository } from '../repositories/AssignmentRepository';
-import { CheckInRepository } from '../repositories/CheckInRepository';
-import { AnalyticsRepository } from '../repositories/AnalyticsRepository';
+import { AsyncStorageProvider } from '../providers/AyskaAsyncStorageProviderProvider';
+import { AuthStorageService } from '../services/AyskaAuthStorageServiceService';
+import { CacheStorageService } from '../services/AyskaCacheStorageServiceService';
+import { DraftStorageService } from '../services/AyskaDraftStorageServiceService';
+import { SettingsStorageService } from '../services/AyskaSettingsStorageServiceService';
+import { LocalDataRepository } from '../repositories/AyskaLocalDataRepositoryRepository';
+import { AuthRepository } from '../repositories/AyskaAuthRepositoryRepository';
+import { StatsRepository } from '../repositories/AyskaStatsRepositoryRepository';
+import { NotificationsRepository } from '../repositories/AyskaNotificationsRepositoryRepository';
+import { EmployeeRepository } from '../repositories/AyskaEmployeeRepositoryRepository';
+import { DoctorRepository } from '../repositories/AyskaDoctorRepositoryRepository';
+import { AssignmentRepository } from '../repositories/AyskaAssignmentRepositoryRepository';
+import { CheckInRepository } from '../repositories/AyskaCheckInRepositoryRepository';
+import { AnalyticsRepository } from '../repositories/AyskaAnalyticsRepositoryRepository';
 import { HttpClient } from '../api/HttpClient';
-import { AuthInterceptor } from '../interceptors/AuthInterceptor';
-import { RetryInterceptor } from '../interceptors/RetryInterceptor';
-import { ErrorInterceptor } from '../interceptors/ErrorInterceptor';
-import { AdminService } from '../services/AdminService';
-import { EmployeeService } from '../services/EmployeeService';
-import { ReportService } from '../services/ReportService';
-import { NotificationsService } from '../services/NotificationsService';
-import { EmailService } from '../services/EmailService';
-import { OnboardingService } from '../services/OnboardingService';
-import { AssignmentService } from '../services/AssignmentService';
-import { CheckInService } from '../services/CheckInService';
-import { AnalyticsService } from '../services/AnalyticsService';
-import { GeolocationService } from '../services/GeolocationService';
+import { AuthInterceptor } from '../interceptors/AyskaAuthInterceptorInterceptor';
+import { RetryInterceptor } from '../interceptors/AyskaRetryInterceptorInterceptor';
+import { ErrorInterceptor } from '../interceptors/AyskaErrorInterceptorInterceptor';
+import { AdminService } from '../services/AyskaAdminServiceService';
+import { EmployeeService } from '../services/AyskaEmployeeServiceService';
+import { ReportService } from '../services/AyskaReportServiceService';
+import { NotificationsService } from '../services/AyskaNotificationsServiceService';
+import { EmailService } from '../services/AyskaEmailServiceService';
+import { OnboardingService } from '../services/AyskaOnboardingServiceService';
+import { AssignmentService } from '../services/AyskaAssignmentServiceService';
+import { CheckInService } from '../services/AyskaCheckInServiceService';
+import { AnalyticsService } from '../services/AyskaAnalyticsServiceService';
+import { GeolocationService } from '../services/AyskaGeolocationServiceService';
 import {
   AdminDashboardObserver,
   EmployeeFeedObserver,
   NotificationObserverService,
   PushNotificationObserver,
-} from '../services/NotificationObserver';
-import { ProximityValidator } from '../validation/strategies/LocationValidator';
-import { GoogleMapProvider } from '../providers/GoogleMapProvider';
-import { MapplsMapProvider } from '../providers/MapplsMapProvider';
+} from '../services/AyskaNotificationObserverService';
+import { ProximityValidator } from '../validation/strategies/AyskaLocationValidatorValidation';
+import { GoogleMapProvider } from '../providers/AyskaGoogleMapProviderProvider';
+import { MapplsMapProvider } from '../providers/AyskaMapplsMapProviderProvider';
 import { MapsConfig } from '../config/maps';
 
 export class ServiceContainer {

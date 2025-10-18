@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '../contexts/ThemeContext';
 import { ToastProvider } from '../contexts/ToastContext';
-import { ErrorBoundary } from '../src/components/feedback/ErrorBoundary';
+import { ErrorBoundary } from '../src/components/feedback/AyskaErrorBoundaryComponent';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TamaguiProvider } from '@tamagui/core';
 import tamaguiConfig from '../tamagui.config';

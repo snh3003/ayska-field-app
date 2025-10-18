@@ -1,3 +1,3 @@
 // Layout Components
-export { Logo } from './Logo';
-export { ThemeToggle } from './ThemeToggle';
+export { Logo } from './AyskaLogoComponent';
+export { ThemeToggle } from './AyskaThemeToggleComponent';

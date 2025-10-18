@@ -1,3 +1,3 @@
-import OnboardEmployeeScreen from '../../src/screens/Admin/OnboardEmployee';
+import OnboardEmployeeScreen from '../../src/screens/Admin/AyskaOnboardEmployeeScreen';
 
 export default OnboardEmployeeScreen;

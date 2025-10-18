@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AdminService } from '../../src/services/AdminService';
-import type { TeamSales } from '../../src/types/api';
+import { AdminService } from '../../src/services/AyskaAdminServiceService';
+import type { TeamSales } from '../../src/types/AyskaApiType';
 
 describe('AdminService', () => {
   const mock = new MockAdapter(axios);
@@ -29,5 +29,3 @@ describe('AdminService', () => {
     await expect(service.getTeamSales('t1')).rejects.toBeTruthy();
   });
 });
-
-

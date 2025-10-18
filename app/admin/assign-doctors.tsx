@@ -1,3 +1,3 @@
-import AssignDoctorsScreen from '../../src/screens/Admin/AssignDoctors';
+import AssignDoctorsScreen from '../../src/screens/Admin/AyskaAssignDoctorsScreen';
 
 export default AssignDoctorsScreen;

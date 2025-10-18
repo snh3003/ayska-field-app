@@ -1,5 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { IHttpClient, IHttpInterceptor } from '../interfaces/services';
+import {
+  IHttpClient,
+  IHttpInterceptor,
+} from '../interfaces/AyskaServicesInterface';
 
 export class HttpClient implements IHttpClient {
   private instance: AxiosInstance;

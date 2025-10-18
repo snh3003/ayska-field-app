@@ -1,3 +1,3 @@
 // Navigation Components
-export { BottomSheet } from './BottomSheet';
-export { SwipeableCard } from './SwipeableCard';
+export { BottomSheet } from './AyskaBottomSheetComponent';
+export { SwipeableCard } from './AyskaSwipeableCardComponent';

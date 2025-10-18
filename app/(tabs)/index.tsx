@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { Redirect } from 'expo-router';
-import EmployeeHome from '../../src/screens/Employee/EmployeeHome';
-import AdminDashboard from '../../src/screens/Admin/AdminDashboard';
+import EmployeeHome from '../../src/screens/Employee/AyskaEmployeeHomeScreen';
+import AdminDashboard from '../../src/screens/Admin/AyskaAdminDashboardScreen';
 import type { RootState } from '../../src/store';
 
 export default function HomeScreen() {

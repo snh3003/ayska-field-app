@@ -1,3 +1,3 @@
-import EmployeeAnalyticsScreen from '../../src/screens/Admin/EmployeeAnalytics';
+import EmployeeAnalyticsScreen from '../../src/screens/Admin/AyskaEmployeeAnalyticsScreen';
 
 export default EmployeeAnalyticsScreen;

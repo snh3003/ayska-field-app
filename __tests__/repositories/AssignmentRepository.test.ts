@@ -1,6 +1,6 @@
-import { AssignmentRepository } from '../../src/repositories/AssignmentRepository';
-import { LocalDataRepository } from '../../src/repositories/LocalDataRepository';
-import { Assignment } from '../../src/types/models';
+import { AssignmentRepository } from '../../src/repositories/AyskaAssignmentRepositoryRepository';
+import { LocalDataRepository } from '../../src/repositories/AyskaLocalDataRepositoryRepository';
+import { Assignment } from '../../src/types/AyskaModelsType';
 
 // Mock LocalDataRepository
 const mockLocalDataRepository = {

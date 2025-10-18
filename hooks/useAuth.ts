@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import type { RootState } from '../src/store';
-import { logout as logoutAction } from '../src/store/slices/authSlice';
+import { logout as logoutAction } from '../src/store/slices/AyskaAuthSliceSlice';
 
 export function useAuth() {
   const dispatch = useDispatch();

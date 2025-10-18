@@ -1,2 +1,2 @@
 // Form Components
-export { SearchBar } from './SearchBar';
+export { SearchBar } from './AyskaSearchBarComponent';

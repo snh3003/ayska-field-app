@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
-import { Toast } from '../src/components/feedback/Toast';
+import { Toast } from '../src/components/feedback/AyskaToastComponent';
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 

@@ -1,2 +1,2 @@
-export { store, serviceContainer } from './configureStore';
-export type { RootState, AppDispatch } from './configureStore';
+export { store, serviceContainer } from './AyskaConfigureStoreStore';
+export type { RootState, AppDispatch } from './AyskaConfigureStoreStore';

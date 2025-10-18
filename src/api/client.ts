@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import type { RootState } from '../store';
-import { logout } from '../store/slices/authSlice';
+import { logout } from '../store/slices/AyskaAuthSliceSlice';
 
 /**
  * Axios client configured for the Field App API.

@@ -1,8 +1,24 @@
-import type { Activity, ReportsResponse, TeamSales } from '../types/api';
+import type {
+  Activity,
+  ReportsResponse,
+  TeamSales,
+} from '../types/AyskaApiType';
 
 export const mockActivities: Activity[] = [
-  { id: 'a1', employeeId: 'e1', type: 'visit', timestamp: '2025-01-01T10:00:00Z', notes: 'Visited client A' },
-  { id: 'a2', employeeId: 'e1', type: 'sale', timestamp: '2025-01-02T11:00:00Z', amount: 200 },
+  {
+    id: 'a1',
+    employeeId: 'e1',
+    type: 'visit',
+    timestamp: '2025-01-01T10:00:00Z',
+    notes: 'Visited client A',
+  },
+  {
+    id: 'a2',
+    employeeId: 'e1',
+    type: 'sale',
+    timestamp: '2025-01-02T11:00:00Z',
+    amount: 200,
+  },
 ];
 
 export const mockTeamSales: TeamSales = {
@@ -22,5 +38,3 @@ export const mockReports: ReportsResponse = {
     { date: '2025-01-02', totalVisits: 3, totalSales: 1 },
   ],
 };
-
-

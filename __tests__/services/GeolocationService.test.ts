@@ -1,5 +1,5 @@
-import { GeolocationService } from '../../src/services/GeolocationService';
-import { Location } from '../../src/types/models';
+import { GeolocationService } from '../../src/services/AyskaGeolocationServiceService';
+import { Location } from '../../src/types/AyskaModelsType';
 
 import * as LocationModule from 'expo-location';
 
