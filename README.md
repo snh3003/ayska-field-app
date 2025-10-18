@@ -18,32 +18,65 @@
 This app includes a typed service layer and Redux Toolkit store to fetch and render employee activities, team sales, and reports.
 
 ### Services
+
 - `src/api/client.ts`: Axios wrapper injecting Bearer token and handling 401 (dispatches logout) and single retry on network/5xx.
 - `src/services/EmployeeService.ts`: `getActivities(employeeId)`, `submitActivity(payload)`.
 - `src/services/AdminService.ts`: `getTeamSales(teamId)`.
 - `src/services/ReportService.ts`: `getReports(start, end)`.
 
 ### Store
+
 - `src/store/index.ts`: configureStore with `auth`, `employee`, `admin` reducers.
 - `src/store/slices/authSlice.ts`: minimal token+role with `setCredentials`, `logout`.
 - `src/store/slices/employeeSlice.ts`, `adminSlice.ts`: async thunks, loading/error states, selectors.
 
 ### UI examples
+
 - `src/screens/EmployeeDashboard.tsx`, `src/screens/AdminDashboard.tsx` use store selectors and render minimal cards with loading/empty/error states.
 
 ### Mock data
+
 Small fixtures in `src/fixtures/mockData.ts` for local demos/tests.
 
 ### Setup
+
 ```bash
 npm install
 npm run start
 ```
 
 ### Tests
+
 ```bash
 npm run test
 ```
 
 Jest tests in `__tests__/services/*.test.ts` mock axios and cover success/error paths.
 
+## Development Guidelines
+
+### Preventing Duplicate Files
+
+This project has experienced issues with duplicate configuration files due to macOS file conflicts and cloud sync issues. To prevent this:
+
+#### Do NOT:
+
+- Manually copy native config files (`android/`, `ios/` directories)
+- Create files with " 2", " 3" suffixes (macOS conflict artifacts)
+- Commit duplicate files to git
+
+#### Do:
+
+- Use `expo prebuild --clean` to regenerate native directories
+- Resolve git conflicts properly (don't create copies)
+- Run `npm run check-duplicates` before committing
+- Disable cloud sync for `ios/` and `android/` directories
+
+#### Available Scripts:
+
+```bash
+npm run check-duplicates  # Scan for duplicate files
+npm run pre-commit        # Run duplicate check + linting
+```
+
+The `.gitignore` file includes patterns to prevent accidental duplicate commits.
