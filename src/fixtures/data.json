@@ -1,31 +1,272 @@
 {
   "admins": [
-    { "id": "a1", "email": "admin@field.co", "password": "admin123", "name": "Admin User" }
+    {
+      "id": "a1",
+      "email": "admin@field.co",
+      "password": "admin123",
+      "name": "Admin User"
+    }
   ],
   "employees": [
-    { "id": "e1", "email": "alice@field.co", "password": "password123", "name": "Alice", "role": "employee" },
-    { "id": "e2", "email": "bob@field.co", "password": "password123", "name": "Bob", "role": "employee" }
+    {
+      "id": "e1",
+      "email": "alice@field.co",
+      "password": "password123",
+      "name": "Alice",
+      "role": "employee"
+    },
+    {
+      "id": "e2",
+      "email": "bob@field.co",
+      "password": "password123",
+      "name": "Bob",
+      "role": "employee"
+    }
   ],
   "doctors": [
-    { "id": "d1", "name": "Dr. Smith", "specialization": "Cardiology", "location": { "lat": 40.7128, "lng": -74.0060 }, "phone": "+1-555-0101" },
-    { "id": "d2", "name": "Dr. Johnson", "specialization": "Neurology", "location": { "lat": 40.7589, "lng": -73.9851 }, "phone": "+1-555-0102" },
-    { "id": "d3", "name": "Dr. Williams", "specialization": "Orthopedics", "location": { "lat": 40.7505, "lng": -73.9934 }, "phone": "+1-555-0103" },
-    { "id": "d4", "name": "Dr. Marley", "specialization": "Orthopedics", "location": { "lat": 40.7505, "lng": -73.9934 }, "phone": "+1-555-0103" }
+    {
+      "id": "d1",
+      "name": "Dr. Smith",
+      "specialization": "Cardiology",
+      "location": { "lat": 40.7128, "lng": -74.006 },
+      "phone": "+1-555-0101"
+    },
+    {
+      "id": "d2",
+      "name": "Dr. Johnson",
+      "specialization": "Neurology",
+      "location": { "lat": 40.7589, "lng": -73.9851 },
+      "phone": "+1-555-0102"
+    },
+    {
+      "id": "d3",
+      "name": "Dr. Williams",
+      "specialization": "Orthopedics",
+      "location": { "lat": 40.7505, "lng": -73.9934 },
+      "phone": "+1-555-0103"
+    },
+    {
+      "id": "d4",
+      "name": "Dr. Marley",
+      "specialization": "Orthopedics",
+      "location": { "lat": 40.7505, "lng": -73.9934 },
+      "phone": "+1-555-0103"
+    }
   ],
   "assignments": [
-    { "id": "as1", "employeeId": "e1", "doctorId": "d1", "assignedDate": "2025-01-15", "status": "active" },
-    { "id": "as2", "employeeId": "e1", "doctorId": "d2", "assignedDate": "2025-01-15", "status": "active" },
-    { "id": "as3", "employeeId": "e1", "doctorId": "d3", "assignedDate": "2025-01-15", "status": "active" },
-    { "id": "as4", "employeeId": "e1", "doctorId": "d4", "assignedDate": "2025-01-15", "status": "active" }
+    {
+      "id": "as1",
+      "employeeId": "e1",
+      "doctorId": "d1",
+      "assignedDate": "2025-01-15",
+      "status": "active"
+    },
+    {
+      "id": "as2",
+      "employeeId": "e1",
+      "doctorId": "d2",
+      "assignedDate": "2025-01-15",
+      "status": "active"
+    },
+    {
+      "id": "as3",
+      "employeeId": "e1",
+      "doctorId": "d3",
+      "assignedDate": "2025-01-15",
+      "status": "active"
+    },
+    {
+      "id": "as4",
+      "employeeId": "e1",
+      "doctorId": "d4",
+      "assignedDate": "2025-01-15",
+      "status": "active"
+    }
   ],
   "attendance": [
-    { "id": "at1", "employeeId": "e1", "startTime": "2025-01-15T09:00:00Z", "date": "2025-01-15", "status": "active" },
-    { "id": "at2", "employeeId": "e2", "startTime": "2025-01-15T08:30:00Z", "endTime": "2025-01-15T17:00:00Z", "date": "2025-01-15", "status": "completed" }
+    {
+      "id": "at1",
+      "employeeId": "e1",
+      "startTime": "2025-01-15T09:00:00Z",
+      "date": "2025-01-15",
+      "status": "active"
+    },
+    {
+      "id": "at2",
+      "employeeId": "e2",
+      "startTime": "2025-01-15T08:30:00Z",
+      "endTime": "2025-01-15T17:00:00Z",
+      "date": "2025-01-15",
+      "status": "completed"
+    }
   ],
   "visits": [
-    { "id": "v1", "employeeId": "e1", "doctorId": "d1", "checkInTime": "2025-01-15T10:00:00Z", "notes": "Regular checkup", "status": "completed" },
-    { "id": "v2", "employeeId": "e1", "doctorId": "d2", "checkInTime": "2025-01-15T14:00:00Z", "status": "in_progress" }
+    {
+      "id": "v1",
+      "employeeId": "e1",
+      "doctorId": "d1",
+      "checkInTime": "2025-01-15T10:00:00Z",
+      "notes": "Regular checkup",
+      "status": "completed"
+    },
+    {
+      "id": "v2",
+      "employeeId": "e1",
+      "doctorId": "d2",
+      "checkInTime": "2025-01-15T14:00:00Z",
+      "status": "in_progress"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "n1",
+      "userId": "a1",
+      "userRole": "admin",
+      "type": "visit",
+      "title": "Visit Completed",
+      "message": "Alice completed visit with Dr. Smith",
+      "timestamp": "2025-01-15T10:30:00Z",
+      "read": false,
+      "actionable": true,
+      "actionData": {
+        "targetId": "v1",
+        "route": "/visits/v1",
+        "visitId": "v1",
+        "employeeId": "e1",
+        "doctorId": "d1"
+      }
+    },
+    {
+      "id": "n2",
+      "userId": "a1",
+      "userRole": "admin",
+      "type": "attendance",
+      "title": "Employee Check-in",
+      "message": "Bob started his work day",
+      "timestamp": "2025-01-15T08:30:00Z",
+      "read": true,
+      "actionable": true,
+      "actionData": {
+        "targetId": "e2",
+        "route": "/employee/e2",
+        "employeeId": "e2",
+        "attendanceId": "at2"
+      }
+    },
+    {
+      "id": "n3",
+      "userId": "a1",
+      "userRole": "admin",
+      "type": "system",
+      "title": "System Update",
+      "message": "New features available in the app",
+      "timestamp": "2025-01-14T16:00:00Z",
+      "read": false,
+      "actionable": false
+    },
+    {
+      "id": "n4",
+      "userId": "e1",
+      "userRole": "employee",
+      "type": "assignment",
+      "title": "New Doctor Assignment",
+      "message": "You have been assigned to Dr. Williams",
+      "timestamp": "2025-01-15T09:00:00Z",
+      "read": false,
+      "actionable": true,
+      "actionData": {
+        "targetId": "d3",
+        "route": "/doctor/d3",
+        "doctorId": "d3",
+        "employeeId": "e1",
+        "assignmentId": "as3"
+      }
+    },
+    {
+      "id": "n5",
+      "userId": "e1",
+      "userRole": "employee",
+      "type": "visit",
+      "title": "Visit Reminder",
+      "message": "You have a visit with Dr. Johnson in 30 minutes",
+      "timestamp": "2025-01-15T13:30:00Z",
+      "read": false,
+      "actionable": true,
+      "actionData": {
+        "targetId": "d2",
+        "route": "/doctor/d2",
+        "doctorId": "d2",
+        "employeeId": "e1"
+      }
+    },
+    {
+      "id": "n6",
+      "userId": "e1",
+      "userRole": "employee",
+      "type": "attendance",
+      "title": "Day Started",
+      "message": "Your work day has been recorded",
+      "timestamp": "2025-01-15T09:00:00Z",
+      "read": true,
+      "actionable": false
+    },
+    {
+      "id": "n7",
+      "userId": "e2",
+      "userRole": "employee",
+      "type": "assignment",
+      "title": "New Doctor Assignment",
+      "message": "You have been assigned to Dr. Marley",
+      "timestamp": "2025-01-15T08:00:00Z",
+      "read": false,
+      "actionable": true,
+      "actionData": {
+        "targetId": "d4",
+        "route": "/doctor/d4",
+        "doctorId": "d4",
+        "employeeId": "e2",
+        "assignmentId": "as4"
+      }
+    },
+    {
+      "id": "n8",
+      "userId": "e2",
+      "userRole": "employee",
+      "type": "alert",
+      "title": "Attendance Alert",
+      "message": "Remember to check in when you start your day",
+      "timestamp": "2025-01-15T08:00:00Z",
+      "read": true,
+      "actionable": false
+    },
+    {
+      "id": "n9",
+      "userId": "a1",
+      "userRole": "admin",
+      "type": "visit",
+      "title": "Visit In Progress",
+      "message": "Alice is currently visiting Dr. Johnson",
+      "timestamp": "2025-01-15T14:00:00Z",
+      "read": false,
+      "actionable": true,
+      "actionData": {
+        "targetId": "v2",
+        "route": "/visits/v2",
+        "visitId": "v2",
+        "employeeId": "e1",
+        "doctorId": "d2"
+      }
+    },
+    {
+      "id": "n10",
+      "userId": "e1",
+      "userRole": "employee",
+      "type": "system",
+      "title": "App Update",
+      "message": "New version available with improved features",
+      "timestamp": "2025-01-14T20:00:00Z",
+      "read": true,
+      "actionable": false
+    }
   ]
 }
-
-

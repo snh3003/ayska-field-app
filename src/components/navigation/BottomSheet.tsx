@@ -72,7 +72,7 @@ export function BottomSheet({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: '$overlay',
+                backgroundColor: theme.overlay,
               },
               overlayStyle,
             ]}
@@ -84,7 +84,7 @@ export function BottomSheet({
               borderTopLeftRadius: BorderRadius.xl,
               borderTopRightRadius: BorderRadius.xl,
               overflow: 'hidden',
-              backgroundColor: '$background',
+              backgroundColor: theme.background,
               height,
             },
             sheetStyle,

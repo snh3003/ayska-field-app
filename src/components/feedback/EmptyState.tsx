@@ -65,7 +65,7 @@ export function EmptyState({
             paddingVertical: 16,
             paddingHorizontal: 24,
             borderRadius: 12,
-            backgroundColor: '$primary',
+            backgroundColor: theme.primary,
           }}
           onPress={onAction}
         >

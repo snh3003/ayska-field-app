@@ -85,7 +85,7 @@ export function Toast({
           padding: 16,
           borderRadius: 12,
           borderLeftWidth: 4,
-          backgroundColor: '$card',
+          backgroundColor: theme.card,
           borderLeftColor: getColor(),
           zIndex: 9999,
           ...Shadows.medium,

@@ -35,15 +35,6 @@ export default function Settings() {
 
   const settingsItems = [
     {
-      id: 'notifications',
-      title: 'Notifications',
-      icon: 'notifications-outline',
-      iconColor: theme.primary,
-      iconBgColor: theme.primaryBg,
-      onPress: () =>
-        Alert.alert('Notifications', 'Notification settings coming soon!'),
-    },
-    {
       id: 'privacy',
       title: 'Privacy & Security',
       icon: 'shield-checkmark-outline',
@@ -83,7 +74,7 @@ export default function Settings() {
           alignItems="center"
           marginBottom="$lg"
         >
-          <TamaguiText fontSize="$6" fontWeight="700" color="$text">
+          <TamaguiText fontSize="$6" fontWeight="700" color={theme.text}>
             Settings
           </TamaguiText>
           <ThemeToggle />
@@ -109,13 +100,13 @@ export default function Settings() {
               <Ionicons name="person" size={48} color={theme.primary} />
             </TamaguiView>
             <TamaguiView alignItems="center">
-              <TamaguiText fontSize="$6" fontWeight="700" color="$text">
+              <TamaguiText fontSize="$6" fontWeight="700" color={theme.text}>
                 {name || 'User'}
               </TamaguiText>
               <TamaguiText
                 fontSize="$4"
                 lineHeight="$6"
-                color="$textSecondary"
+                color={theme.textSecondary}
                 marginTop="$xs"
               >
                 {name}
@@ -130,7 +121,7 @@ export default function Settings() {
                 <TamaguiText
                   fontSize="$2"
                   lineHeight="$4"
-                  color="$primary"
+                  color={theme.primary}
                   fontWeight="600"
                 >
                   {role === 'admin' ? 'Administrator' : 'Employee'}
@@ -144,7 +135,7 @@ export default function Settings() {
         <TamaguiText
           fontSize="$5"
           fontWeight="600"
-          color="$text"
+          color={theme.text}
           marginTop="$lg"
           marginBottom="$md"
         >
@@ -176,7 +167,7 @@ export default function Settings() {
                 <TamaguiText
                   fontSize="$4"
                   lineHeight="$6"
-                  color="$text"
+                  color={theme.text}
                   fontWeight="600"
                 >
                   Theme
@@ -184,7 +175,7 @@ export default function Settings() {
                 <TamaguiText
                   fontSize="$2"
                   lineHeight="$4"
-                  color="$textSecondary"
+                  color={theme.textSecondary}
                   marginTop="$xs"
                 >
                   {scheme === 'dark' ? 'Dark Mode' : 'Light Mode'}
@@ -199,7 +190,7 @@ export default function Settings() {
         <TamaguiText
           fontSize="$5"
           fontWeight="600"
-          color="$text"
+          color={theme.text}
           marginTop="$lg"
           marginBottom="$md"
         >
@@ -239,7 +230,7 @@ export default function Settings() {
                   <TamaguiText
                     fontSize="$4"
                     lineHeight="$6"
-                    color="$text"
+                    color={theme.text}
                     fontWeight="600"
                   >
                     {item.title}
@@ -257,13 +248,6 @@ export default function Settings() {
           onPress={handleLogout}
           style={{
             marginTop: Spacing.xl,
-            backgroundColor: '$error',
-            ...(Platform.OS === 'android'
-              ? {
-                  elevation: 0,
-                  shadowOpacity: 0,
-                }
-              : {}),
           }}
         >
           <TamaguiView
@@ -290,14 +274,14 @@ export default function Settings() {
                 <TamaguiText
                   fontSize="$4"
                   lineHeight="$6"
-                  color="$error"
+                  color={theme.text}
                   fontWeight="600"
                 >
                   Logout
                 </TamaguiText>
               </TamaguiView>
             </TamaguiView>
-            <Ionicons name="chevron-forward" size={20} color={theme.error} />
+            <Ionicons name="chevron-forward" size={20} color={theme.icon} />
           </TamaguiView>
         </Card>
 
@@ -305,7 +289,7 @@ export default function Settings() {
         <TamaguiText
           fontSize="$2"
           lineHeight="$4"
-          color="$textSecondary"
+          color={theme.textSecondary}
           textAlign="center"
           marginTop="$xl"
         >

@@ -85,7 +85,7 @@ export function SearchBar({
             justifyContent: 'center',
             alignItems: 'center',
             marginLeft: 8,
-            backgroundColor: '$card',
+            backgroundColor: theme.card,
             borderColor: '$border',
           }}
           onPress={onFilterPress}

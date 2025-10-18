@@ -70,3 +70,27 @@ export interface AdminStats {
   totalVisits: number;
   activeAttendance: number;
 }
+
+export interface INotificationsRepository {
+  getNotificationsByUserId(_userId: string): Promise<Notification[]>;
+  markAsRead(_notificationId: string): Promise<void>;
+  markAllAsRead(_userId: string): Promise<void>;
+  getUnreadCount(_userId: string): Promise<number>;
+  deleteNotification(_notificationId: string): Promise<void>;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  userRole: 'admin' | 'employee';
+  type: 'visit' | 'assignment' | 'attendance' | 'system' | 'alert';
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  actionable?: boolean;
+  actionData?: {
+    targetId?: string;
+    route?: string;
+  };
+}

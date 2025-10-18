@@ -43,3 +43,30 @@ export interface IHttpInterceptor {
   onResponse?(_response: any): any;
   onError?(_error: any): any;
 }
+
+export interface INotificationsService {
+  // Local data operations
+  fetchNotifications(_userId: string): Promise<Notification[]>;
+  markNotificationRead(_notificationId: string): Promise<void>;
+  clearAllNotifications(_userId: string): Promise<void>;
+
+  // Future FCM/Expo integration hooks
+  registerForPushNotifications?(): Promise<string>;
+  unregisterPushNotifications?(): Promise<void>;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  userRole: 'admin' | 'employee';
+  type: 'visit' | 'assignment' | 'attendance' | 'system' | 'alert';
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  actionable?: boolean;
+  actionData?: {
+    targetId?: string;
+    route?: string;
+  };
+}

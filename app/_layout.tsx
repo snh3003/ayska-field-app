@@ -48,6 +48,10 @@ function RootLayoutContent() {
         <Stack.Screen name="doctor/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="employee/[id]" options={{ headerShown: false }} />
         <Stack.Screen
+          name="notification/[id]"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="modal"
           options={{ presentation: 'modal', title: 'Modal' }}
         />

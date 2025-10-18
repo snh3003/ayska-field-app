@@ -1,6 +1,6 @@
 // Redux store types and state interfaces
 
-import { UserRole } from './models';
+import { Notification, UserRole } from './models';
 
 // Auth State
 export interface AuthState {
@@ -30,11 +30,20 @@ export interface EmployeeState {
   error: string | null;
 }
 
+// Notifications State
+export interface NotificationsState {
+  notifications: Notification[];
+  unreadCount: number;
+  loading: boolean;
+  error: string | null;
+}
+
 // Root State
 export interface RootState {
   auth: AuthState;
   admin: AdminState;
   employee: EmployeeState;
+  notifications: NotificationsState;
 }
 
 // Action types

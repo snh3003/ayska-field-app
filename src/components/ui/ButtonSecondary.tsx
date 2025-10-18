@@ -5,6 +5,7 @@ import { hapticFeedback } from '@/utils/haptics';
 import { getButtonA11yProps } from '@/utils/accessibility';
 import { Button as TamaguiButton } from '@tamagui/button';
 import { Text as TamaguiText } from '@tamagui/core';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { ButtonSecondaryProps } from '../../types';
 
 export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
@@ -15,7 +16,7 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
   style,
   accessibilityHint,
 }) => {
-  const scheme = 'light'; // Default scheme
+  const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
 
   const handlePress = () => {
@@ -26,9 +27,9 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
   return (
     <TamaguiButton
       backgroundColor="transparent"
-      borderColor="$primary"
+      borderColor={theme.primary}
       borderWidth={1.5}
-      color="$primary"
+      color={theme.primary}
       paddingVertical="$md"
       paddingHorizontal="$lg"
       borderRadius="$md"
@@ -49,7 +50,7 @@ export const ButtonSecondary: React.FC<ButtonSecondaryProps> = ({
         <ActivityIndicator color={theme.primary} />
       ) : (
         <TamaguiText
-          color="$primary"
+          color={theme.primary}
           fontSize="$4"
           fontWeight="600"
           textAlign="center"

@@ -64,5 +64,26 @@ export interface Location {
   lng: number;
 }
 
+export interface Notification {
+  id: string;
+  userId: string;
+  userRole: 'admin' | 'employee';
+  type: 'visit' | 'assignment' | 'attendance' | 'system' | 'alert';
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  actionable?: boolean;
+  actionData?: {
+    targetId?: string;
+    route?: string;
+    visitId?: string;
+    employeeId?: string;
+    doctorId?: string;
+    attendanceId?: string;
+    assignmentId?: string;
+  };
+}
+
 export type Status = 'active' | 'completed' | 'cancelled' | 'in_progress';
 export type UserRole = 'employee' | 'admin' | null;

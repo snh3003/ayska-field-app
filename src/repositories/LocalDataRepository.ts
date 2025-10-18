@@ -5,6 +5,7 @@ import {
   Attendance,
   Doctor,
   Employee,
+  Notification,
   Visit,
 } from '../types';
 
@@ -15,6 +16,7 @@ export interface Database {
   assignments: Assignment[];
   attendance: Attendance[];
   visits: Visit[];
+  notifications: Notification[];
 }
 
 export class LocalDataRepository<T> {

@@ -6,6 +6,7 @@ import { SettingsStorageService } from '../services/SettingsStorageService';
 import { LocalDataRepository } from '../repositories/LocalDataRepository';
 import { AuthRepository } from '../repositories/AuthRepository';
 import { StatsRepository } from '../repositories/StatsRepository';
+import { NotificationsRepository } from '../repositories/NotificationsRepository';
 import { HttpClient } from '../api/HttpClient';
 import { AuthInterceptor } from '../interceptors/AuthInterceptor';
 import { RetryInterceptor } from '../interceptors/RetryInterceptor';
@@ -13,6 +14,7 @@ import { ErrorInterceptor } from '../interceptors/ErrorInterceptor';
 import { AdminService } from '../services/AdminService';
 import { EmployeeService } from '../services/EmployeeService';
 import { ReportService } from '../services/ReportService';
+import { NotificationsService } from '../services/NotificationsService';
 
 export class ServiceContainer {
   private services = new Map<string, any>();
@@ -46,6 +48,10 @@ export class ServiceContainer {
       'ISettingsStorage',
       () => new SettingsStorageService(this.get('IStorageProvider'))
     );
+    this.registerSingleton(
+      'INotificationsService',
+      () => new NotificationsService(this.get('INotificationsRepository'))
+    );
 
     // Data repositories
     this.registerSingleton('IDataRepository', () => new LocalDataRepository());
@@ -56,6 +62,10 @@ export class ServiceContainer {
     this.registerSingleton(
       'IStatsRepository',
       () => new StatsRepository(this.get('IDataRepository'))
+    );
+    this.registerSingleton(
+      'INotificationsRepository',
+      () => new NotificationsRepository(this.get('IDataRepository'))
     );
 
     // HTTP client and interceptors

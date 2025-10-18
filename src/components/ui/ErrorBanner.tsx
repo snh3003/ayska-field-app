@@ -13,7 +13,7 @@ export const ErrorBanner: React.FC<{ message: string }> = ({ message }) => {
       backgroundColor={theme.errorBg}
       borderRadius="$md"
     >
-      <TamaguiText color="$error">{message}</TamaguiText>
+      <TamaguiText color={theme.error}>{message}</TamaguiText>
     </TamaguiView>
   );
 };
