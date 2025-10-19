@@ -7,7 +7,8 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
 import { SwipeableCardProps } from '../../types';
 
 const SWIPE_THRESHOLD = 120;
@@ -71,14 +72,12 @@ export function SwipeableCard({
           ]}
         >
           <Ionicons name={rightAction.icon} size={24} color="#FFF" />
-          <TamaguiText
-            color="white"
-            fontWeight="600"
-            marginTop="$xs"
-            fontSize="$2"
+          <AyskaCaptionComponent
+            color="textSecondary"
+            style={{ color: 'white', fontWeight: '600', marginTop: 4 }}
           >
             {rightAction.label}
-          </TamaguiText>
+          </AyskaCaptionComponent>
         </Animated.View>
       )}
       {leftAction && (
@@ -100,14 +99,12 @@ export function SwipeableCard({
           ]}
         >
           <Ionicons name={leftAction.icon} size={24} color="#FFF" />
-          <TamaguiText
-            color="white"
-            fontWeight="600"
-            marginTop="$xs"
-            fontSize="$2"
+          <AyskaCaptionComponent
+            color="textSecondary"
+            style={{ color: 'white', fontWeight: '600', marginTop: 4 }}
           >
             {leftAction.label}
-          </TamaguiText>
+          </AyskaCaptionComponent>
         </Animated.View>
       )}
       <PanGestureHandler

@@ -1,7 +1,9 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaTitleComponent } from '../ui/AyskaTitleComponent';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
 
@@ -41,24 +43,23 @@ export function EmptyState({
       >
         <Ionicons name={icon} size={64} color={theme.primary} />
       </TamaguiView>
-      <TamaguiText
-        fontSize="$6"
-        fontWeight="600"
-        color="$text"
-        marginBottom="$md"
-        textAlign="center"
+      <AyskaTitleComponent
+        level={2}
+        weight="semibold"
+        color="text"
+        align="center"
+        style={{ marginBottom: 16 }}
       >
         {title}
-      </TamaguiText>
-      <TamaguiText
-        fontSize="$4"
-        color="$textSecondary"
-        textAlign="center"
-        marginBottom="$xl"
-        maxWidth={280}
+      </AyskaTitleComponent>
+      <AyskaTextComponent
+        variant="bodyLarge"
+        color="textSecondary"
+        align="center"
+        style={{ marginBottom: 24, maxWidth: 280 }}
       >
         {message}
-      </TamaguiText>
+      </AyskaTextComponent>
       {actionLabel && onAction && (
         <TouchableOpacity
           style={{
@@ -69,9 +70,14 @@ export function EmptyState({
           }}
           onPress={onAction}
         >
-          <TamaguiText fontSize="$4" fontWeight="600" color="white">
+          <AyskaTextComponent
+            variant="bodyLarge"
+            weight="semibold"
+            color="text"
+            style={{ color: 'white' }}
+          >
             {actionLabel}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TouchableOpacity>
       )}
     </TamaguiView>

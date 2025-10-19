@@ -1,8 +1,10 @@
 import React, { Component, ReactNode } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
-import { Colors } from '@/constants/theme';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaTitleComponent } from '../ui/AyskaTitleComponent';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { useTheme } from '../../../utils/theme';
 
 interface Props {
   children: ReactNode;
@@ -14,8 +16,12 @@ interface State {
   error: Error | null;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+interface ErrorBoundaryWithThemeProps extends Props {
+  theme: any;
+}
+
+class ErrorBoundaryClass extends Component<ErrorBoundaryWithThemeProps, State> {
+  constructor(props: ErrorBoundaryWithThemeProps) {
     super(props);
     this.state = { hasError: false, error: null };
   }
@@ -35,7 +41,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     const { hasError, error } = this.state;
-    const { fallback, children } = this.props;
+    const { fallback, children, theme } = this.props;
 
     if (hasError) {
       if (fallback) {
@@ -48,55 +54,55 @@ export class ErrorBoundary extends Component<Props, State> {
           justifyContent="center"
           alignItems="center"
           padding="$xl"
-          backgroundColor={Colors.light.background}
+          backgroundColor={theme.background}
         >
           <TamaguiView marginBottom="$lg">
-            <Ionicons
-              name="alert-circle"
-              size={64}
-              color={Colors.light.error}
-            />
+            <Ionicons name="alert-circle" size={64} color={theme.error} />
           </TamaguiView>
-          <TamaguiText
-            fontSize="$6"
-            fontWeight="700"
-            color={Colors.light.text}
-            marginBottom="$md"
-            textAlign="center"
+          <AyskaTitleComponent
+            level={2}
+            weight="bold"
+            color="text"
+            align="center"
+            style={{ marginBottom: 16 }}
           >
             Oops! Something went wrong
-          </TamaguiText>
-          <TamaguiText
-            fontSize="$4"
-            color={Colors.light.textSecondary}
-            textAlign="center"
-            marginBottom="$lg"
+          </AyskaTitleComponent>
+          <AyskaTextComponent
+            variant="bodyLarge"
+            color="textSecondary"
+            align="center"
+            style={{ marginBottom: 24 }}
           >
             We&apos;re sorry for the inconvenience. Please try again.
-          </TamaguiText>
+          </AyskaTextComponent>
           {__DEV__ && error && (
-            <TamaguiText
-              fontSize="$2"
-              color={Colors.light.error}
-              textAlign="center"
-              marginBottom="$lg"
-              paddingHorizontal="$md"
+            <AyskaTextComponent
+              variant="bodySmall"
+              color="error"
+              align="center"
+              style={{ marginBottom: 24, paddingHorizontal: 16 }}
             >
               {error.toString()}
-            </TamaguiText>
+            </AyskaTextComponent>
           )}
           <TouchableOpacity
             style={{
-              backgroundColor: Colors.light.primary,
+              backgroundColor: theme.primary,
               paddingVertical: 16,
               paddingHorizontal: 32,
               borderRadius: 12,
             }}
             onPress={this.handleReset}
           >
-            <TamaguiText fontSize="$4" fontWeight="600" color="#FFFFFF">
+            <AyskaTextComponent
+              variant="bodyLarge"
+              weight="semibold"
+              color="text"
+              style={{ color: 'white' }}
+            >
               Try Again
-            </TamaguiText>
+            </AyskaTextComponent>
           </TouchableOpacity>
         </TamaguiView>
       );
@@ -105,3 +111,9 @@ export class ErrorBoundary extends Component<Props, State> {
     return children;
   }
 }
+
+// Functional component wrapper that uses the theme hook
+export const ErrorBoundary: React.FC<Props> = props => {
+  const theme = useTheme();
+  return <ErrorBoundaryClass {...props} theme={theme} />;
+};

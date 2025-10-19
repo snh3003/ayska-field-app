@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaLabelComponent } from './AyskaLabelComponent';
+import { AyskaCaptionComponent } from './AyskaCaptionComponent';
+import { AyskaTextComponent } from './AyskaTextComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheet } from '../navigation/AyskaBottomSheetComponent';
 import { PickerWheel } from './AyskaPickerWheelComponent';
@@ -213,14 +216,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   return (
     <TamaguiView style={style} marginBottom={16}>
       {label && (
-        <TamaguiText
-          fontSize={16}
-          color={theme.text}
-          marginBottom={8}
-          fontWeight="600"
-        >
+        <AyskaLabelComponent style={{ marginBottom: 8 }}>
           {label}
-        </TamaguiText>
+        </AyskaLabelComponent>
       )}
 
       <TouchableOpacity onPress={handleOpen}>
@@ -234,20 +232,19 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           alignItems="center"
         >
           {icon && <TamaguiView marginRight={8}>{icon}</TamaguiView>}
-          <TamaguiText
-            color={value ? theme.text : theme.textSecondary}
-            fontSize={16}
-            flex={1}
+          <AyskaTextComponent
+            color={value ? 'text' : 'textSecondary'}
+            style={{ flex: 1 }}
           >
             {value ? formatDisplayValue(value) : placeholder}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
       </TouchableOpacity>
 
       {error && (
-        <TamaguiText fontSize={14} color={theme.error} marginTop={4}>
+        <AyskaCaptionComponent color="error" style={{ marginTop: 4 }}>
           {error}
-        </TamaguiText>
+        </AyskaCaptionComponent>
       )}
 
       <BottomSheet
@@ -287,9 +284,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                   alignItems: 'center',
                 }}
               >
-                <TamaguiText fontSize={18} fontWeight="600" color={theme.text}>
+                <AyskaTextComponent weight="semibold" color="text">
                   {months[currentMonth.getMonth()]}
-                </TamaguiText>
+                </AyskaTextComponent>
                 <Ionicons
                   name="chevron-down"
                   size={16}
@@ -309,9 +306,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                   alignItems: 'center',
                 }}
               >
-                <TamaguiText fontSize={18} fontWeight="600" color={theme.text}>
+                <AyskaTextComponent weight="semibold" color="text">
                   {currentMonth.getFullYear()}
-                </TamaguiText>
+                </AyskaTextComponent>
                 <Ionicons
                   name="chevron-down"
                   size={16}
@@ -342,13 +339,12 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                 alignItems="center"
                 paddingVertical="$sm"
               >
-                <TamaguiText
-                  fontSize="$3"
-                  color="$textSecondary"
-                  fontWeight="600"
+                <AyskaCaptionComponent
+                  color="textSecondary"
+                  style={{ fontWeight: '600' }}
                 >
                   {day}
-                </TamaguiText>
+                </AyskaCaptionComponent>
               </TamaguiView>
             ))}
           </TamaguiView>
@@ -394,23 +390,21 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                               opacity: isDateDisabled(date) ? 0.3 : 1,
                             }}
                           >
-                            <TamaguiText
-                              fontSize="$3"
-                              color={
-                                isDateSelected(date)
+                            <AyskaCaptionComponent
+                              style={{
+                                color: isDateSelected(date)
                                   ? 'white'
                                   : isToday(date)
                                     ? theme.primary
-                                    : theme.text
-                              }
-                              fontWeight={
-                                isDateSelected(date) || isToday(date)
-                                  ? '600'
-                                  : '400'
-                              }
+                                    : theme.text,
+                                fontWeight:
+                                  isDateSelected(date) || isToday(date)
+                                    ? '600'
+                                    : '400',
+                              }}
                             >
                               {date.getDate()}
-                            </TamaguiText>
+                            </AyskaCaptionComponent>
                           </TouchableOpacity>
                         ) : (
                           <TamaguiView width={36} height={36} />

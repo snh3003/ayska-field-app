@@ -1,5 +1,3 @@
-import { Colors, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -8,13 +6,17 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Input } from '../src/components/ui/AyskaInputComponent';
-import { PasswordInput } from '../src/components/ui/AyskaPasswordInputComponent';
-import { ButtonPrimary } from '../src/components/ui/AyskaButtonPrimaryComponent';
+import { useTheme } from '../utils/theme';
+import { Spacing } from '../constants/theme';
+import { AyskaTextComponent } from '../src/components/ui/AyskaTextComponent';
+import { AyskaTitleComponent } from '../src/components/ui/AyskaTitleComponent';
+import { AyskaCaptionComponent } from '../src/components/ui/AyskaCaptionComponent';
+import { AyskaStackComponent } from '../src/components/ui/AyskaStackComponent';
+import { AyskaFormFieldComponent } from '../src/components/ui/AyskaFormFieldComponent';
+import { AyskaActionButtonComponent } from '../src/components/ui/AyskaActionButtonComponent';
 import { Card } from '../src/components/ui/AyskaCardComponent';
 import { login } from '../src/store/slices/AyskaAuthSliceSlice';
 import type { RootState } from '../src/store';
@@ -32,8 +34,7 @@ export default function LoginScreen() {
   const { loading: loginLoading, error: loginError } = useSelector(
     (s: RootState) => s.auth
   );
-  const scheme = useColorScheme() ?? 'light';
-  const theme = Colors[scheme];
+  const theme = useTheme();
   const toast = useToast();
 
   const [values, setValues] = useState({ email: '', password: '' });
@@ -168,14 +169,14 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <TamaguiView
-            flexDirection="row"
-            justifyContent="flex-end"
-            alignItems="center"
-            marginBottom="$md"
+          <AyskaStackComponent
+            direction="horizontal"
+            justify="end"
+            align="center"
+            style={{ marginBottom: Spacing.md }}
           >
             <ThemeToggle />
-          </TamaguiView>
+          </AyskaStackComponent>
 
           <Logo
             size="responsive"
@@ -187,29 +188,29 @@ export default function LoginScreen() {
           />
 
           <Card variant="elevated" style={{ marginBottom: Spacing.xl }}>
-            <TamaguiText
-              fontSize="$6"
-              fontWeight="700"
-              color={theme.text}
-              marginBottom="$xs"
+            <AyskaTitleComponent
+              level={3}
+              weight="bold"
+              color="text"
+              style={{ marginBottom: Spacing.xs }}
             >
               Welcome Back
-            </TamaguiText>
-            <TamaguiText
-              fontSize="$4"
-              lineHeight="$6"
-              color={theme.textSecondary}
-              marginBottom="$xl"
+            </AyskaTitleComponent>
+            <AyskaTextComponent
+              variant="bodyLarge"
+              color="textSecondary"
+              style={{ marginBottom: Spacing.xl }}
             >
               Sign in to continue
-            </TamaguiText>
+            </AyskaTextComponent>
 
-            <Input
-              placeholder="Email"
+            <AyskaFormFieldComponent
+              label="Email"
               value={values.email}
-              onChangeText={text => handleChange('email', text)}
+              onChange={text => handleChange('email', text)}
               onBlur={() => handleBlur('email')}
-              icon={
+              placeholder="Enter your email"
+              leadingIcon={
                 <Ionicons
                   name="mail-outline"
                   size={20}
@@ -219,55 +220,59 @@ export default function LoginScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               error={touched.email ? errors.email || '' : ''}
+              touched={!!touched.email}
+              required
             />
 
-            <PasswordInput
-              placeholder="Password"
+            <AyskaFormFieldComponent
+              label="Password"
               value={values.password}
-              onChangeText={text => handleChange('password', text)}
+              onChange={text => handleChange('password', text)}
               onBlur={() => handleBlur('password')}
-              icon={
+              placeholder="Enter your password"
+              leadingIcon={
                 <Ionicons
                   name="lock-closed-outline"
                   size={20}
                   color={theme.textSecondary}
                 />
               }
-              keyboardType="default"
-              autoCapitalize="none"
+              secureTextEntry
+              showPasswordToggle
               error={touched.password ? errors.password || '' : ''}
+              touched={!!touched.password}
+              required
             />
 
-            <ButtonPrimary
-              title="Sign In"
+            <AyskaActionButtonComponent
+              label="Sign In"
               onPress={onSubmit}
               loading={loginLoading}
-              accessibilityHint="Double tap to sign in to your account"
+              variant="primary"
+              size="md"
+              accessibilityLabel="Double tap to sign in to your account"
             />
 
             {!!loginError && (
-              <TamaguiText
-                fontSize="$3"
-                lineHeight="$5"
-                color={theme.error}
-                marginTop="$md"
-                textAlign="center"
+              <AyskaTextComponent
+                variant="bodySmall"
+                color="error"
+                align="center"
+                style={{ marginTop: Spacing.md }}
               >
                 {loginError}
-              </TamaguiText>
+              </AyskaTextComponent>
             )}
           </Card>
 
-          <TamaguiView style={{ marginTop: Spacing.lg }}>
-            <TamaguiText
-              fontSize="$2"
-              lineHeight="$4"
-              color={theme.textSecondary}
-              textAlign="center"
-              marginBottom="$sm"
+          <AyskaStackComponent style={{ marginTop: Spacing.lg }}>
+            <AyskaCaptionComponent
+              color="textSecondary"
+              align="center"
+              style={{ marginBottom: Spacing.sm }}
             >
               Demo Credentials
-            </TamaguiText>
+            </AyskaCaptionComponent>
             <TouchableOpacity
               onPress={() => {
                 setValues({ email: 'admin@field.co', password: 'admin123' });
@@ -279,14 +284,9 @@ export default function LoginScreen() {
                 marginBottom: Spacing.xs,
               }}
             >
-              <TamaguiText
-                fontSize="$2"
-                lineHeight="$4"
-                color={theme.primary}
-                textAlign="center"
-              >
+              <AyskaCaptionComponent color="primary" align="center">
                 Admin: admin@field.co / admin123
-              </TamaguiText>
+              </AyskaCaptionComponent>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -302,16 +302,11 @@ export default function LoginScreen() {
                 marginBottom: Spacing.xs,
               }}
             >
-              <TamaguiText
-                fontSize="$2"
-                lineHeight="$4"
-                color={theme.primary}
-                textAlign="center"
-              >
+              <AyskaCaptionComponent color="primary" align="center">
                 Employee: alice@field.co / password123
-              </TamaguiText>
+              </AyskaCaptionComponent>
             </TouchableOpacity>
-          </TamaguiView>
+          </AyskaStackComponent>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

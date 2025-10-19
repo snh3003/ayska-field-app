@@ -1,8 +1,10 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../ui/AyskaCardComponent';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
 import { Notification } from '../../types';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -123,15 +125,13 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <TamaguiText
-              fontSize="$4"
-              lineHeight="$6"
-              color="$text"
-              fontWeight={notification.read ? '500' : '600'}
-              flex={1}
+            <AyskaTextComponent
+              color="text"
+              weight={notification.read ? 'medium' : 'semibold'}
+              style={{ flex: 1 }}
             >
               {notification.title}
-            </TamaguiText>
+            </AyskaTextComponent>
             {!notification.read && (
               <TamaguiView
                 width={8}
@@ -143,19 +143,18 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
             )}
           </TamaguiView>
 
-          <TamaguiText
-            fontSize="$3"
-            lineHeight="$5"
-            color="$textSecondary"
-            marginBottom="$xs"
+          <AyskaTextComponent
+            variant="bodySmall"
+            color="textSecondary"
             numberOfLines={2}
+            style={{ marginBottom: 4 }}
           >
             {notification.message}
-          </TamaguiText>
+          </AyskaTextComponent>
 
-          <TamaguiText fontSize="$2" lineHeight="$4" color="$textSecondary">
+          <AyskaCaptionComponent color="textSecondary">
             {formatRelativeTime(notification.timestamp)}
-          </TamaguiText>
+          </AyskaCaptionComponent>
         </TamaguiView>
 
         {/* Action Button */}

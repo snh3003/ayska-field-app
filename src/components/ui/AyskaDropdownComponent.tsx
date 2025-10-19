@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { FlatList, TouchableOpacity } from 'react-native';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
+import { AyskaLabelComponent } from './AyskaLabelComponent';
+import { AyskaCaptionComponent } from './AyskaCaptionComponent';
+import { AyskaTextComponent } from './AyskaTextComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheet } from '../navigation/AyskaBottomSheetComponent';
 import { Input } from './AyskaInputComponent';
@@ -93,21 +96,19 @@ export const Dropdown: React.FC<DropdownProps> = ({
           justifyContent="space-between"
         >
           <TamaguiView flex={1}>
-            <TamaguiText
-              fontSize="$4"
-              color={isSelected ? theme.primary : theme.text}
-              fontWeight={isSelected ? '600' : '400'}
+            <AyskaTextComponent
+              color={isSelected ? 'primary' : 'text'}
+              weight={isSelected ? 'semibold' : 'normal'}
             >
               {item.name}
-            </TamaguiText>
+            </AyskaTextComponent>
             {item.subtitle && (
-              <TamaguiText
-                fontSize="$3"
-                color={theme.textSecondary}
-                marginTop="$xs"
+              <AyskaCaptionComponent
+                color="textSecondary"
+                style={{ marginTop: 4 }}
               >
                 {item.subtitle}
-              </TamaguiText>
+              </AyskaCaptionComponent>
             )}
           </TamaguiView>
           {isSelected && (
@@ -126,23 +127,21 @@ export const Dropdown: React.FC<DropdownProps> = ({
       minHeight={200}
     >
       <Ionicons name="list-outline" size={48} color={theme.textSecondary} />
-      <TamaguiText
-        fontSize="$4"
-        color={theme.textSecondary}
-        marginTop="$sm"
-        textAlign="center"
+      <AyskaTextComponent
+        color="textSecondary"
+        align="center"
+        style={{ marginTop: 8 }}
       >
         {searchQuery ? 'No items found' : 'No items available'}
-      </TamaguiText>
+      </AyskaTextComponent>
       {searchQuery && (
-        <TamaguiText
-          fontSize="$3"
-          color={theme.textSecondary}
-          marginTop="$xs"
-          textAlign="center"
+        <AyskaCaptionComponent
+          color="textSecondary"
+          align="center"
+          style={{ marginTop: 4 }}
         >
           Try adjusting your search
-        </TamaguiText>
+        </AyskaCaptionComponent>
       )}
     </TamaguiView>
   );
@@ -150,14 +149,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
   return (
     <TamaguiView marginBottom="$md">
       {label && (
-        <TamaguiText
-          fontSize="$4"
-          color="$text"
-          marginBottom="$sm"
-          fontWeight="600"
-        >
+        <AyskaLabelComponent style={{ marginBottom: 8 }}>
           {label}
-        </TamaguiText>
+        </AyskaLabelComponent>
       )}
 
       <TouchableOpacity
@@ -179,22 +173,21 @@ export const Dropdown: React.FC<DropdownProps> = ({
         {icon && <TamaguiView marginRight="$sm">{icon}</TamaguiView>}
 
         <TamaguiView flex={1}>
-          <TamaguiText
-            fontSize="$4"
-            color={selectedItem ? theme.text : theme.textSecondary}
+          <AyskaTextComponent
+            color={selectedItem ? 'text' : 'textSecondary'}
             numberOfLines={1}
           >
             {displayText}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
 
         <Ionicons name="chevron-down" size={20} color={theme.textSecondary} />
       </TouchableOpacity>
 
       {error && (
-        <TamaguiText fontSize="$3" color="$error" marginTop="$xs">
+        <AyskaCaptionComponent color="error" style={{ marginTop: 4 }}>
           {error}
-        </TamaguiText>
+        </AyskaCaptionComponent>
       )}
 
       <BottomSheet

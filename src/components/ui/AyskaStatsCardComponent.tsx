@@ -1,7 +1,9 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { AyskaCaptionComponent } from './AyskaCaptionComponent';
+import { AyskaTitleComponent } from './AyskaTitleComponent';
+import { AyskaStackComponent } from './AyskaStackComponent';
 import { StatsCardProps } from '../../types';
 
 export const StatsCard: React.FC<StatsCardProps> = ({
@@ -48,66 +50,73 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   const accentBgColor = getBackgroundColor();
 
   return (
-    <TamaguiView
-      backgroundColor="$card"
-      borderColor="$border"
-      borderRadius="$md"
-      padding="$md"
-      marginBottom="$md"
-      flex={1}
-      marginHorizontal="$xs"
-      borderWidth={0}
-      shadowColor="$shadow"
-      shadowOffset={{ width: 0, height: 2 }}
-      shadowOpacity={0.08}
-      shadowRadius={4}
+    <AyskaStackComponent
+      direction="vertical"
+      spacing="sm"
+      padding="md"
+      backgroundColor="card"
+      borderRadius="md"
+      style={{
+        marginBottom: 16,
+        flex: 1,
+        marginHorizontal: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      }}
     >
       {/* Top row: Icon and Title */}
-      <TamaguiView
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-evenly"
-        marginBottom="$sm"
-        gap="$sm"
+      <AyskaStackComponent
+        direction="horizontal"
+        align="center"
+        justify="space-evenly"
+        spacing="sm"
       >
         {icon && (
-          <TamaguiView
-            width={40}
-            height={40}
-            borderRadius="$sm"
-            justifyContent="center"
-            alignItems="center"
-            backgroundColor={accentBgColor}
+          <AyskaStackComponent
+            direction="horizontal"
+            align="center"
+            justify="center"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 4,
+              backgroundColor: accentBgColor,
+            }}
           >
             {icon}
-          </TamaguiView>
+          </AyskaStackComponent>
         )}
-        <TamaguiText fontSize="$3" color="$textSecondary" flex={1}>
+        <AyskaCaptionComponent color="textSecondary" style={{ flex: 1 }}>
           {title}
-        </TamaguiText>
-      </TamaguiView>
+        </AyskaCaptionComponent>
+      </AyskaStackComponent>
 
       {/* Value row */}
-      <TamaguiView
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="center"
+      <AyskaStackComponent
+        direction="horizontal"
+        align="center"
+        justify="center"
       >
-        <TamaguiText
-          fontSize="$8"
-          fontWeight="700"
-          color={accentColor}
-          marginBottom={subtitle ? '$xs' : 0}
+        <AyskaTitleComponent
+          level={1}
+          weight="bold"
+          style={{
+            color: accentColor,
+            marginBottom: subtitle ? 4 : 0,
+          }}
         >
           {value}
-        </TamaguiText>
-      </TamaguiView>
+        </AyskaTitleComponent>
+      </AyskaStackComponent>
 
       {subtitle && (
-        <TamaguiText fontSize="$2" color="$textSecondary">
+        <AyskaCaptionComponent color="textSecondary">
           {subtitle}
-        </TamaguiText>
+        </AyskaCaptionComponent>
       )}
-    </TamaguiView>
+    </AyskaStackComponent>
   );
 };

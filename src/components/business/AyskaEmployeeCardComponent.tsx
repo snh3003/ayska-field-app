@@ -1,23 +1,34 @@
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
+import { AyskaStackComponent } from '../ui/AyskaStackComponent';
+import { useTheme } from '../../../utils/theme';
 
 export const EmployeeCard: React.FC<{ name: string; email: string }> = ({
   name,
   email,
 }) => {
+  const theme = useTheme();
+
   return (
-    <TamaguiView
-      padding="$sm"
-      borderRadius="$md"
-      borderWidth={1}
-      borderColor="$border"
-      marginBottom="$sm"
-      backgroundColor="$card"
+    <AyskaStackComponent
+      direction="vertical"
+      spacing="xs"
+      padding="sm"
+      backgroundColor="card"
+      borderRadius="md"
+      style={{
+        borderWidth: 1,
+        borderColor: theme.border,
+        marginBottom: 8,
+      }}
     >
-      <TamaguiText fontWeight="600" color="$text">
+      <AyskaTextComponent weight="semibold" color="text">
         {name}
-      </TamaguiText>
-      <TamaguiText color="$text">{email}</TamaguiText>
-    </TamaguiView>
+      </AyskaTextComponent>
+      <AyskaCaptionComponent color="textSecondary">
+        {email}
+      </AyskaCaptionComponent>
+    </AyskaStackComponent>
   );
 };

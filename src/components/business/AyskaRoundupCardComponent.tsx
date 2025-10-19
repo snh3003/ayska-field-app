@@ -1,6 +1,9 @@
 import React from 'react';
-import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
+import { View as TamaguiView } from '@tamagui/core';
 import { Card } from '../ui/AyskaCardComponent';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
+import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
+import { useTheme } from '../../../utils/theme';
 import { ActivityRoundup } from '../../types/AyskaModelsType';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -13,6 +16,8 @@ export const RoundupCard: React.FC<RoundupCardProps> = ({
   roundup,
   onPress,
 }) => {
+  const theme = useTheme();
+
   const totalCheckIns = roundup.employeeSummaries.reduce(
     (sum, emp) => sum + emp.checkInsCount,
     0
@@ -43,23 +48,23 @@ export const RoundupCard: React.FC<RoundupCardProps> = ({
           <Ionicons
             name={getPeriodIcon(roundup.period)}
             size={24}
-            color="#2196F3"
+            color={theme.primary}
             marginRight="$sm"
           />
-          <TamaguiText fontSize="$5" fontWeight="bold" color="$text">
+          <AyskaTextComponent variant="bodyLarge" weight="bold" color="text">
             {roundup.period.charAt(0).toUpperCase() + roundup.period.slice(1)}{' '}
             Roundup
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
         <TamaguiView
-          backgroundColor="#2196F3"
+          backgroundColor={theme.primary}
           paddingHorizontal="$sm"
           paddingVertical="$xs"
           borderRadius="$sm"
         >
-          <TamaguiText fontSize="$2" color="white" fontWeight="bold">
+          <AyskaCaptionComponent style={{ color: 'white', fontWeight: 'bold' }}>
             {formatDate(roundup.startDate)}
-          </TamaguiText>
+          </AyskaCaptionComponent>
         </TamaguiView>
       </TamaguiView>
 
@@ -74,14 +79,17 @@ export const RoundupCard: React.FC<RoundupCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <Ionicons name="people" size={16} color="#666" />
-            <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+            <Ionicons name="people" size={16} color={theme.textSecondary} />
+            <AyskaCaptionComponent
+              color="textSecondary"
+              style={{ marginLeft: 4 }}
+            >
               Active Employees
-            </TamaguiText>
+            </AyskaCaptionComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$4" fontWeight="bold" color="$text">
+          <AyskaTextComponent weight="bold" color="text">
             {activeEmployees}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
 
         <TamaguiView flex={1} marginLeft="$sm">
@@ -90,14 +98,21 @@ export const RoundupCard: React.FC<RoundupCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <Ionicons name="checkmark-circle" size={16} color="#666" />
-            <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+            <Ionicons
+              name="checkmark-circle"
+              size={16}
+              color={theme.textSecondary}
+            />
+            <AyskaCaptionComponent
+              color="textSecondary"
+              style={{ marginLeft: 4 }}
+            >
               Total Check-ins
-            </TamaguiText>
+            </AyskaCaptionComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$4" fontWeight="bold" color="$text">
+          <AyskaTextComponent weight="bold" color="text">
             {totalCheckIns}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
       </TamaguiView>
 
@@ -112,14 +127,17 @@ export const RoundupCard: React.FC<RoundupCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <Ionicons name="flag" size={16} color="#666" />
-            <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+            <Ionicons name="flag" size={16} color={theme.textSecondary} />
+            <AyskaCaptionComponent
+              color="textSecondary"
+              style={{ marginLeft: 4 }}
+            >
               Targets Achieved
-            </TamaguiText>
+            </AyskaCaptionComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$4" fontWeight="bold" color="$text">
+          <AyskaTextComponent weight="bold" color="text">
             {totalTargets}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
 
         <TamaguiView flex={1} marginLeft="$sm">
@@ -128,21 +146,27 @@ export const RoundupCard: React.FC<RoundupCardProps> = ({
             alignItems="center"
             marginBottom="$xs"
           >
-            <Ionicons name="time" size={16} color="#666" />
-            <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
+            <Ionicons name="time" size={16} color={theme.textSecondary} />
+            <AyskaCaptionComponent
+              color="textSecondary"
+              style={{ marginLeft: 4 }}
+            >
               Generated
-            </TamaguiText>
+            </AyskaCaptionComponent>
           </TamaguiView>
-          <TamaguiText fontSize="$4" fontWeight="bold" color="$text">
+          <AyskaTextComponent weight="bold" color="text">
             {formatDate(roundup.generatedAt)}
-          </TamaguiText>
+          </AyskaTextComponent>
         </TamaguiView>
       </TamaguiView>
 
       <TamaguiView>
-        <TamaguiText fontSize="$3" color="$textSecondary" marginBottom="$xs">
+        <AyskaCaptionComponent
+          color="textSecondary"
+          style={{ marginBottom: 4 }}
+        >
           Top Performers:
-        </TamaguiText>
+        </AyskaCaptionComponent>
         {roundup.employeeSummaries
           .filter(emp => emp.checkInsCount > 0)
           .sort((a, b) => b.checkInsCount - a.checkInsCount)
@@ -158,23 +182,29 @@ export const RoundupCard: React.FC<RoundupCardProps> = ({
                 width={20}
                 height={20}
                 backgroundColor={
-                  index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : '#CD7F32'
+                  index === 0
+                    ? theme.warning
+                    : index === 1
+                      ? theme.textSecondary
+                      : theme.error
                 }
                 borderRadius={10}
                 justifyContent="center"
                 alignItems="center"
                 marginRight="$sm"
               >
-                <TamaguiText fontSize="$2" color="white" fontWeight="bold">
+                <AyskaCaptionComponent
+                  style={{ color: 'white', fontWeight: 'bold' }}
+                >
                   {index + 1}
-                </TamaguiText>
+                </AyskaCaptionComponent>
               </TamaguiView>
-              <TamaguiText fontSize="$3" color="$text" flex={1}>
+              <AyskaCaptionComponent color="textSecondary" style={{ flex: 1 }}>
                 {emp.employeeName}
-              </TamaguiText>
-              <TamaguiText fontSize="$3" color="$textSecondary">
+              </AyskaCaptionComponent>
+              <AyskaCaptionComponent color="textSecondary">
                 {emp.checkInsCount} check-ins
-              </TamaguiText>
+              </AyskaCaptionComponent>
             </TamaguiView>
           ))}
       </TamaguiView>

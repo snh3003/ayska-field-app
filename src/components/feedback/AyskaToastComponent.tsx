@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { Text as TamaguiText } from '@tamagui/core';
+import { AyskaTextComponent } from '../ui/AyskaTextComponent';
 import { Colors, Shadows, Spacing } from '@/constants/theme';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { ToastProps } from '../../types';
@@ -94,16 +94,14 @@ export function Toast({
       ]}
     >
       <Ionicons name={getIcon()} size={24} color={getColor()} />
-      <TamaguiText
-        color="$text"
-        marginLeft="$md"
-        flex={1}
+      <AyskaTextComponent
+        color="text"
+        style={{ marginLeft: 16, flex: 1 }}
         numberOfLines={2}
-        fontSize="$4"
-        lineHeight="$6"
+        variant="bodyLarge"
       >
         {message}
-      </TamaguiText>
+      </AyskaTextComponent>
     </Animated.View>
   );
 }
