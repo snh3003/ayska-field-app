@@ -26,7 +26,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const showToast = (
     message: string,
     type: ToastType = 'info',
-    duration = 3000
+    duration = 10000
   ) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message, type, duration }]);

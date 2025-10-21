@@ -3,14 +3,12 @@
 export interface Admin {
   id: string;
   email: string;
-  password: string;
   name: string;
 }
 
 export interface Employee {
   id: string;
   email: string;
-  password: string;
   name: string;
   role: 'employee';
   age: number;

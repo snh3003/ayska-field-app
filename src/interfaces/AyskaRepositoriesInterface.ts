@@ -17,10 +17,7 @@ export interface IDataRepository<T>
   // Combines read and write operations for full CRUD
 }
 
-export interface IAuthRepository {
-  validateAdmin(_email: string, _password: string): Promise<Admin | null>;
-  validateEmployee(_email: string, _password: string): Promise<Employee | null>;
-}
+// IAuthRepository removed - backend handles OTP validation
 
 export interface IStatsRepository {
   getEmployeeStats(_employeeId: string): Promise<EmployeeStats>;
@@ -32,14 +29,12 @@ export interface IStatsRepository {
 export interface Admin {
   id: string;
   email: string;
-  password: string;
   name: string;
 }
 
 export interface Employee {
   id: string;
   email: string;
-  password: string;
   name: string;
   role: 'employee';
 }

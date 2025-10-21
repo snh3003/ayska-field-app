@@ -1,7 +1,6 @@
 import { OnboardingService } from '../../src/services/AyskaOnboardingServiceService';
 import {
   IDoctorRepository,
-  IEmailService,
   IEmployeeRepository,
 } from '../../src/interfaces/AyskaOnboardingInterface';
 import { INotificationSubject } from '../../src/interfaces/AyskaPatternsInterface';
@@ -15,7 +14,6 @@ const mockEmployeeRepository: jest.Mocked<IEmployeeRepository> = {
   update: jest.fn(),
   delete: jest.fn(),
   getByEmail: jest.fn(),
-  updatePassword: jest.fn(),
   markFirstLoginComplete: jest.fn(),
 };
 
@@ -28,10 +26,7 @@ const mockDoctorRepository: jest.Mocked<IDoctorRepository> = {
   getByLocation: jest.fn(),
 };
 
-const mockEmailService: jest.Mocked<IEmailService> = {
-  sendWelcomeEmail: jest.fn(),
-  sendAssignmentEmail: jest.fn(),
-};
+// mockEmailService removed - backend handles email sending
 
 const mockNotificationSubject: jest.Mocked<INotificationSubject> = {
   attach: jest.fn(),
@@ -47,7 +42,6 @@ describe('OnboardingService', () => {
     onboardingService = new OnboardingService(
       mockEmployeeRepository,
       mockDoctorRepository,
-      mockEmailService,
       mockNotificationSubject
     );
   });
@@ -67,7 +61,6 @@ describe('OnboardingService', () => {
         id: 'emp1',
         name: employeeData.name,
         email: employeeData.email,
-        password: 'temp123',
         role: 'employee',
         age: employeeData.age,
         areaOfOperation: employeeData.areaOfOperation,
@@ -78,7 +71,7 @@ describe('OnboardingService', () => {
 
       mockEmployeeRepository.getByEmail.mockResolvedValue(null);
       mockEmployeeRepository.create.mockResolvedValue(mockEmployee);
-      mockEmailService.sendWelcomeEmail.mockResolvedValue(true);
+      // mockEmailService.sendWelcomeEmail.mockResolvedValue(true); // Removed - backend handles email
       mockNotificationSubject.notify.mockImplementation(() => {});
 
       // Act
@@ -103,11 +96,11 @@ describe('OnboardingService', () => {
           isFirstLogin: true,
         })
       );
-      expect(mockEmailService.sendWelcomeEmail).toHaveBeenCalledWith(
-        employeeData.email,
-        employeeData.name,
-        expect.any(String)
-      );
+      // expect(mockEmailService.sendWelcomeEmail).toHaveBeenCalledWith(
+      //   employeeData.email,
+      //   employeeData.name,
+      //   expect.any(String)
+      // ); // Removed - backend handles email sending
       expect(mockNotificationSubject.notify).toHaveBeenCalled();
     });
 
@@ -125,7 +118,6 @@ describe('OnboardingService', () => {
         id: 'emp1',
         name: 'Existing Employee',
         email: employeeData.email,
-        password: 'password',
         role: 'employee',
         age: 30,
         areaOfOperation: 'Mumbai',

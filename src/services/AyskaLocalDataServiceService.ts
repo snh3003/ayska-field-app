@@ -66,21 +66,7 @@ class LocalDataService {
   }
 
   // Auth helpers
-  validateAdmin(email: string, password: string): Admin | null {
-    return (
-      this.data.admins.find(
-        admin => admin.email === email && admin.password === password
-      ) || null
-    );
-  }
-
-  validateEmployee(email: string, password: string): Employee | null {
-    return (
-      this.data.employees.find(
-        emp => emp.email === email && emp.password === password
-      ) || null
-    );
-  }
+  // validateAdmin and validateEmployee methods removed for OTP-based authentication
 
   // Business logic helpers
   getAssignedDoctors(employeeId: string): Doctor[] {

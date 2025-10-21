@@ -9,7 +9,7 @@ export function useAuth() {
   const auth = useSelector((state: RootState) => state.auth);
 
   const logout = () => {
-    dispatch(logoutAction());
+    dispatch(logoutAction() as any);
     router.replace('/login');
   };
 

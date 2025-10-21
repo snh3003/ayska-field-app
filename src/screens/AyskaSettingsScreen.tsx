@@ -26,7 +26,7 @@ export default function Settings() {
         text: 'Logout',
         style: 'destructive',
         onPress: () => {
-          dispatch(logout());
+          dispatch(logout() as any);
           router.replace('/login');
         },
       },

@@ -1,6 +1,5 @@
 import {
   IDoctorRepository,
-  IEmailService,
   IEmployeeRepository,
   IOnboardingService,
 } from '../interfaces/AyskaOnboardingInterface';
@@ -11,7 +10,6 @@ export class OnboardingService implements IOnboardingService {
   constructor(
     private _employeeRepo: IEmployeeRepository,
     private _doctorRepo: IDoctorRepository,
-    private _emailService: IEmailService,
     private _notificationObserver: INotificationSubject
   ) {}
 
@@ -22,13 +20,9 @@ export class OnboardingService implements IOnboardingService {
     _areaOfOperation: string,
     _adminId: string
   ): Promise<Employee> {
-    // Generate temporary password
-    const tempPassword = this.generateTempPassword();
-
     const employee: Employee = {
       id: Math.random().toString(36).substr(2, 9),
       email: _email,
-      password: tempPassword,
       name: _name,
       role: 'employee',
       age: _age,
@@ -40,8 +34,8 @@ export class OnboardingService implements IOnboardingService {
 
     const created = await this._employeeRepo.create(employee);
 
-    // Send welcome email
-    await this._emailService.sendWelcomeEmail(_email, _name, tempPassword);
+    // TODO: Backend will send welcome email automatically when employee is created
+    // await this._emailService.sendWelcomeEmail(_email, _name);
 
     // Create notification for admin
     this._notificationObserver.notify({
@@ -94,15 +88,7 @@ export class OnboardingService implements IOnboardingService {
     return created;
   }
 
-  private generateTempPassword(): string {
-    const chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < 8; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  }
+  // generateTempPassword method removed for OTP-based authentication
 }
 
 // Interface already defined in interfaces/onboarding.ts

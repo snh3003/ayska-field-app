@@ -4,7 +4,7 @@ import { CacheStorageService } from '../services/AyskaCacheStorageServiceService
 import { DraftStorageService } from '../services/AyskaDraftStorageServiceService';
 import { SettingsStorageService } from '../services/AyskaSettingsStorageServiceService';
 import { LocalDataRepository } from '../repositories/AyskaLocalDataRepositoryRepository';
-import { AuthRepository } from '../repositories/AyskaAuthRepositoryRepository';
+// AuthRepository removed - backend handles OTP validation
 import { StatsRepository } from '../repositories/AyskaStatsRepositoryRepository';
 import { NotificationsRepository } from '../repositories/AyskaNotificationsRepositoryRepository';
 import { EmployeeRepository } from '../repositories/AyskaEmployeeRepositoryRepository';
@@ -17,15 +17,18 @@ import { AuthInterceptor } from '../interceptors/AyskaAuthInterceptorInterceptor
 import { RetryInterceptor } from '../interceptors/AyskaRetryInterceptorInterceptor';
 import { ErrorInterceptor } from '../interceptors/AyskaErrorInterceptorInterceptor';
 import { AdminService } from '../services/AyskaAdminServiceService';
-import { EmployeeService } from '../services/AyskaEmployeeServiceService';
+// EmployeeService import removed - using new EmployeeService
 import { ReportService } from '../services/AyskaReportServiceService';
 import { NotificationsService } from '../services/AyskaNotificationsServiceService';
-import { EmailService } from '../services/AyskaEmailServiceService';
+// EmailService removed - backend handles email sending
 import { OnboardingService } from '../services/AyskaOnboardingServiceService';
 import { AssignmentService } from '../services/AyskaAssignmentServiceService';
 import { CheckInService } from '../services/AyskaCheckInServiceService';
 import { AnalyticsService } from '../services/AyskaAnalyticsServiceService';
 import { GeolocationService } from '../services/AyskaGeolocationServiceService';
+import { AuthService } from '../services/AyskaAuthService';
+import { EmployeeService } from '../services/AyskaEmployeeService';
+import { ProfileService } from '../services/AyskaProfileService';
 import {
   AdminDashboardObserver,
   EmployeeFeedObserver,
@@ -40,9 +43,17 @@ import { MapsConfig } from '../config/maps';
 export class ServiceContainer {
   private services = new Map<string, any>();
   private factories = new Map<string, () => any>();
+  private static instance: ServiceContainer;
 
   constructor() {
     this.registerServices();
+  }
+
+  static getInstance(): ServiceContainer {
+    if (!ServiceContainer.instance) {
+      ServiceContainer.instance = new ServiceContainer();
+    }
+    return ServiceContainer.instance;
   }
 
   private registerServices(): void {
@@ -88,10 +99,24 @@ export class ServiceContainer {
     );
 
     // New services
-    this.registerSingleton('IEmailService', () => new EmailService());
+    // IEmailService removed - backend handles email sending
     this.registerSingleton(
       'IGeolocationService',
       () => new GeolocationService()
+    );
+
+    // API Services
+    this.registerFactory(
+      'IAuthService',
+      () => new AuthService(this.get('IHttpClient'))
+    );
+    this.registerFactory(
+      'IEmployeeService',
+      () => new EmployeeService(this.get('IHttpClient'))
+    );
+    this.registerFactory(
+      'IProfileService',
+      () => new ProfileService(this.get('IHttpClient'))
     );
     this.registerFactory(
       'IOnboardingService',
@@ -99,7 +124,6 @@ export class ServiceContainer {
         new OnboardingService(
           this.get('IEmployeeRepository'),
           this.get('IDoctorRepository'),
-          this.get('IEmailService'),
           this.get('INotificationSubject')
         )
     );
@@ -135,10 +159,7 @@ export class ServiceContainer {
 
     // Data repositories
     this.registerSingleton('IDataRepository', () => new LocalDataRepository());
-    this.registerSingleton(
-      'IAuthRepository',
-      () => new AuthRepository(this.get('IDataRepository'))
-    );
+    // IAuthRepository removed - backend handles OTP validation
     this.registerSingleton(
       'IStatsRepository',
       () => new StatsRepository(this.get('IDataRepository'))

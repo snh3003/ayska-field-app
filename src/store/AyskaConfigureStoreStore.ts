@@ -3,6 +3,7 @@ import { ServiceContainer } from '../di/ServiceContainer';
 import authReducer from './slices/AyskaAuthSliceSlice';
 import adminReducer from './slices/AyskaAdminSliceSlice';
 import employeeReducer from './slices/AyskaEmployeeSliceSlice';
+import profileReducer from './slices/AyskaProfileSliceSlice';
 import notificationsReducer from './slices/AyskaNotificationsSliceSlice';
 import onboardingReducer from './slices/AyskaOnboardingSliceSlice';
 import assignmentReducer from './slices/AyskaAssignmentSliceSlice';
@@ -16,6 +17,7 @@ export const store = configureStore({
     auth: authReducer,
     admin: adminReducer,
     employee: employeeReducer,
+    profile: profileReducer,
     notifications: notificationsReducer,
     onboarding: onboardingReducer,
     assignment: assignmentReducer,

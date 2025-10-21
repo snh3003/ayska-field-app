@@ -20,6 +20,7 @@ export const AyskaActionButtonComponent: React.FC<AyskaActionButtonProps> = ({
   style,
   accessibilityLabel,
   accessibilityHint,
+  textColor,
 }) => {
   const theme = useTheme();
   // Variant styling
@@ -157,7 +158,8 @@ export const AyskaActionButtonComponent: React.FC<AyskaActionButtonProps> = ({
       ) : null}
       <AyskaTextComponent
         color={
-          loading ? loadingStyles.textColor : variantStyles[variant].textColor
+          textColor ||
+          (loading ? loadingStyles.textColor : variantStyles[variant].textColor)
         }
         variant={currentSize.textVariant}
         weight="semibold"

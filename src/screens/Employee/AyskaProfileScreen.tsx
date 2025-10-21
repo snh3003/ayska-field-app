@@ -86,7 +86,7 @@ export default function Profile() {
         <Card>
           <ButtonSecondary
             title="Sign Out"
-            onPress={() => dispatch(logout())}
+            onPress={() => dispatch(logout() as any)}
           />
         </Card>
       </TamaguiView>

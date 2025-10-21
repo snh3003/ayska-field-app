@@ -39,10 +39,7 @@ export class EmployeeRepository implements IEmployeeRepository {
     return employees.find(emp => emp.email === email) || null;
   }
 
-  async updatePassword(id: string, password: string): Promise<boolean> {
-    const result = await this.update(id, { password });
-    return result !== null;
-  }
+  // updatePassword method removed for OTP-based authentication
 
   async markFirstLoginComplete(id: string): Promise<boolean> {
     const result = await this.update(id, { isFirstLogin: false });

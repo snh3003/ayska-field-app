@@ -21,18 +21,10 @@ export type {
   EmployeeAnalytics,
 };
 
-export interface IEmailService {
-  sendWelcomeEmail(
-    _to: string,
-    _name: string,
-    _tempPassword: string
-  ): Promise<boolean>;
-  sendAssignmentEmail(_to: string, _assignments: any[]): Promise<boolean>;
-}
+// IEmailService removed - backend handles email sending via SendGrid
 
 export interface IEmployeeRepository extends IDataRepository<Employee> {
   getByEmail(_email: string): Promise<Employee | null>;
-  updatePassword(_id: string, _password: string): Promise<boolean>;
   markFirstLoginComplete(_id: string): Promise<boolean>;
 }
 

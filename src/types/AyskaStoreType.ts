@@ -49,7 +49,6 @@ export interface RootState {
 // Action types
 export interface LoginCredentials {
   email: string;
-  password: string;
   role: UserRole;
   userId: string;
   name: string;

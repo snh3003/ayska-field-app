@@ -325,6 +325,15 @@ export interface AyskaActionButtonProps {
   style?: any;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  textColor?:
+    | 'text'
+    | 'textSecondary'
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'warning'
+    | 'error'
+    | 'info';
 }
 
 export interface AyskaListItemProps {
@@ -423,6 +432,18 @@ export interface AyskaEmptyStateProps {
   actionLabel?: string;
   onAction?: () => void;
   variant?: 'default' | 'minimal' | 'prominent';
+  style?: any;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+}
+
+export interface AyskaOTPInputProps {
+  length?: number;
+  value?: string;
+  onChange?: (_value: string) => void;
+  onComplete?: (_value: string) => void;
+  disabled?: boolean;
+  error?: string;
   style?: any;
   accessibilityLabel?: string;
   accessibilityHint?: string;

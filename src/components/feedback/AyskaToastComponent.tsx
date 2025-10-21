@@ -15,7 +15,7 @@ import { ToastProps } from '../../types';
 export function Toast({
   message,
   type = 'info',
-  duration = 3000,
+  duration = 10000,
   onDismiss,
 }: ToastProps) {
   const colorScheme = useColorScheme();

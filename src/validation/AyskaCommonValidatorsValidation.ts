@@ -15,6 +15,11 @@ export const CommonValidators = {
     'Please enter a valid phone number'
   ),
 
+  emailOrPhone: new PatternValidator(
+    /^([^\s@]+@[^\s@]+\.[^\s@]+|\+?[\d\s\-\(\)]{10,})$/,
+    'Please enter a valid email or phone number'
+  ),
+
   password: new MinLengthValidator(6, 'Password must be at least 6 characters'),
 
   required: (message?: string) => new RequiredValidator(message),
