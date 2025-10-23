@@ -296,7 +296,6 @@ export const NotificationListComponent: React.FC<
       <EmptyState
         title="No Notifications"
         message="You don't have any notifications yet."
-        style={style}
       />
     );
   }
