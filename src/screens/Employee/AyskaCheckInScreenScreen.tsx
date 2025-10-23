@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { performCheckIn } from '../../store/slices/AyskaCheckInSlice';
+import { submitCheckIn } from '../../store/slices/AyskaCheckInSlice';
 import { fetchAllDoctors } from '../../store/slices/AyskaOnboardingSlice';
 import { CheckInButton } from '../../components/business/AyskaCheckInButtonComponent';
 import { useAuth } from '../../../hooks/useAuth';
@@ -40,7 +40,7 @@ export default function CheckInScreen() {
 
     try {
       await dispatch(
-        performCheckIn({
+        submitCheckIn({
           employeeId: user.id,
           doctorId: doctor.id,
           location: location,

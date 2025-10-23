@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import {
   createAssignment,
-  fetchAllAssignments,
+  fetchAssignments,
 } from '../../store/slices/AyskaAssignmentSlice';
 import {
   fetchAllDoctors,
@@ -49,7 +49,7 @@ export default function AssignDoctorsScreen() {
   useEffect(() => {
     dispatch(fetchAllEmployees());
     dispatch(fetchAllDoctors());
-    dispatch(fetchAllAssignments());
+    dispatch(fetchAssignments());
   }, [dispatch]);
 
   const validationRules = {
