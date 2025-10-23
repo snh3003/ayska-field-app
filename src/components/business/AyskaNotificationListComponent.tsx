@@ -134,11 +134,7 @@ export const NotificationListComponent: React.FC<
         bulkMarkAsRead({ notification_ids: selectedNotifications })
       );
       setSelectedNotifications([]);
-      showToast({
-        type: 'success',
-        title: 'Success',
-        message: `${selectedNotifications.length} notifications marked as read.`,
-      });
+      showToast(`${selectedNotifications.length} notifications marked as read.`, 'success');
     } catch (error) {
       if (__DEV__) {
         console.error('Failed to bulk mark as read:', error);
@@ -306,7 +302,7 @@ export const NotificationListComponent: React.FC<
   }
 
   return (
-    <ErrorBoundary style={style} accessibilityHint={accessibilityHint}>
+    <ErrorBoundary>
       <AyskaTitleComponent level={2} weight="bold" style={{ marginBottom: 16 }}>
         Notifications
         {stats && (
