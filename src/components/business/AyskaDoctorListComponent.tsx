@@ -167,7 +167,7 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
       <EmptyState
         title="No Doctors Found"
         message="No doctors match your current search criteria."
-        actionText="Add Doctor"
+        actionLabel="Add Doctor"
         onAction={handleAddDoctor}
         style={style}
       />

@@ -227,7 +227,7 @@ export const NotificationListComponent: React.FC<
         <View style={{ flex: 1, marginRight: 12 }}>
           <AyskaTitleComponent
             level={4}
-            weight={item.read ? 'normal' : 'semibold'}
+            weight="semibold"
             style={{ marginBottom: 4 }}
           >
             {item.title}
