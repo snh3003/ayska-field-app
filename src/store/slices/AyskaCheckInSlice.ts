@@ -119,7 +119,7 @@ const checkInSlice = createSlice({
         state.lastCheckIn = action.payload;
         // Add to history if it's a valid check-in
         if (action.payload.is_valid) {
-          state.checkinHistory.unshift({
+          state.checkInHistory.unshift({
             id: action.payload.checkin_id,
             is_valid: action.payload.is_valid,
             distance_meters: action.payload.distance_meters,
@@ -144,7 +144,7 @@ const checkInSlice = createSlice({
       })
       .addCase(fetchCheckInHistory.fulfilled, (state, action) => {
         state.loading = false;
-        state.checkinHistory = action.payload.checkins;
+        state.checkInHistory = action.payload.checkins;
         state.pagination = {
           total: action.payload.total,
           page: action.payload.page,
@@ -200,17 +200,17 @@ export const { clearError, setFilters, clearCurrentCheckIn, clearLastCheckIn } =
 
 // Selectors
 export const selectCheckInHistory = (state: RootState) =>
-  state.checkin?.checkinHistory ?? [];
+  state.checkIn?.checkinHistory ?? [];
 export const selectCurrentCheckIn = (state: RootState) =>
-  state.checkin?.currentCheckIn ?? null;
+  state.checkIn?.currentCheckIn ?? null;
 export const selectEmployeeProfile = (state: RootState) =>
-  state.checkin?.employeeProfile ?? null;
+  state.checkIn?.employeeProfile ?? null;
 export const selectCheckInLoading = (state: RootState) =>
-  state.checkin?.loading ?? false;
+  state.checkIn?.loading ?? false;
 export const selectCheckInError = (state: RootState) =>
-  state.checkin?.error ?? null;
+  state.checkIn?.error ?? null;
 export const selectCheckInPagination = (state: RootState) =>
-  state.checkin?.pagination ?? {
+  state.checkIn?.pagination ?? {
     total: 0,
     page: 1,
     size: 10,
@@ -220,8 +220,8 @@ export const selectCheckInPagination = (state: RootState) =>
     totalDoctorsVisited: 0,
   };
 export const selectCheckInFilters = (state: RootState) =>
-  state.checkin?.filters ?? {};
+  state.checkIn?.filters ?? {};
 export const selectLastCheckIn = (state: RootState) =>
-  state.checkin?.lastCheckIn ?? null;
+  state.checkIn?.lastCheckIn ?? null;
 
 export default checkInSlice.reducer;

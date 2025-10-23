@@ -13,14 +13,14 @@ import {
 } from '../types/AyskaCheckInApiType';
 
 export class CheckInService implements ICheckInService {
-  constructor(private _httpClient: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * Submit check-in for a doctor
    */
   async submitCheckIn(data: CheckinRequest): Promise<CheckinResponse> {
     try {
-      const response = await this.httpClient.post<CheckinResponse>(
+      const response = await this.http.post<CheckinResponse>(
         '/employee/checkin',
         data
       );
@@ -49,7 +49,7 @@ export class CheckInService implements ICheckInService {
       const endpoint = `/employee/checkin/history${queryString ? `?${queryString}` : ''}`;
 
       const response =
-        await this.httpClient.get<CheckinHistoryResponse>(endpoint);
+        await this.http.get<CheckinHistoryResponse>(endpoint);
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -61,7 +61,7 @@ export class CheckInService implements ICheckInService {
    */
   async getDoctorForCheckIn(id: string): Promise<any> {
     try {
-      const response = await this.httpClient.get<any>(
+      const response = await this.http.get<any>(
         `/employee/doctors/${id}`
       );
       return response;
@@ -76,7 +76,7 @@ export class CheckInService implements ICheckInService {
   async getEmployeeProfile(): Promise<EmployeeProfileResponse> {
     try {
       const response =
-        await this.httpClient.get<EmployeeProfileResponse>('/employee/profile');
+        await this.http.get<EmployeeProfileResponse>('/employee/profile');
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
