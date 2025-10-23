@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { EmployeeService } from '../../src/services/AyskaEmployeeServiceService';
+import { EmployeeService } from '../../src/services/AyskaEmployeeService';
 import type {
   Activity,
   SubmitActivityRequest,

@@ -18,13 +18,13 @@ import { AyskaFormFieldComponent } from '../src/components/ui/AyskaFormFieldComp
 import { AyskaActionButtonComponent } from '../src/components/ui/AyskaActionButtonComponent';
 import { AyskaOTPInputComponent } from '../src/components/ui/AyskaOTPInputComponent';
 import { Card } from '../src/components/ui/AyskaCardComponent';
-import { login } from '../src/store/slices/AyskaAuthSliceSlice';
+import { login } from '../src/store/slices/AyskaAuthSlice';
 import type { RootState } from '../src/store';
 import { ThemeToggle } from '../src/components/layout/AyskaThemeToggleComponent';
 import { Logo } from '../src/components/layout/AyskaLogoComponent';
-import { CommonValidators } from '../src/validation/AyskaCommonValidatorsValidation';
-import { ValidationContext } from '../src/validation/AyskaValidationContextValidation';
-import { FormValidator } from '../src/validation/AyskaFormValidatorValidation';
+import { CommonValidators } from '../src/validation/AyskaCommonValidators';
+import { ValidationContext } from '../src/validation/AyskaValidationContext';
+import { FormValidator } from '../src/validation/AyskaFormValidator';
 import { useToast } from '../contexts/ToastContext';
 import { hapticFeedback } from '../utils/haptics';
 import { ServiceContainer } from '../src/di/ServiceContainer';
@@ -205,7 +205,10 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: theme.background }}
+      edges={['top']}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -213,9 +216,9 @@ export default function LoginScreen() {
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             padding: Spacing.md,
-            paddingTop: Spacing.lg,
+            paddingTop: Spacing.md,
             paddingBottom: Spacing.lg,
             minHeight: '100%',
           }}
@@ -226,7 +229,12 @@ export default function LoginScreen() {
             direction="horizontal"
             justify="end"
             align="center"
-            style={{ marginBottom: Spacing.sm }}
+            style={{
+              position: 'absolute',
+              top: Spacing.lg,
+              right: Spacing.md,
+              zIndex: 10,
+            }}
           >
             <ThemeToggle />
           </AyskaStackComponent>
@@ -236,7 +244,7 @@ export default function LoginScreen() {
             matchCardWidth={true}
             style={{
               marginBottom: Spacing.md,
-              marginTop: 0,
+              marginTop: Spacing.xl,
             }}
           />
 
@@ -322,7 +330,7 @@ export default function LoginScreen() {
                 direction="vertical"
                 spacing="sm"
                 align="center"
-                style={{ marginTop: Spacing.sm }}
+                style={{ marginTop: Spacing.sm, width: '100%' }}
               >
                 <AyskaStackComponent
                   direction="vertical"

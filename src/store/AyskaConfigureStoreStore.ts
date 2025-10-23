@@ -1,14 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { ServiceContainer } from '../di/ServiceContainer';
-import authReducer from './slices/AyskaAuthSliceSlice';
-import adminReducer from './slices/AyskaAdminSliceSlice';
-import employeeReducer from './slices/AyskaEmployeeSliceSlice';
-import profileReducer from './slices/AyskaProfileSliceSlice';
-import notificationsReducer from './slices/AyskaNotificationsSliceSlice';
-import onboardingReducer from './slices/AyskaOnboardingSliceSlice';
-import assignmentReducer from './slices/AyskaAssignmentSliceSlice';
-import checkInReducer from './slices/AyskaCheckInSliceSlice';
-import analyticsReducer from './slices/AyskaAnalyticsSliceSlice';
+import authReducer from './slices/AyskaAuthSlice';
+import adminReducer from './slices/AyskaAdminSlice';
+import employeeReducer from './slices/AyskaEmployeeSlice';
+import profileReducer from './slices/AyskaProfileSlice';
+import notificationsReducer from './slices/AyskaNotificationsSlice';
+import notificationReducer from './slices/AyskaNotificationSlice';
+import onboardingReducer from './slices/AyskaOnboardingSlice';
+import assignmentReducer from './slices/AyskaAssignmentSlice';
+import checkInReducer from './slices/AyskaCheckInSlice';
+import analyticsReducer from './slices/AyskaAnalyticsSlice';
+import doctorReducer from './slices/AyskaDoctorSlice';
 
 export const serviceContainer = new ServiceContainer();
 
@@ -19,10 +21,12 @@ export const store = configureStore({
     employee: employeeReducer,
     profile: profileReducer,
     notifications: notificationsReducer,
+    notification: notificationReducer,
     onboarding: onboardingReducer,
     assignment: assignmentReducer,
     checkIn: checkInReducer,
     analytics: analyticsReducer,
+    doctor: doctorReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

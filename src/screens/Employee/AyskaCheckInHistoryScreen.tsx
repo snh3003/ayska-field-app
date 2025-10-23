@@ -5,7 +5,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useSelector } from 'react-redux';
 import { Card } from '../../components/ui/AyskaCardComponent';
-import { localDataService } from '../../services/AyskaLocalDataServiceService';
+import { localDataService } from '../../services/AyskaLocalDataService';
 import { Visit } from '../../types';
 import type { RootState } from '../../store';
 

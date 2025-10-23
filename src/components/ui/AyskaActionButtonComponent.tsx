@@ -158,8 +158,13 @@ export const AyskaActionButtonComponent: React.FC<AyskaActionButtonProps> = ({
       ) : null}
       <AyskaTextComponent
         color={
-          textColor ||
-          (loading ? loadingStyles.textColor : variantStyles[variant].textColor)
+          textColor
+            ? textColor
+            : disabled || loading
+              ? 'textSecondary'
+              : variant === 'secondary' || variant === 'ghost'
+                ? 'primary'
+                : 'text' // This ensures white text on colored buttons
         }
         variant={currentSize.textVariant}
         weight="semibold"

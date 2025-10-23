@@ -44,7 +44,6 @@ function RootLayoutContent() {
       <Stack initialRouteName="login">
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="doctor/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="employee/[id]" options={{ headerShown: false }} />
         <Stack.Screen

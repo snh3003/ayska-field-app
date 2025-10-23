@@ -7,7 +7,7 @@ import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/AyskaCardComponent';
-import { localDataService } from '../../services/AyskaLocalDataServiceService';
+import { localDataService } from '../../services/AyskaLocalDataService';
 import { Employee } from '../../types';
 
 export default function EmployeeList() {

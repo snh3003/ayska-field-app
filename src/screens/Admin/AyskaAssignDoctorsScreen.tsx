@@ -11,16 +11,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import {
   createAssignment,
-  fetchAllAssignments,
-} from '../../store/slices/AyskaAssignmentSliceSlice';
+  fetchAssignments,
+} from '../../store/slices/AyskaAssignmentSlice';
 import {
   fetchAllDoctors,
   fetchAllEmployees,
-} from '../../store/slices/AyskaOnboardingSliceSlice';
+} from '../../store/slices/AyskaOnboardingSlice';
 import { AssignmentCard } from '../../components/business/AyskaAssignmentCardComponent';
-import { CommonValidators } from '../../validation/AyskaCommonValidatorsValidation';
-import { FormValidator } from '../../validation/AyskaFormValidatorValidation';
-import { ValidationContext } from '../../validation/AyskaValidationContextValidation';
+import { CommonValidators } from '../../validation/AyskaCommonValidators';
+import { FormValidator } from '../../validation/AyskaFormValidator';
+import { ValidationContext } from '../../validation/AyskaValidationContext';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '../../../constants/theme';
 import { hapticFeedback } from '../../../utils/haptics';
@@ -38,7 +38,7 @@ export default function AssignDoctorsScreen() {
   const theme = Colors[scheme];
 
   const [formData, setFormData] = useState({
-    employeeId: '',
+    employee_id: '',
     doctorId: '',
     target: '',
   });
@@ -49,11 +49,11 @@ export default function AssignDoctorsScreen() {
   useEffect(() => {
     dispatch(fetchAllEmployees());
     dispatch(fetchAllDoctors());
-    dispatch(fetchAllAssignments());
+    dispatch(fetchAssignments());
   }, [dispatch]);
 
   const validationRules = {
-    employeeId: [CommonValidators.required('Please select an employee')],
+    employee_id: [CommonValidators.required('Please select an employee')],
     doctorId: [CommonValidators.required('Please select a doctor')],
     target: [CommonValidators.required('Target is required')],
   };
@@ -81,7 +81,7 @@ export default function AssignDoctorsScreen() {
     const newErrors = formValidator.validateForm(formData, validationRules);
     setErrors(newErrors);
     setTouched({
-      employeeId: true,
+      employee_id: true,
       doctorId: true,
       target: true,
     });
@@ -97,7 +97,8 @@ export default function AssignDoctorsScreen() {
     // Check no validation errors exist
     const noErrors = Object.values(errors).every(err => !err);
     return allFieldsFilled && noErrors;
-  }, [formData, errors, validationRules]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData, errors]);
 
   const toast = useToast();
 
@@ -113,15 +114,15 @@ export default function AssignDoctorsScreen() {
     try {
       await dispatch(
         createAssignment({
-          employeeId: formData.employeeId,
-          doctorIds: [formData.doctorId],
-          targets: [parseInt(formData.target)],
+          employee_id: formData.employee_id,
+          doctor_id: formData.doctorId,
+          target: parseInt(formData.target),
           adminId: 'a1', // Default admin ID
-        })
+        } as any)
       ).unwrap();
 
       // Get employee and doctor names for toast
-      const employee = employees.find(emp => emp.id === formData.employeeId);
+      const employee = employees.find(emp => emp.id === formData.employee_id);
       const doctor = doctors.find(doc => doc.id === formData.doctorId);
 
       // Show success toast with names and specialization
@@ -129,7 +130,7 @@ export default function AssignDoctorsScreen() {
         `Doctor ${doctor?.name || 'Unknown'} (${doctor?.specialization || 'Unknown'}) assigned to Employee ${employee?.name || 'Unknown'}`
       );
       hapticFeedback.success();
-      setFormData({ employeeId: '', doctorId: '', target: '' });
+      setFormData({ employee_id: '', doctorId: '', target: '' });
       setErrors({});
       setTouched({});
 
@@ -151,7 +152,7 @@ export default function AssignDoctorsScreen() {
   };
 
   // const selectedEmployee = employees.find(emp => emp.id === formData.employeeId);
-  // const selectedDoctor = doctors.find(doc => doc.id === formData.doctorId);
+  // const selectedDoctor = doctors.find(doc => doc.id === formData.doctor_id);
 
   return (
     <Modal
@@ -234,13 +235,13 @@ export default function AssignDoctorsScreen() {
               <Dropdown
                 label="Employee"
                 placeholder="Select employee"
-                value={formData.employeeId}
+                value={formData.employee_id}
                 items={employees.map(emp => ({
                   id: emp.id,
                   name: emp.name,
                   subtitle: emp.email,
                 }))}
-                onSelect={id => handleFieldChange('employeeId', id)}
+                onSelect={id => handleFieldChange('employee_id', id)}
                 icon={
                   <Ionicons
                     name="person-outline"
@@ -248,7 +249,7 @@ export default function AssignDoctorsScreen() {
                     color={theme.textSecondary}
                   />
                 }
-                error={touched.employeeId ? errors.employeeId || '' : ''}
+                error={touched.employee_id ? errors.employee_id || '' : ''}
               />
 
               <Dropdown
@@ -337,12 +338,12 @@ export default function AssignDoctorsScreen() {
               ) : (
                 assignments.map(assignment => {
                   const doctor = doctors.find(
-                    doc => doc.id === assignment.doctorId
+                    doc => doc.id === assignment.doctor_id
                   );
                   return (
                     <AssignmentCard
                       key={assignment.id}
-                      assignment={assignment}
+                      assignment={assignment as any}
                       doctorName={doctor?.name || 'Unknown'}
                     />
                   );

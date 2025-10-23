@@ -1,4 +1,4 @@
-import { OnboardingService } from '../../src/services/AyskaOnboardingServiceService';
+import { OnboardingService } from '../../src/services/AyskaOnboardingService';
 import {
   IDoctorRepository,
   IEmployeeRepository,

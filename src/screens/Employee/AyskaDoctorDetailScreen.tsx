@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/AyskaCardComponent';
 import { ButtonPrimary } from '../../components/ui/AyskaButtonPrimaryComponent';
 import { ButtonSecondary } from '../../components/ui/AyskaButtonSecondaryComponent';
-import { localDataService } from '../../services/AyskaLocalDataServiceService';
+import { localDataService } from '../../services/AyskaLocalDataService';
 import { Doctor, Visit } from '../../types';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';

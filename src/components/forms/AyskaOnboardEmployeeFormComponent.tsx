@@ -4,10 +4,10 @@ import { View as TamaguiView } from '@tamagui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { AppDispatch, RootState } from '../../store';
-import { onboardEmployee } from '../../store/slices/AyskaOnboardingSliceSlice';
-import { CommonValidators } from '../../validation/AyskaCommonValidatorsValidation';
-import { FormValidator } from '../../validation/AyskaFormValidatorValidation';
-import { ValidationContext } from '../../validation/AyskaValidationContextValidation';
+import { onboardEmployee } from '../../store/slices/AyskaOnboardingSlice';
+import { CommonValidators } from '../../validation/AyskaCommonValidators';
+import { FormValidator } from '../../validation/AyskaFormValidator';
+import { ValidationContext } from '../../validation/AyskaValidationContext';
 import { Input } from '../ui/AyskaInputComponent';
 import { ButtonPrimary } from '../ui/AyskaButtonPrimaryComponent';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
@@ -87,7 +87,8 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
     // Check no validation errors exist
     const noErrors = Object.values(errors).every(err => !err);
     return allFieldsFilled && noErrors;
-  }, [formData, errors, validationRules]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData, errors]);
 
   const toast = useToast();
 

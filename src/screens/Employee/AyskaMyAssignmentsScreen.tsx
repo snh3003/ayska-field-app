@@ -6,8 +6,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { fetchEmployeeAssignments } from '../../store/slices/AyskaAssignmentSliceSlice';
-import { fetchAllDoctors } from '../../store/slices/AyskaOnboardingSliceSlice';
+import { fetchEmployeeAssignments } from '../../store/slices/AyskaAssignmentSlice';
+import { fetchAllDoctors } from '../../store/slices/AyskaOnboardingSlice';
 import { AssignmentCard } from '../../components/business/AyskaAssignmentCardComponent';
 import { useAuth } from '../../../hooks/useAuth';
 
@@ -15,20 +15,20 @@ export default function MyAssignmentsScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
   const { doctors } = useSelector((state: RootState) => state.onboarding);
-  const { employeeAssignments, loading } = useSelector(
+  const { assignments: employeeAssignments, loading } = useSelector(
     (state: RootState) => state.assignment
   );
 
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchEmployeeAssignments({ employeeId: user.id }));
+      dispatch(fetchEmployeeAssignments(user.id));
     }
     dispatch(fetchAllDoctors());
   }, [dispatch, user?.id]);
 
   const handleRefresh = () => {
     if (user?.id) {
-      dispatch(fetchEmployeeAssignments({ employeeId: user.id }));
+      dispatch(fetchEmployeeAssignments(user.id));
     }
   };
 
@@ -39,14 +39,14 @@ export default function MyAssignmentsScreen() {
 
   const getTotalProgress = () => {
     return employeeAssignments.reduce(
-      (sum, assignment) => sum + assignment.currentProgress,
+      (sum: number, assignment: any) => sum + assignment.currentProgress,
       0
     );
   };
 
   const getTotalTarget = () => {
     return employeeAssignments.reduce(
-      (sum, assignment) => sum + assignment.target,
+      (sum: number, assignment: any) => sum + assignment.target,
       0
     );
   };
@@ -221,7 +221,7 @@ export default function MyAssignmentsScreen() {
                 </TamaguiText>
               </TamaguiView>
             ) : (
-              employeeAssignments.map(assignment => (
+              employeeAssignments.map((assignment: any) => (
                 <AssignmentCard
                   key={assignment.id}
                   assignment={assignment}

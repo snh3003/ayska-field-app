@@ -9,7 +9,7 @@ import { AppDispatch, RootState } from '../../store';
 import {
   fetchNotifications,
   markAsRead,
-} from '../../store/slices/AyskaNotificationsSliceSlice';
+} from '../../store/slices/AyskaNotificationsSlice';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function MyNotificationsScreen() {

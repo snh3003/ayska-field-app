@@ -14,7 +14,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/AyskaCardComponent';
 import { StatsCard } from '../../components/ui/AyskaStatsCardComponent';
-import { localDataService } from '../../services/AyskaLocalDataServiceService';
+import { localDataService } from '../../services/AyskaLocalDataService';
 import { Employee, Visit } from '../../types';
 import { ThemeToggle } from '../../components/layout/AyskaThemeToggleComponent';
 import { Logo } from '../../components/layout/AyskaLogoComponent';

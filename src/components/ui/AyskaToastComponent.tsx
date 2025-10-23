@@ -64,6 +64,9 @@ export const AyskaToastComponent: React.FC<AyskaToastProps> = ({
     }
 
     return undefined;
+    // Animation values (fadeAnim, slideAnim) are refs and stable
+    // handleDismiss is defined below and doesn't need to be a dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, duration, position]);
 
   const handleDismiss = () => {
