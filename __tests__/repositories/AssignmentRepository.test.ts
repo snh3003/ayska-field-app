@@ -1,5 +1,5 @@
-import { AssignmentRepository } from '../../src/repositories/AyskaAssignmentRepositoryRepository';
-import { LocalDataRepository } from '../../src/repositories/AyskaLocalDataRepositoryRepository';
+import { AssignmentRepository } from '../../src/repositories/AyskaAssignmentRepository';
+import { LocalDataRepository } from '../../src/repositories/AyskaLocalDataRepository';
 import { Assignment } from '../../src/types/AyskaModelsType';
 
 // Mock LocalDataRepository

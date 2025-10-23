@@ -16,7 +16,7 @@ import {
   fetchNotifications,
   markAllAsRead,
   markAsRead,
-} from '../store/slices/AyskaNotificationsSliceSlice';
+} from '../store/slices/AyskaNotificationsSlice';
 import { Notification } from '../types';
 import { hapticFeedback } from '../../utils/haptics';
 

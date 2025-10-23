@@ -12,15 +12,15 @@ import { AppDispatch, RootState } from '../../store';
 import {
   createAssignment,
   fetchAllAssignments,
-} from '../../store/slices/AyskaAssignmentSliceSlice';
+} from '../../store/slices/AyskaAssignmentSlice';
 import {
   fetchAllDoctors,
   fetchAllEmployees,
-} from '../../store/slices/AyskaOnboardingSliceSlice';
+} from '../../store/slices/AyskaOnboardingSlice';
 import { AssignmentCard } from '../../components/business/AyskaAssignmentCardComponent';
-import { CommonValidators } from '../../validation/AyskaCommonValidatorsValidation';
-import { FormValidator } from '../../validation/AyskaFormValidatorValidation';
-import { ValidationContext } from '../../validation/AyskaValidationContextValidation';
+import { CommonValidators } from '../../validation/AyskaCommonValidators';
+import { FormValidator } from '../../validation/AyskaFormValidator';
+import { ValidationContext } from '../../validation/AyskaValidationContext';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '../../../constants/theme';
 import { hapticFeedback } from '../../../utils/haptics';
@@ -97,7 +97,8 @@ export default function AssignDoctorsScreen() {
     // Check no validation errors exist
     const noErrors = Object.values(errors).every(err => !err);
     return allFieldsFilled && noErrors;
-  }, [formData, errors, validationRules]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData, errors]);
 
   const toast = useToast();
 

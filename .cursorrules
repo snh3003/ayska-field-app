@@ -27,34 +27,37 @@ src/
 │   ├── services.ts      # Service interfaces
 │   └── validation.ts    # Validation interfaces
 ├── repositories/        # Data access layer ONLY
-│   ├── LocalDataRepository.ts
-│   ├── AuthRepository.ts
-│   └── StatsRepository.ts
+│   ├── AyskaLocalDataRepository.ts
+│   ├── AyskaAuthRepository.ts
+│   └── AyskaStatsRepository.ts
 ├── services/           # Business logic services
-│   ├── AdminService.ts
-│   ├── EmployeeService.ts
-│   ├── AuthStorageService.ts
-│   ├── CacheStorageService.ts
-│   └── SettingsStorageService.ts
+│   ├── AyskaAdminService.ts
+│   ├── AyskaEmployeeService.ts
+│   ├── AyskaAuthStorageService.ts
+│   ├── AyskaCacheStorageService.ts
+│   └── AyskaSettingsStorageService.ts
 ├── providers/          # Infrastructure providers
-│   ├── StorageProvider.ts (abstract)
-│   └── AsyncStorageProvider.ts (concrete)
+│   ├── AyskaStorageProviderProvider.ts (abstract)
+│   └── AyskaAsyncStorageProviderProvider.ts (concrete)
 ├── interceptors/       # HTTP middleware ONLY
-│   ├── AuthInterceptor.ts
-│   ├── RetryInterceptor.ts
-│   └── ErrorInterceptor.ts
+│   ├── AyskaAuthInterceptorInterceptor.ts
+│   ├── AyskaRetryInterceptorInterceptor.ts
+│   └── AyskaErrorInterceptorInterceptor.ts
 ├── validation/         # Validation strategies
 │   ├── strategies/
-│   ├── FieldValidator.ts
-│   ├── FormValidator.ts
-│   └── CommonValidators.ts
+│   ├── AyskaFieldValidator.ts
+│   ├── AyskaFormValidator.ts
+│   └── AyskaCommonValidators.ts
 ├── di/                # Dependency injection container
 │   └── ServiceContainer.ts
 ├── store/             # Redux state management
 │   ├── configureStore.ts
 │   └── slices/
+│       ├── AyskaAuthSlice.ts
+│       ├── AyskaEmployeeSlice.ts
+│       └── AyskaDoctorSlice.ts
 └── components/        # React components
-    ├── ui/           # Reusable UI components
+    ├── ui/           # Reusable UI components (AyskaActionButtonComponent.tsx)
     ├── business/     # Business-specific components
     ├── feedback/     # Feedback components
     └── layout/       # Layout components
@@ -177,6 +180,100 @@ export default slice.reducer;
 - ALWAYS export typed selectors
 - ALWAYS use builder callback notation in extraReducers
 
+## 🌊 DATA FLOW PRINCIPLES
+
+### Unidirectional Data Flow (MANDATORY)
+
+Data ALWAYS flows in one direction - never bypass this pattern:
+
+```
+User → Component → Redux Action → Thunk → Service → Repository → API/Storage
+                                      ↓
+User ← Component ← Redux State Update ← Thunk Fulfilled/Rejected
+```
+
+```typescript
+// ✅ Good: Follow unidirectional flow
+const handleLogin = () => {
+  dispatch(login(credentials)); // Component dispatches action
+};
+
+// ❌ Bad: Bypassing Redux
+const handleLogin = async () => {
+  const authService = serviceContainer.get('IAuthService');
+  const result = await authService.login(credentials); // Direct service call!
+  // State not updated in Redux
+};
+```
+
+### Single Source of Truth
+
+Redux store is the ONLY source of truth for application state:
+
+```typescript
+// ✅ Good: Get data from Redux
+const employees = useSelector(selectEmployees);
+const loading = useSelector(selectLoading);
+const error = useSelector(selectError);
+
+// ❌ Bad: Duplicate state in component
+const [employees, setEmployees] = useState([]);
+const reduxEmployees = useSelector(selectEmployees); // Why both?
+```
+
+### Component Communication Patterns
+
+Choose the right communication method based on the relationship:
+
+```typescript
+// Props - Direct parent-child communication (close neighbors)
+<EmployeeCard 
+  employee={employee} 
+  onPress={handleEmployeePress}
+/>
+
+// Redux - Complex state shared across components (community bulletin board)
+const employees = useSelector(selectEmployees);
+dispatch(fetchEmployees());
+
+// Context - App-wide settings (shared utilities)
+const { theme, colorScheme } = useTheme();
+const { showToast } = useToast();
+```
+
+**Decision Tree:**
+- **Props**: Simple data passing, parent-child only
+- **Redux**: Complex state, multiple components need it
+- **Context**: App-wide configuration (theme, user preferences)
+
+### Predictable State Updates
+
+State changes follow clear patterns - ALWAYS use this structure:
+
+```typescript
+// 1. User action triggers dispatch
+dispatch(login(credentials));
+
+// 2. Thunk executes async operation
+const result = await authService.login(credentials);
+
+// 3. Redux updates state predictably
+builder
+  .addCase(login.pending, state => {
+    state.loading = true;
+    state.error = null;
+  })
+  .addCase(login.fulfilled, (state, action) => {
+    state.loading = false;
+    state.user = action.payload.user;
+    state.token = action.payload.token;
+  })
+  .addCase(login.rejected, (state, action) => {
+    state.loading = false;
+    state.error = action.error.message;
+  });
+```
+
 ## ✅ VALIDATION PATTERNS (STRATEGY PATTERN)
 
 ### Creating Validation Strategies
@@ -280,6 +377,434 @@ export const ComponentName: React.FC<ComponentNameProps> = ({
 - ALWAYS use Tamagui components for styling
 - NEVER include business logic - use hooks/services
 
+## 🎨 AYSKA UI COMPONENT LIBRARY
+
+### Component Hierarchy & Responsibility
+
+Our components follow a clear hierarchy - Base → Layout → Form → Business → Screens:
+
+| Component Type          | UI Logic | Business Logic | Data Access | Example                      |
+| ----------------------- | -------- | -------------- | ----------- | ---------------------------- |
+| **Base Components**     | ✅       | ❌             | ❌          | `AyskaTextComponent`         |
+| **Layout Components**   | ✅       | ❌             | ❌          | `AyskaStackComponent`        |
+| **Form Components**     | ✅       | ✅ Validation  | ❌          | `AyskaFormFieldComponent`    |
+| **Business Components** | ✅       | ✅             | ✅          | `AyskaEmployeeCardComponent` |
+
+### Base Components (7 components)
+
+```typescript
+// Typography foundation
+<AyskaTextComponent variant="body" weight="medium" color="text">
+  Main content text
+</AyskaTextComponent>
+
+<AyskaTitleComponent level={2} weight="bold">
+  Section heading
+</AyskaTitleComponent>
+
+<AyskaHeadingComponent variant="section">
+  List header
+</AyskaHeadingComponent>
+
+<AyskaCaptionComponent>
+  Small descriptive text
+</AyskaCaptionComponent>
+
+<AyskaLabelComponent>
+  Form label
+</AyskaLabelComponent>
+
+// Visual elements
+<AyskaIconComponent name="person" size="md" color="primary" />
+
+<AyskaBadgeComponent variant="success">Active</AyskaBadgeComponent>
+```
+
+### Layout Components (3 components)
+
+```typescript
+// Flexible layouts
+<AyskaStackComponent direction="row" spacing="md" alignItems="center">
+  <AyskaTextComponent>Item 1</AyskaTextComponent>
+  <AyskaTextComponent>Item 2</AyskaTextComponent>
+</AyskaStackComponent>
+
+<AyskaGridComponent columns={2} gap="md">
+  <AyskaTextComponent>Grid Item 1</AyskaTextComponent>
+  <AyskaTextComponent>Grid Item 2</AyskaTextComponent>
+</AyskaGridComponent>
+
+<AyskaContainerComponent maxWidth="lg" padding="md">
+  <AyskaTextComponent>Page content</AyskaTextComponent>
+</AyskaContainerComponent>
+```
+
+### Action Components (2 components)
+
+```typescript
+// Interactive elements
+<AyskaActionButtonComponent
+  variant="primary"
+  onPress={handlePress}
+  loading={isLoading}
+  disabled={isDisabled}
+>
+  Submit
+</AyskaActionButtonComponent>
+
+<AyskaListItemComponent
+  title="Employee Name"
+  subtitle="Software Engineer"
+  onPress={handlePress}
+  avatar={{ uri: 'https://...' }}
+  rightIcon="chevron-right"
+/>
+```
+
+### Form Components (2 components)
+
+```typescript
+// Form inputs
+<AyskaFormFieldComponent
+  label="Email"
+  placeholder="Enter your email"
+  value={email}
+  onChangeText={setEmail}
+  error={emailError}
+  required
+  autoCapitalize="none"
+  keyboardType="email-address"
+/>
+
+<AyskaSearchBarComponent
+  placeholder="Search employees..."
+  value={searchQuery}
+  onChangeText={setSearchQuery}
+  onClear={handleClear}
+/>
+```
+
+### Feedback Components (4 components)
+
+```typescript
+// Status indicators
+<AyskaStatusIndicatorComponent
+  type="success"
+  message="Login successful"
+  dismissible
+  onDismiss={handleDismiss}
+/>
+
+<AyskaToastComponent
+  message="Data saved successfully"
+  type="success"
+  duration={3000}
+/>
+
+<AyskaLoadingStateComponent
+  variant="spinner"
+  message="Loading employees..."
+/>
+
+<AyskaEmptyStateComponent
+  icon="people-outline"
+  title="No employees found"
+  message="Try adjusting your search criteria"
+  actionLabel="Add Employee"
+  onAction={handleAddEmployee}
+/>
+```
+
+### Rule of Three for New Components
+
+- **Create new component** when you use the same UI pattern 3+ times
+- **Reuse existing** when the pattern is used 1-2 times
+- **Extend existing** when you need slight variations
+
+```typescript
+// ✅ Good: Reuse existing component
+<AyskaTextComponent variant="body" color="text">
+  Employee Name
+</AyskaTextComponent>
+
+// ✅ Good: Create new when pattern repeats 3+ times
+<AyskaEmployeeCardComponent
+  employee={employee}
+  onPress={handleEmployeePress}
+/>
+
+// ❌ Bad: Duplicate existing patterns
+<div>
+  <Text style={customStyle}>Employee Name</Text>
+  <Text style={customStyle}>Employee Role</Text>
+</div>
+```
+
+## 📐 TYPOGRAPHY & SPACING SYSTEMS
+
+### Typography Variants
+
+```typescript
+// Text variants - use for content
+<AyskaTextComponent variant="body">Regular content (16px)</AyskaTextComponent>
+<AyskaTextComponent variant="bodyLarge">Important content (18px)</AyskaTextComponent>
+<AyskaTextComponent variant="bodySmall">Secondary content (14px)</AyskaTextComponent>
+
+// Text weights - use for emphasis
+<AyskaTextComponent weight="normal">Regular text (400)</AyskaTextComponent>
+<AyskaTextComponent weight="medium">Emphasized text (500)</AyskaTextComponent>
+<AyskaTextComponent weight="semibold">Important text (600)</AyskaTextComponent>
+<AyskaTextComponent weight="bold">Critical text (700)</AyskaTextComponent>
+
+// Title levels - use for headings
+<AyskaTitleComponent level={1}>Page title (32px)</AyskaTitleComponent>
+<AyskaTitleComponent level={2}>Section title (28px)</AyskaTitleComponent>
+<AyskaTitleComponent level={3}>Subsection title (24px)</AyskaTitleComponent>
+<AyskaTitleComponent level={4}>Card title (20px)</AyskaTitleComponent>
+```
+
+### Spacing Scale
+
+```typescript
+// Semantic spacing - ALWAYS use these values
+const Spacing = {
+  xs: 4,   // Micro spacing - between icon and text
+  sm: 8,   // Small spacing - tight groups
+  md: 16,  // Medium spacing - default gaps
+  lg: 24,  // Large spacing - section separation
+  xl: 32,  // Extra large - major sections
+  xxl: 48, // Maximum spacing - page sections
+};
+
+// Usage in components
+<AyskaStackComponent spacing="md">
+  <AyskaTextComponent>Item 1</AyskaTextComponent>
+  <AyskaTextComponent>Item 2</AyskaTextComponent>
+</AyskaStackComponent>
+
+<AyskaContainerComponent padding="lg">
+  <AyskaTextComponent>Content</AyskaTextComponent>
+</AyskaContainerComponent>
+```
+
+## 🎨 THEME & RESPONSIVE DESIGN
+
+### Theme-Aware Styling (MANDATORY)
+
+```typescript
+// ✅ Good: Theme-aware colors
+<AyskaTextComponent color="text">Always readable</AyskaTextComponent>
+<AyskaTextComponent color="primary">Brand consistent</AyskaTextComponent>
+<AyskaTextComponent color="error">Error state</AyskaTextComponent>
+
+// ❌ Bad: Hardcoded colors - NEVER DO THIS
+<AyskaTextComponent style={{ color: '#000000' }}>Breaks in dark mode</AyskaTextComponent>
+
+// Color system
+const Colors = {
+  text: 'text',           // Primary text color
+  textSecondary: 'textSecondary', // Secondary text
+  primary: 'primary',     // Brand blue
+  primaryRed: 'primaryRed', // Brand red
+  secondary: 'secondary', // Teal accent
+  success: 'success',     // Green - success states
+  warning: 'warning',     // Orange - warnings
+  error: 'error',         // Red - errors
+  info: 'info',           // Blue - information
+};
+```
+
+### Responsive Design
+
+```typescript
+// Responsive grid - adapts to screen size
+<AyskaGridComponent
+  columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}
+  gap="md"
+>
+  {employees.map(employee => (
+    <AyskaEmployeeCardComponent key={employee.id} employee={employee} />
+  ))}
+</AyskaGridComponent>
+
+// Responsive spacing
+<AyskaStackComponent
+  padding={{ xs: "sm", md: "lg" }}
+  spacing={{ xs: "sm", md: "md" }}
+>
+  <AyskaTextComponent>Content</AyskaTextComponent>
+</AyskaStackComponent>
+```
+
+### Platform-Specific Code
+
+```typescript
+import { Platform } from 'react-native';
+
+// Platform-specific styling
+<AyskaActionButtonComponent
+  style={{
+    ...Platform.select({
+      ios: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 } },
+      android: { elevation: 4 }
+    })
+  }}
+>
+  Platform-specific button
+</AyskaActionButtonComponent>
+
+// Platform-specific behavior
+const keyboardBehavior = Platform.OS === 'ios' ? 'padding' : 'height';
+```
+
+## ♿ ACCESSIBILITY (ENHANCED)
+
+### Screen Reader Support
+
+```typescript
+// Form fields with proper labels
+<AyskaFormFieldComponent
+  label="Email Address"
+  placeholder="Enter your email"
+  value={email}
+  onChangeText={setEmail}
+  accessibilityLabel="Email address input"
+  accessibilityHint="Enter your email address to log in"
+/>
+
+// Interactive elements
+<AyskaActionButtonComponent
+  onPress={handlePress}
+  accessibilityLabel="Login button"
+  accessibilityHint="Double tap to log in to your account"
+  accessibilityRole="button"
+>
+  Login
+</AyskaActionButtonComponent>
+```
+
+### Keyboard Navigation
+
+```typescript
+// Focusable elements
+<AyskaActionButtonComponent
+  onPress={handlePress}
+  accessible={true}
+  focusable={true}
+>
+  Submit
+</AyskaActionButtonComponent>
+
+// Form navigation
+<AyskaFormFieldComponent
+  label="Password"
+  value={password}
+  onChangeText={setPassword}
+  returnKeyType="next"
+  onSubmitEditing={handleNext}
+/>
+```
+
+### List Accessibility
+
+```typescript
+// Proper list structure
+<AyskaStackComponent accessibilityRole="list">
+  {employees.map(employee => (
+    <AyskaListItemComponent
+      key={employee.id}
+      title={employee.name}
+      subtitle={employee.role}
+      accessibilityRole="listitem"
+      accessibilityLabel={`${employee.name}, ${employee.role}`}
+    />
+  ))}
+</AyskaStackComponent>
+```
+
+## 🎯 UX PATTERNS
+
+### Haptic Feedback (MANDATORY for interactions)
+
+```typescript
+import { hapticFeedback } from '@/utils/haptics';
+
+// Light feedback - subtle interactions (list item taps, toggles)
+const handlePress = () => {
+  hapticFeedback.light();
+  onPress?.();
+};
+
+// Medium feedback - important actions (form submission, confirmations)
+const handleSubmit = () => {
+  hapticFeedback.medium();
+  onSubmit();
+};
+
+// Heavy feedback - critical actions (delete, logout)
+const handleDelete = () => {
+  hapticFeedback.heavy();
+  onDelete();
+};
+```
+
+### Loading States
+
+```typescript
+// Component loading state
+<AyskaLoadingStateComponent
+  variant="spinner"
+  message="Loading employees..."
+/>
+
+// Button loading state
+<AyskaActionButtonComponent
+  loading={isLoading}
+  disabled={isLoading}
+>
+  {isLoading ? 'Saving...' : 'Save'}
+</AyskaActionButtonComponent>
+
+// Skeleton loading (for lists)
+{loading ? (
+  <AyskaLoadingSkeletonComponent count={5} />
+) : (
+  <EmployeeList employees={employees} />
+)}
+```
+
+### Empty States
+
+```typescript
+// Proper empty state with action
+<AyskaEmptyStateComponent
+  icon="people-outline"
+  title="No employees found"
+  message="Try adjusting your search criteria or add a new employee"
+  actionLabel="Add Employee"
+  onAction={handleAddEmployee}
+/>
+```
+
+### Error Handling
+
+```typescript
+// Error display with retry
+<AyskaStatusIndicatorComponent
+  type="error"
+  message="Failed to load employees"
+  dismissible
+  onDismiss={handleDismissError}
+/>
+
+<AyskaActionButtonComponent
+  variant="secondary"
+  onPress={handleRetry}
+>
+  Try Again
+</AyskaActionButtonComponent>
+```
+
 ## 🔌 HTTP CLIENT & INTERCEPTORS
 
 ### Creating HTTP Interceptors
@@ -358,6 +883,480 @@ export class SpecificStorageService implements IStorageInterface {
 - ALWAYS prefix keys by concern (`auth_`, `cache_`, `draft_`)
 - ALWAYS wrap console.error in `if (__DEV__)` checks
 
+## 💾 STORAGE ARCHITECTURE
+
+### Storage Service Types
+
+Our app has FOUR distinct storage services - each with a specific purpose:
+
+```typescript
+// 1. AuthStorageService - Secure user authentication data
+await authStorage.saveToken(token);           // Access tokens
+await authStorage.saveUser(userData);         // User profile
+await authStorage.saveRefreshToken(refresh);  // Refresh tokens
+// Use: Login session, user identity
+
+// 2. CacheStorageService - Temporary API response caching
+await cacheStorage.setItem('employees', employees, 60); // 60 min expiry
+const cached = await cacheStorage.getItem('employees');
+// Use: Reduce API calls, offline support
+
+// 3. DraftStorageService - Incomplete form data
+await draftStorage.saveDraft('assignment', formData);
+const draft = await draftStorage.getDraft('assignment');
+// Use: Save user work, prevent data loss
+
+// 4. SettingsStorageService - App preferences
+await settingsStorage.saveSetting('theme', 'dark');
+const theme = await settingsStorage.getSetting('theme');
+// Use: User preferences, app configuration
+```
+
+### Data Persistence Patterns
+
+Different data types have different lifetimes:
+
+```typescript
+// Permanent data (until logout) - AuthStorageService
+await authStorage.saveToken(token);
+// Survives: App restarts, updates
+// Cleared: Manual logout, token expiration
+
+// Temporary data (with expiry) - CacheStorageService
+await cacheStorage.setItem('employees', data, 30); // 30 minutes
+// Survives: Brief app restarts
+// Cleared: Expiry time, manual clear
+
+// Working data (until complete) - DraftStorageService
+await draftStorage.saveDraft('form', data);
+// Survives: App crashes, interruptions
+// Cleared: Form submission, manual discard
+
+// Preference data (forever) - SettingsStorageService
+await settingsStorage.saveSetting('language', 'en');
+// Survives: Everything except app uninstall
+// Cleared: Only on app uninstall or manual reset
+```
+
+### When to Use Each Storage Type
+
+```typescript
+// AuthStorageService - Use for:
+✅ Authentication tokens
+✅ User profile data
+✅ Session information
+❌ Temporary data
+❌ User preferences (use SettingsStorageService)
+
+// CacheStorageService - Use for:
+✅ API response caching
+✅ Downloaded assets
+✅ Frequently accessed data
+❌ Critical data (might expire)
+❌ User-created content (use DraftStorageService)
+
+// DraftStorageService - Use for:
+✅ Incomplete forms
+✅ Unsaved changes
+✅ Work in progress
+❌ Completed submissions
+❌ Permanent data
+
+// SettingsStorageService - Use for:
+✅ Theme preference
+✅ Language selection
+✅ Notification settings
+❌ User credentials
+❌ Temporary states
+```
+
+## 🚨 FILE MANAGEMENT & DUPLICATION PREVENTION (CRITICAL)
+
+### NEVER Create Duplicate Files
+
+Before creating ANY file, you MUST verify it doesn't exist:
+
+```bash
+# Check if file exists (exact name)
+find . -name "ComponentName.tsx" -not -path "*/node_modules/*"
+
+# Check for similar files (pattern matching)
+find . -name "*Component*" -not -path "*/node_modules/*"
+
+# Grep for existing implementations
+grep -r "class ComponentName" src/
+grep -r "export.*ComponentName" src/
+```
+
+### Pre-Creation Checklist (MANDATORY)
+
+Before creating any file, ALWAYS:
+
+```typescript
+// 1. Search for exact file name
+// ❌ DON'T: Just create src/components/ui/Button.tsx
+// ✅ DO: First check if it exists
+
+// 2. Search for similar functionality
+grep -r "Button" src/components/
+// Found: AyskaActionButtonComponent.tsx - USE THIS INSTEAD
+
+// 3. Check multiple naming variations
+// Search for: Button, ButtonComponent, AyskaButton, ActionButton
+// One might already exist with different naming
+
+// 4. Verify directory structure
+ls src/components/ui/
+// See what's already there before adding
+
+// 5. Check for numbered duplicates
+find . -name "*Component*2*" -o -name "*Component*3*"
+// These indicate previous duplicate creation - FIX DON'T CREATE MORE
+```
+
+### Common Duplication Scenarios
+
+```typescript
+// Scenario 1: Component already exists with different name
+// ❌ Bad: Creating ButtonPrimary.tsx
+// ✅ Good: Found AyskaActionButtonComponent.tsx - use variant="primary"
+
+// Scenario 2: Service already exists
+// ❌ Bad: Creating EmployeeDataService.ts
+// ✅ Good: Found EmployeeService.ts - use this instead
+
+// Scenario 3: Similar utility exists
+// ❌ Bad: Creating validation.ts
+// ✅ Good: Found CommonValidators.ts and ValidationContext - extend these
+
+// Scenario 4: Component in wrong directory
+// ❌ Bad: Creating components/Button.tsx (already exists in components/ui/)
+// ✅ Good: Import from existing location
+```
+
+### Verification Commands (USE BEFORE CREATING)
+
+```bash
+# Check if component exists
+find src/components -name "*${COMPONENT_NAME}*" -type f
+
+# Check if service exists
+find src/services -name "*${SERVICE_NAME}*" -type f
+
+# Check if similar functionality exists
+grep -r "function ${FUNCTION_NAME}" src/
+
+# List all files in target directory
+ls -la src/${TARGET_DIR}/
+
+# Search for related imports
+grep -r "import.*${NAME}" src/
+```
+
+### Duplicate Detection Rules
+
+If you find numbered files (file 2.tsx, file 3.tsx), it means:
+- ❌ Someone created duplicates instead of using existing
+- ✅ YOU MUST: Compare and merge before deleting (see below)
+- ✅ NEVER add more numbered files
+
+## 🚨 DUPLICATE FILE COMPARISON (MANDATORY)
+
+### Before Deleting ANY Duplicate File
+
+ALWAYS compare duplicates using this process:
+
+#### Step 1: Identify Duplicate Pair
+Example: `AyskaNotificationListComponent.tsx` and `AyskaNotificationListComponent 2.tsx`
+
+#### Step 2: Compare Files Line-by-Line
+```bash
+diff AyskaNotificationListComponent.tsx "AyskaNotificationListComponent 2.tsx"
+```
+
+#### Step 3: Decision Matrix
+- **If IDENTICAL**: Safe to delete numbered version
+- **If DIFFERENT**: 
+  1. Read both files completely
+  2. Identify unique functionality in each
+  3. Merge unique code into canonical file (without number)
+  4. Test merged version
+  5. Only then delete numbered version
+
+#### Step 4: Verification After Deletion
+- No broken imports
+- TypeScript compiles: `npx tsc --noEmit`
+- Tests pass: `npm test`
+
+### Example Comparison Process
+```typescript
+// Original: AyskaNotificationListComponent.tsx has function A()
+// Copy 2: AyskaNotificationListComponent 2.tsx has function A() + function B()
+
+// Action: Merge B() into original, verify it works, then delete copy 2
+```
+
+### Anti-Pattern: NEVER Do This
+```bash
+# ❌ WRONG: Delete without comparing
+rm "Component 2.tsx"
+
+# ✅ RIGHT: Compare first, merge if needed, then delete
+diff Component.tsx "Component 2.tsx"
+# If different: merge unique code
+# If identical: safe to delete
+rm "Component 2.tsx"
+```
+
+### Comparison Commands
+```bash
+# Quick check if identical
+diff file1.ts "file 2.ts" && echo "IDENTICAL" || echo "DIFFERENT"
+
+# See actual differences
+diff file1.ts "file 2.ts"
+
+# Side-by-side comparison
+diff -y file1.ts "file 2.ts" | head -50
+```
+
+## 🧹 UTILITY FILE CLEANUP (MANDATORY)
+
+### Temporary vs Permanent Files
+
+**DELETE immediately after use:**
+- Debug scripts (fix-*.py, compare-*.sh, check-*.js)
+- Investigation reports (comparison-report.txt, duplicate-inventory.txt)
+- Temporary logs (phase-*-fixes.log, error-analysis.txt)
+- One-time automation scripts created for specific fixes
+
+**KEEP if adds value:**
+- Reusable utilities (validation helpers, formatters)
+- Shared test utilities
+- Build/deployment scripts
+- Migration scripts (with documentation)
+
+### Cleanup Pattern
+
+```bash
+# After fix script completes
+python3 fix-something.py  # Run the fix
+rm fix-something.py       # Delete immediately after
+
+# Bad ❌
+# Leave temporary files in root
+
+# Good ✅
+# Create, use, delete in same operation
+```
+
+### Rule
+If a file was created solely to fix errors/warnings and won't be reused, DELETE it after successful execution.
+
+## 📁 GENERATED FILES ORGANIZATION (MANDATORY)
+
+### Generated Folder Structure
+
+ALL generated documentation, reports, and summaries go in `generated/`:
+
+```
+generated/
+├── phase-*.md           # Phase reports
+├── investigation-*.md   # Investigation docs
+├── summary-*.txt        # Quick summaries
+├── analysis-*.md        # Analysis reports
+└── README.md            # Index of generated files
+```
+
+### File Placement Rules
+
+**❌ NEVER create in root:**
+- PHASE-7-COMPLETE-REPORT.md
+- investigation-summary.md
+- duplicate-analysis.txt
+
+**✅ ALWAYS create in generated/:**
+- generated/phase-7-complete-report.md
+- generated/investigation-summary.md
+- generated/duplicate-analysis.txt
+
+### Implementation
+
+```bash
+# Wrong ❌
+cat > ANALYSIS.md << 'EOF'
+
+# Right ✅
+cat > generated/analysis.md << 'EOF'
+```
+
+### Exceptions
+
+Only these stay in root:
+- README.md (project readme)
+- .cursorrules (project rules)
+- package.json, tsconfig.json, etc. (config files)
+
+## 🎯 CODEBASE CONSISTENCY RULES (CRITICAL)
+
+### ALWAYS Match Existing Patterns
+
+Before implementing ANY feature, find a similar existing implementation:
+
+```typescript
+// Creating new service? Copy pattern from existing service
+// 1. Find similar service
+ls src/services/
+// Found: EmployeeService.ts
+
+// 2. Read its structure
+cat src/services/EmployeeService.ts
+
+// 3. Match the pattern EXACTLY
+// - Same imports structure
+// - Same constructor pattern
+// - Same method naming
+// - Same error handling
+// - Same comments style
+```
+
+### Consistency Checklist (MANDATORY)
+
+```typescript
+// ✅ 1. Naming Conventions
+// Found: AyskaEmployeeCardComponent.tsx
+// Create: AyskaTeamCardComponent.tsx (NOT TeamCard.tsx)
+
+// ✅ 2. Import Order
+// Match existing files in same directory:
+import React from 'react';
+import { View } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+// ^^ Copy this order from existing files
+
+// ✅ 3. File Structure
+// Match existing service structure:
+export class NewService {
+  constructor(private dependency: IDependency) {} // Match pattern
+  
+  async getData() { // Match naming
+    try { // Match error handling
+      // Implementation
+    } catch (error) {
+      if (__DEV__) console.error('Error:', error); // Match logging
+      throw error;
+    }
+  }
+}
+
+// ✅ 4. Props Interface Pattern
+// Match existing components in same directory:
+interface ComponentNameProps {
+  prop1: string;
+  prop2?: number; // Optional props at end
+  onPress?: () => void; // Event handlers with 'on' prefix
+  style?: any; // Style props at end
+}
+
+// ✅ 5. Export Pattern
+// Check existing files - some use default, some use named
+// Found in directory: export const Component = ...
+// YOU MUST USE: export const YourComponent = ... (NOT export default)
+```
+
+### Directory Placement Verification
+
+```typescript
+// Before creating file, verify correct directory:
+
+// Components
+src/components/ui/          // ✅ Base components (Text, Button, Icon)
+src/components/layout/      // ✅ Layout components (Stack, Grid, Container)
+src/components/business/    // ✅ Business components (EmployeeCard, DoctorCard)
+src/components/feedback/    // ✅ Feedback (Loading, Toast, EmptyState)
+
+// Services
+src/services/              // ✅ Business logic services ONLY
+src/repositories/          // ✅ Data access ONLY
+src/providers/             // ✅ Infrastructure providers ONLY
+
+// ❌ WRONG: Creating src/components/EmployeeService.tsx
+// ✅ RIGHT: Creating src/services/EmployeeService.ts
+```
+
+### Pattern Matching Examples
+
+```typescript
+// Example: Adding new Redux slice
+
+// 1. Find existing slice
+cat src/store/slices/employeeSlice.ts
+
+// 2. Copy the EXACT structure
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { RootState } from '..'; // ✅ Same import
+import { ServiceContainer } from '../../di/ServiceContainer'; // ✅ Same import
+
+interface TeamSliceState { // ✅ Same naming pattern
+  data: Team[] | null;
+  loading: boolean;
+  error: string | null;
+}
+
+// 3. Match thunk pattern EXACTLY
+export const fetchTeams = createAsyncThunk<
+  Team[],
+  void,
+  { state: RootState; extra: { serviceContainer: ServiceContainer } }
+>('teams/fetchTeams', async (_, thunkAPI) => { // ✅ Same pattern
+  const service = thunkAPI.extra.serviceContainer.get('ITeamService') as any;
+  return service.getTeams();
+});
+
+// 4. Match reducer pattern EXACTLY
+const teamSlice = createSlice({
+  name: 'teams',
+  initialState,
+  reducers: {},
+  extraReducers: builder => { // ✅ Same builder pattern
+    builder
+      .addCase(fetchTeams.pending, state => { // ✅ Same structure
+        state.loading = true;
+        state.error = null;
+      })
+      // ... etc
+  },
+});
+
+// 5. Match export pattern EXACTLY
+export const selectTeams = (state: RootState) => state.teams?.data ?? [];
+export const selectLoading = (state: RootState) => state.teams?.loading ?? false;
+export const selectError = (state: RootState) => state.teams?.error ?? null;
+
+export default teamSlice.reducer;
+```
+
+### Verification Before Committing
+
+```bash
+# Before creating any file, run these checks:
+
+# 1. Check no duplicates
+find . -name "*${FILENAME}*" -not -path "*/node_modules/*"
+
+# 2. Check directory is correct
+ls src/${TARGET_DIR}/
+
+# 3. Check naming matches existing
+ls src/${TARGET_DIR}/ | grep -i ${PATTERN}
+
+# 4. Check similar files for pattern
+cat src/${SIMILAR_FILE}
+
+# 5. Verify imports match existing
+head -n 20 src/${SIMILAR_FILE}
+```
+
 ## 🚫 ANTI-PATTERNS (NEVER DO)
 
 ### Code Smells to Avoid
@@ -393,6 +1392,221 @@ console.log('Debug info'); // Use: if (__DEV__) console.log(...)
 
 // ❌ Duplicate validation logic
 if (email.includes('@')) {} // Use CommonValidators.email
+
+// ❌ Creating duplicate files
+// Creating src/components/ui/Button.tsx when AyskaActionButtonComponent.tsx exists
+```
+
+## 🚨 COMMON UI MISTAKES (NEVER DO)
+
+### 1. Inconsistent Spacing
+
+```typescript
+// ❌ Bad: Random spacing values
+<View style={{ margin: 10, padding: 15, gap: 8, marginTop: 12 }}>
+  <Text>Content</Text>
+</View>
+
+// ✅ Good: Use spacing system
+<AyskaStackComponent spacing="md" padding="lg">
+  <AyskaTextComponent>Content</AyskaTextComponent>
+</AyskaStackComponent>
+
+// ❌ Bad: Mixing px values with spacing system
+<AyskaStackComponent spacing="md" style={{ marginTop: 20 }}>
+
+// ✅ Good: Consistent spacing system
+<AyskaStackComponent spacing="md" padding="lg">
+```
+
+### 2. Hardcoded Colors
+
+```typescript
+// ❌ Bad: Hardcoded colors (breaks dark mode)
+<Text style={{ color: '#FF0000' }}>Error</Text>
+<View style={{ backgroundColor: '#FFFFFF' }}>
+  <Text style={{ color: '#000000' }}>Content</Text>
+</View>
+
+// ✅ Good: Theme-aware colors
+<AyskaTextComponent color="error">Error</AyskaTextComponent>
+<AyskaContainerComponent backgroundColor="background">
+  <AyskaTextComponent color="text">Content</AyskaTextComponent>
+</AyskaContainerComponent>
+
+// ❌ Bad: Inline hex colors
+const buttonStyle = {
+  backgroundColor: '#1E40AF',
+  borderColor: '#B91C1C'
+};
+
+// ✅ Good: Theme colors
+<AyskaActionButtonComponent variant="primary" />
+```
+
+### 3. Missing Accessibility
+
+```typescript
+// ❌ Bad: No accessibility props
+<TouchableOpacity onPress={handlePress}>
+  <Text>Submit</Text>
+</TouchableOpacity>
+
+// ✅ Good: Proper accessibility
+<AyskaActionButtonComponent
+  onPress={handlePress}
+  accessibilityLabel="Submit form"
+  accessibilityHint="Double tap to submit the form"
+  accessibilityRole="button"
+>
+  Submit
+</AyskaActionButtonComponent>
+
+// ❌ Bad: Image without alt text
+<Image source={{ uri: imageUrl }} />
+
+// ✅ Good: Accessible image
+<Image 
+  source={{ uri: imageUrl }}
+  accessible={true}
+  accessibilityLabel="Employee profile photo"
+/>
+```
+
+### 4. Poor Performance Patterns
+
+```typescript
+// ❌ Bad: Expensive operations in render
+const ExpensiveComponent = () => {
+  const processedData = employees.filter(emp => emp.active)
+                                  .sort((a, b) => a.name.localeCompare(b.name))
+                                  .map(emp => ({ ...emp, displayName: `${emp.firstName} ${emp.lastName}` }));
+  return <List data={processedData} />; // Runs EVERY render!
+};
+
+// ✅ Good: Memoized calculations
+const ExpensiveComponent = () => {
+  const processedData = useMemo(() => 
+    employees.filter(emp => emp.active)
+             .sort((a, b) => a.name.localeCompare(b.name))
+             .map(emp => ({ ...emp, displayName: `${emp.firstName} ${emp.lastName}` }))
+  , [employees]);
+  
+  return <List data={processedData} />;
+};
+
+// ❌ Bad: Creating functions in render
+const ListScreen = () => {
+  return employees.map(emp => (
+    <EmployeeCard 
+      key={emp.id} 
+      employee={emp}
+      onPress={() => handlePress(emp.id)} // New function every render!
+    />
+  ));
+};
+
+// ✅ Good: Memoized callbacks
+const ListScreen = () => {
+  const handlePress = useCallback((id: string) => {
+    navigation.navigate('Detail', { id });
+  }, [navigation]);
+  
+  return employees.map(emp => (
+    <EmployeeCard 
+      key={emp.id} 
+      employee={emp}
+      onPress={() => handlePress(emp.id)}
+    />
+  ));
+};
+```
+
+### 5. Creating Duplicate Files/Components
+
+```typescript
+// ❌ Bad: Not checking if component exists
+// Creating: src/components/ui/PrimaryButton.tsx
+// When: AyskaActionButtonComponent.tsx already exists with variant="primary"
+
+// ✅ Good: Search first, reuse existing
+// 1. Search: find src/components -name "*Button*"
+// 2. Found: AyskaActionButtonComponent.tsx
+// 3. Use: <AyskaActionButtonComponent variant="primary" />
+
+// ❌ Bad: Creating numbered duplicates
+// Creating: LoginService2.ts, LoginService3.ts
+// This indicates you didn't check for existing implementation
+
+// ✅ Good: Use existing, delete numbered files
+// 1. Found: LoginService.ts already exists
+// 2. Use: LoginService.ts
+// 3. Delete: Any numbered versions (2, 3, etc.)
+```
+
+### 6. Ignoring Loading/Error States
+
+```typescript
+// ❌ Bad: No loading or error handling
+const EmployeeList = () => {
+  const employees = useSelector(selectEmployees);
+  return employees.map(emp => <EmployeeCard key={emp.id} employee={emp} />);
+};
+
+// ✅ Good: Handle all states
+const EmployeeList = () => {
+  const employees = useSelector(selectEmployees);
+  const loading = useSelector(selectLoading);
+  const error = useSelector(selectError);
+  
+  if (loading) return <AyskaLoadingStateComponent />;
+  if (error) return <AyskaStatusIndicatorComponent type="error" message={error} />;
+  if (employees.length === 0) return <AyskaEmptyStateComponent title="No employees" />;
+  
+  return employees.map(emp => <EmployeeCard key={emp.id} employee={emp} />);
+};
+```
+
+### 7. Not Using Ayska Components
+
+```typescript
+// ❌ Bad: Using raw React Native components
+<View style={{ padding: 16 }}>
+  <Text style={{ fontSize: 18, fontWeight: '600' }}>Title</Text>
+  <Text style={{ fontSize: 14, color: '#666' }}>Subtitle</Text>
+  <TouchableOpacity onPress={handlePress}>
+    <Text>Click</Text>
+  </TouchableOpacity>
+</View>
+
+// ✅ Good: Using Ayska component library
+<AyskaContainerComponent padding="md">
+  <AyskaTitleComponent level={3}>Title</AyskaTitleComponent>
+  <AyskaTextComponent color="textSecondary">Subtitle</AyskaTextComponent>
+  <AyskaActionButtonComponent onPress={handlePress}>
+    Click
+  </AyskaActionButtonComponent>
+</AyskaContainerComponent>
+```
+
+### 8. Missing Haptic Feedback
+
+```typescript
+// ❌ Bad: No haptic feedback on interactions
+const handlePress = () => {
+  onPress();
+};
+
+// ✅ Good: Haptic feedback for UX
+const handlePress = () => {
+  hapticFeedback.light(); // Subtle feedback
+  onPress();
+};
+
+const handleDelete = () => {
+  hapticFeedback.heavy(); // Strong feedback for critical actions
+  onDelete();
+};
 ```
 
 ## ✅ BEST PRACTICES (ALWAYS DO)
@@ -436,10 +1650,17 @@ interface IRepository {
 
 ### File Naming
 - **Interfaces**: `I*` prefix (IAuthRepository.ts lives in interfaces/)
-- **Classes**: PascalCase (AuthRepository.ts, ServiceContainer.ts)
-- **Components**: PascalCase (ButtonPrimary.tsx, LoginScreen.tsx)
+- **Classes**: Ayska + PascalCase (AyskaAuthRepository.ts, ServiceContainer.ts)
+- **Services**: Ayska + PascalCase + Service (AyskaEmployeeService.ts, AyskaAuthService.ts)
+- **Repositories**: Ayska + PascalCase + Repository (AyskaEmployeeRepository.ts)
+- **Slices**: Ayska + PascalCase + Slice (AyskaEmployeeSlice.ts, AyskaAuthSlice.ts)
+- **Components**: Ayska + PascalCase + Component (AyskaActionButtonComponent.tsx, LoginScreen.tsx)
+- **Providers**: Ayska + PascalCase + Provider + Provider (AyskaAsyncStorageProviderProvider.ts)
+- **Interceptors**: Ayska + PascalCase + Interceptor + Interceptor (AyskaAuthInterceptorInterceptor.ts)
 - **Utilities**: camelCase (validation.ts, haptics.ts)
-- **Types**: PascalCase (models.ts contains Admin, Employee interfaces)
+- **Types**: Ayska + PascalCase + Type (AyskaModelsType.ts, AyskaApiResponseType.ts)
+
+⚠️ **CRITICAL**: Never use double suffixes like `ServiceService`, `RepositoryRepository`, `SliceSlice` - these are WRONG patterns that were cleaned up!
 
 ### Code Naming
 - **Interfaces**: I* (IAuthRepository, IStorageProvider, IValidationStrategy)
@@ -511,7 +1732,7 @@ export interface ITeamsRepository {
   createTeam(_team: Team): Promise<Team>;
 }
 
-// 2. src/repositories/TeamsRepository.ts
+// 2. src/repositories/AyskaTeamsRepository.ts (CORRECT NAMING)
 export class TeamsRepository implements ITeamsRepository {
   constructor(private dataRepo: LocalDataRepository<any>) {}
   
@@ -525,7 +1746,7 @@ this.registerSingleton('ITeamsRepository', () =>
   new TeamsRepository(this.get('IDataRepository'))
 );
 
-// 4. src/store/slices/teamsSlice.ts
+// 4. src/store/slices/AyskaTeamsSlice.ts (CORRECT NAMING)
 export const fetchTeams = createAsyncThunk<
   Team[],
   void,
@@ -535,10 +1756,326 @@ export const fetchTeams = createAsyncThunk<
   return repo.getTeams();
 });
 
-// 5. src/components/business/TeamCard.tsx
+// 5. src/components/business/AyskaTeamCardComponent.tsx (CORRECT NAMING)
 export const TeamCard: React.FC<TeamCardProps> = ({ team }) => {
   // Component implementation
 };
+```
+
+## 🔄 REAL-WORLD DATA FLOW EXAMPLES
+
+### Login Flow (Complete Journey)
+
+```typescript
+// Step 1: User enters credentials and taps login
+// File: src/screens/LoginScreen.tsx
+const handleLogin = () => {
+  dispatch(login({ email, password })); // Dispatch Redux action
+};
+
+// Step 2: Redux thunk executes
+// File: src/store/slices/authSlice.ts
+export const login = createAsyncThunk<
+  AuthResult,
+  LoginCredentials,
+  { state: RootState; extra: { serviceContainer: ServiceContainer } }
+>('auth/login', async (credentials, thunkAPI) => {
+  // Step 3: Get service from container
+  const authService = thunkAPI.extra.serviceContainer.get('IAuthService') as any;
+  
+  // Step 4: Service calls repository
+  return authService.login(credentials);
+});
+
+// Step 5: Service processes business logic
+// File: src/services/AuthService.ts
+async login(credentials: LoginCredentials): Promise<AuthResult> {
+  // Step 6: Validate credentials
+  this.validateCredentials(credentials);
+  
+  // Step 7: Repository makes API call
+  const result = await this.authRepository.login(credentials);
+  
+  // Step 8: Save token to storage
+  await this.authStorage.saveToken(result.token);
+  await this.authStorage.saveUser(result.user);
+  
+  // Step 9: Return result to thunk
+  return result;
+}
+
+// Step 10: Redux updates state
+// File: src/store/slices/authSlice.ts
+builder
+  .addCase(login.fulfilled, (state, action) => {
+    state.loading = false;
+    state.token = action.payload.token;
+    state.user = action.payload.user;
+    state.isAuthenticated = true;
+  })
+
+// Step 11: Component re-renders with new state
+// File: src/screens/LoginScreen.tsx
+const isAuthenticated = useSelector(selectIsAuthenticated);
+useEffect(() => {
+  if (isAuthenticated) {
+    navigation.navigate('Dashboard'); // Navigate to main app
+  }
+}, [isAuthenticated]);
+```
+
+### Data Fetching Flow (List Display)
+
+```typescript
+// Step 1: Screen loads and triggers data fetch
+// File: src/screens/EmployeeListScreen.tsx
+useEffect(() => {
+  dispatch(fetchEmployees());
+}, [dispatch]);
+
+// Step 2: Redux thunk gets service
+// File: src/store/slices/employeeSlice.ts
+export const fetchEmployees = createAsyncThunk<
+  Employee[],
+  void,
+  { state: RootState; extra: { serviceContainer: ServiceContainer } }
+>('employees/fetchEmployees', async (_, thunkAPI) => {
+  const employeeService = thunkAPI.extra.serviceContainer.get('IEmployeeService') as any;
+  
+  // Step 3: Check cache first
+  const cache = thunkAPI.extra.serviceContainer.get('ICacheStorage') as any;
+  const cached = await cache.getItem('employees');
+  if (cached) return cached;
+  
+  // Step 4: Fetch from service
+  const employees = await employeeService.getEmployees();
+  
+  // Step 5: Cache the result
+  await cache.setItem('employees', employees, 30); // 30 min cache
+  
+  return employees;
+});
+
+// Step 6: Service calls repository
+// File: src/services/EmployeeService.ts
+async getEmployees(): Promise<Employee[]> {
+  return this.employeeRepository.getAll();
+}
+
+// Step 7: Repository makes API call
+// File: src/repositories/EmployeeRepository.ts
+async getAll(): Promise<Employee[]> {
+  const { data } = await this.httpClient.get<Employee[]>('/employees');
+  return data;
+}
+
+// Step 8: Redux updates state
+builder
+  .addCase(fetchEmployees.fulfilled, (state, action) => {
+    state.loading = false;
+    state.employees = action.payload;
+  })
+
+// Step 9: Component displays data
+// File: src/screens/EmployeeListScreen.tsx
+const employees = useSelector(selectEmployees);
+const loading = useSelector(selectLoading);
+
+return (
+  <View>
+    {loading ? (
+      <AyskaLoadingStateComponent />
+    ) : (
+      employees.map(emp => (
+        <EmployeeCard key={emp.id} employee={emp} />
+      ))
+    )}
+  </View>
+);
+```
+
+### Form Submission Flow (Create/Update)
+
+```typescript
+// Step 1: User fills form and submits
+// File: src/screens/CreateEmployeeScreen.tsx
+const handleSubmit = async () => {
+  // Step 2: Validate form
+  if (!validateAll()) return;
+  
+  // Step 3: Provide haptic feedback
+  hapticFeedback.medium();
+  
+  // Step 4: Dispatch create action
+  dispatch(createEmployee(formValues));
+};
+
+// Step 5: Redux thunk executes
+// File: src/store/slices/employeeSlice.ts
+export const createEmployee = createAsyncThunk<
+  Employee,
+  CreateEmployeePayload,
+  { state: RootState; extra: { serviceContainer: ServiceContainer } }
+>('employees/createEmployee', async (payload, thunkAPI) => {
+  const employeeService = thunkAPI.extra.serviceContainer.get('IEmployeeService') as any;
+  
+  try {
+    // Step 6: Create employee
+    const employee = await employeeService.createEmployee(payload);
+    
+    // Step 7: Clear draft if exists
+    const draftStorage = thunkAPI.extra.serviceContainer.get('IDraftStorage') as any;
+    await draftStorage.removeDraft('create-employee');
+    
+    // Step 8: Invalidate cache
+    const cacheStorage = thunkAPI.extra.serviceContainer.get('ICacheStorage') as any;
+    await cacheStorage.removeItem('employees');
+    
+    // Step 9: Show success toast
+    // (Handled in component via fulfilled action)
+    
+    return employee;
+  } catch (error) {
+    // Step 10: Save as draft on error
+    const draftStorage = thunkAPI.extra.serviceContainer.get('IDraftStorage') as any;
+    await draftStorage.saveDraft('create-employee', payload);
+    throw error;
+  }
+});
+
+// Step 11: Component handles result
+// File: src/screens/CreateEmployeeScreen.tsx
+useEffect(() => {
+  if (createStatus === 'fulfilled') {
+    showToast('Employee created successfully', 'success');
+    navigation.goBack();
+  } else if (createStatus === 'rejected') {
+    showToast(error || 'Failed to create employee', 'error');
+  }
+}, [createStatus]);
+```
+
+## 🎯 PERFORMANCE OPTIMIZATION (ENHANCED)
+
+### When to Use React.memo
+
+Use React.memo for components that render frequently with same props:
+
+```typescript
+// ✅ Use React.memo when:
+// 1. Component renders frequently (list items, cards)
+// 2. Parent re-renders often but props rarely change
+// 3. Component is expensive to render
+
+export const EmployeeCard = React.memo<EmployeeCardProps>(({
+  employee,
+  onPress
+}) => {
+  return (
+    <AyskaContainerComponent onPress={onPress}>
+      <AyskaTitleComponent>{employee.name}</AyskaTitleComponent>
+      <AyskaTextComponent>{employee.role}</AyskaTextComponent>
+    </AyskaContainerComponent>
+  );
+});
+
+// ❌ Don't use React.memo when:
+// 1. Props change frequently (every render)
+// 2. Component is simple/cheap to render
+// 3. Component rarely re-renders
+```
+
+### When to Use useCallback
+
+Use useCallback for event handlers passed to memoized child components:
+
+```typescript
+// ✅ Use useCallback when:
+// 1. Passing callbacks to memoized children
+// 2. Callback used in dependency arrays
+// 3. Expensive child component re-renders on callback change
+
+const EmployeeList = () => {
+  // ✅ Good: Memoized handler for child components
+  const handleEmployeePress = useCallback(
+    (employeeId: string) => {
+      navigation.navigate('EmployeeDetail', { employeeId });
+    },
+    [navigation]
+  );
+  
+  return employees.map(emp => (
+    <EmployeeCard key={emp.id} employee={emp} onPress={() => handleEmployeePress(emp.id)} />
+  ));
+};
+
+// ❌ Don't use useCallback when:
+// 1. Not passing to child components
+// 2. Child components aren't memoized
+// 3. Callback changes every render anyway
+```
+
+### When to Use useMemo
+
+Use useMemo for expensive calculations:
+
+```typescript
+// ✅ Use useMemo when:
+// 1. Expensive transformations (filtering, sorting large lists)
+// 2. Complex calculations run every render
+// 3. Derived state from multiple sources
+
+const EmployeeList = () => {
+  const employees = useSelector(selectEmployees);
+  const searchQuery = useSelector(selectSearchQuery);
+  
+  // ✅ Good: Expensive filter operation memoized
+  const filteredEmployees = useMemo(() => {
+    return employees.filter(emp => 
+      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.department.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [employees, searchQuery]);
+  
+  return filteredEmployees.map(emp => <EmployeeCard key={emp.id} employee={emp} />);
+};
+
+// ❌ Don't use useMemo when:
+// 1. Simple calculations (additions, boolean checks)
+// 2. Already fast operations
+// 3. Deps change every render anyway
+```
+
+### FlatList vs ScrollView Decision
+
+```typescript
+// ✅ Use FlatList when:
+// - Rendering 10+ items
+// - Data can grow (pagination, infinite scroll)
+// - Items are uniform in size
+<FlatList
+  data={employees}
+  renderItem={({ item }) => <EmployeeCard employee={item} />}
+  keyExtractor={item => item.id}
+  onEndReached={loadMore}
+  onEndReachedThreshold={0.5}
+/>
+
+// ✅ Use ScrollView when:
+// - Small, fixed number of items (< 10)
+// - Complex, non-uniform layouts
+// - Need pull-to-refresh on non-list content
+<ScrollView>
+  <Header />
+  <Stats />
+  <Actions />
+</ScrollView>
+
+// ❌ Never use ScrollView with .map() for large lists
+<ScrollView>
+  {employees.map(emp => <EmployeeCard key={emp.id} employee={emp} />)}
+</ScrollView>
 ```
 
 ## 🎯 PERFORMANCE OPTIMIZATION
