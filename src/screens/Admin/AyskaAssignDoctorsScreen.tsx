@@ -115,10 +115,10 @@ export default function AssignDoctorsScreen() {
       await dispatch(
         createAssignment({
           employee_id: formData.employee_id,
-          doctor_ids: [formData.doctorId],
-          targets: [parseInt(formData.target)],
+          doctor_id: formData.doctorId,
+          target: parseInt(formData.target),
           adminId: 'a1', // Default admin ID
-        })
+        } as any)
       ).unwrap();
 
       // Get employee and doctor names for toast
@@ -343,7 +343,7 @@ export default function AssignDoctorsScreen() {
                   return (
                     <AssignmentCard
                       key={assignment.id}
-                      assignment={assignment}
+                      assignment={assignment as any}
                       doctorName={doctor?.name || 'Unknown'}
                     />
                   );

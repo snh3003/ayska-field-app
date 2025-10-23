@@ -25,10 +25,10 @@ import {
   selectAnalyticsLoading,
   selectAssignmentAnalytics,
   selectCheckinAnalytics,
+  selectDailyTrends,
   selectDashboard,
   selectEmployeePerformance,
   selectKPIs,
-  selectDailyTrends,
 } from '../../store/slices/AyskaAnalyticsSlice';
 import type { AppDispatch } from '../../store';
 
@@ -36,12 +36,12 @@ interface AnalyticsDashboardComponentProps {
   onViewDetails?: (_section: string) => void;
   onGenerateReport?: () => void;
   style?: any;
-  accessibilityHint?: string;
+  _accessibilityHint?: string;
 }
 
 export const AnalyticsDashboardComponent: React.FC<
   AnalyticsDashboardComponentProps
-> = ({ onViewDetails, onGenerateReport, style, accessibilityHint }) => {
+> = ({ onViewDetails, onGenerateReport, style }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
 
@@ -50,8 +50,9 @@ export const AnalyticsDashboardComponent: React.FC<
   const employeePerformance = useSelector(selectEmployeePerformance);
   const assignmentAnalytics = useSelector(selectAssignmentAnalytics);
   const checkinAnalytics = useSelector(selectCheckinAnalytics);
+  // @ts-expect-error - Reserved for daily trends chart feature
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _dailyTrends = useSelector(selectDailyTrends); // Reserved for daily trends chart feature
+  const _dailyTrends = useSelector(selectDailyTrends);
   const loading = useSelector(selectAnalyticsLoading);
   const error = useSelector(selectAnalyticsError);
 
@@ -126,7 +127,16 @@ export const AnalyticsDashboardComponent: React.FC<
     title: string,
     value: string | number,
     subtitle?: string,
-    color?: 'text' | 'textSecondary' | 'primary' | 'primaryRed' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
+    color?:
+      | 'text'
+      | 'textSecondary'
+      | 'primary'
+      | 'primaryRed'
+      | 'secondary'
+      | 'success'
+      | 'warning'
+      | 'error'
+      | 'info'
   ) => (
     <Card
       style={{
@@ -282,13 +292,12 @@ export const AnalyticsDashboardComponent: React.FC<
                 Assignment Analytics
               </AyskaTitleComponent>
               <AyskaActionButtonComponent
+                label="View Details"
                 variant="secondary"
                 size="sm"
                 onPress={() => handleViewDetails('assignments')}
                 {...getA11yProps('View detailed assignment analytics')}
-              >
-                View Details
-              </AyskaActionButtonComponent>
+              />
             </View>
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -321,13 +330,12 @@ export const AnalyticsDashboardComponent: React.FC<
                 Check-in Analytics
               </AyskaTitleComponent>
               <AyskaActionButtonComponent
+                label="View Details"
                 variant="secondary"
                 size="sm"
                 onPress={() => handleViewDetails('checkins')}
                 {...getA11yProps('View detailed check-in analytics')}
-              >
-                View Details
-              </AyskaActionButtonComponent>
+              />
             </View>
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -359,13 +367,12 @@ export const AnalyticsDashboardComponent: React.FC<
                 Employee Performance
               </AyskaTitleComponent>
               <AyskaActionButtonComponent
+                label="View Details"
                 variant="secondary"
                 size="sm"
                 onPress={() => handleViewDetails('employees')}
                 {...getA11yProps('View detailed employee performance')}
-              >
-                View Details
-              </AyskaActionButtonComponent>
+              />
             </View>
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -394,23 +401,21 @@ export const AnalyticsDashboardComponent: React.FC<
         {/* Action Buttons */}
         <View style={{ flexDirection: 'row', marginTop: 24, marginBottom: 20 }}>
           <AyskaActionButtonComponent
+            label="Generate Report"
             variant="primary"
             onPress={handleGenerateReport}
             style={{ flex: 1, marginRight: 8 }}
             {...getA11yProps('Generate analytics report')}
-          >
-            Generate Report
-          </AyskaActionButtonComponent>
+          />
 
           <AyskaActionButtonComponent
+            label="Refresh"
             variant="secondary"
             onPress={handleRefresh}
             style={{ flex: 1, marginLeft: 8 }}
             loading={refreshing}
             {...getA11yProps('Refresh analytics data')}
-          >
-            Refresh
-          </AyskaActionButtonComponent>
+          />
         </View>
       </ScrollView>
     </ErrorBoundary>

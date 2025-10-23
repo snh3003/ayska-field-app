@@ -18,14 +18,14 @@ import {
 } from '../types/AyskaAnalyticsApiType';
 
 export class AnalyticsService implements IAnalyticsService {
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   /**
    * Get dashboard overview metrics
    */
   async getDashboard(): Promise<DashboardResponse> {
     try {
-      const response = await this.http.get<DashboardResponse>(
+      const response = await this._http.get<DashboardResponse>(
         '/analytics/dashboard'
       );
       return response;
@@ -39,8 +39,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async getKPIs(): Promise<KPIsResponse> {
     try {
-      const response =
-        await this.http.get<KPIsResponse>('/analytics/kpis');
+      const response = await this._http.get<KPIsResponse>('/analytics/kpis');
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -52,7 +51,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async getEmployeePerformance(): Promise<EmployeePerformanceResponse> {
     try {
-      const response = await this.http.get<EmployeePerformanceResponse>(
+      const response = await this._http.get<EmployeePerformanceResponse>(
         '/analytics/employees/performance'
       );
       return response;
@@ -66,7 +65,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async getIndividualPerformance(id: string): Promise<EmployeePerformance> {
     try {
-      const response = await this.http.get<EmployeePerformance>(
+      const response = await this._http.get<EmployeePerformance>(
         `/analytics/employees/${id}/performance`
       );
       return response;
@@ -80,7 +79,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async getAssignmentAnalytics(): Promise<AssignmentAnalyticsResponse> {
     try {
-      const response = await this.http.get<AssignmentAnalyticsResponse>(
+      const response = await this._http.get<AssignmentAnalyticsResponse>(
         '/analytics/assignments'
       );
       return response;
@@ -94,7 +93,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async getCheckinAnalytics(): Promise<CheckinAnalyticsResponse> {
     try {
-      const response = await this.http.get<CheckinAnalyticsResponse>(
+      const response = await this._http.get<CheckinAnalyticsResponse>(
         '/analytics/checkins'
       );
       return response;
@@ -108,7 +107,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async getDailyTrends(days: number = 7): Promise<TrendResponse> {
     try {
-      const response = await this.http.get<TrendResponse>(
+      const response = await this._http.get<TrendResponse>(
         `/analytics/trends/daily?days=${days}`
       );
       return response;
@@ -122,7 +121,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async getWeeklyTrends(weeks: number = 4): Promise<TrendResponse> {
     try {
-      const response = await this.http.get<TrendResponse>(
+      const response = await this._http.get<TrendResponse>(
         `/analytics/trends/weekly?weeks=${weeks}`
       );
       return response;
@@ -138,7 +137,7 @@ export class AnalyticsService implements IAnalyticsService {
     data: ReportGenerateRequest
   ): Promise<ReportGenerateResponse> {
     try {
-      const response = await this.http.post<ReportGenerateResponse>(
+      const response = await this._http.post<ReportGenerateResponse>(
         '/analytics/reports/generate',
         data
       );
@@ -153,7 +152,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async exportCSV(dataType: string): Promise<Blob> {
     try {
-      const response = await this.http.get<Blob>(
+      const response = await this._http.get<Blob>(
         `/analytics/export/csv?data_type=${dataType}`,
         {
           responseType: 'blob',
@@ -170,7 +169,7 @@ export class AnalyticsService implements IAnalyticsService {
    */
   async getSystemHealth(): Promise<SystemHealthResponse> {
     try {
-      const response = await this.http.get<SystemHealthResponse>(
+      const response = await this._http.get<SystemHealthResponse>(
         '/analytics/system/health'
       );
       return response;

@@ -14,7 +14,7 @@ import {
 } from '../types/AyskaDoctorApiType';
 
 export class DoctorService implements IDoctorService {
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   /**
    * Get all doctors with pagination and search
@@ -32,7 +32,7 @@ export class DoctorService implements IDoctorService {
       const queryString = queryParams.toString();
       const endpoint = `/admin/doctors${queryString ? `?${queryString}` : ''}`;
 
-      const response = await this.http.get<DoctorListResponse>(endpoint);
+      const response = await this._http.get<DoctorListResponse>(endpoint);
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -44,9 +44,7 @@ export class DoctorService implements IDoctorService {
    */
   async getDoctorById(id: string): Promise<Doctor> {
     try {
-      const response = await this.http.get<Doctor>(
-        `/admin/doctors/${id}`
-      );
+      const response = await this._http.get<Doctor>(`/admin/doctors/${id}`);
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -58,7 +56,7 @@ export class DoctorService implements IDoctorService {
    */
   async createDoctor(data: CreateDoctorPayload): Promise<CreateDoctorResponse> {
     try {
-      const response = await this.http.post<CreateDoctorResponse>(
+      const response = await this._http.post<CreateDoctorResponse>(
         '/admin/doctors',
         data
       );
@@ -73,7 +71,7 @@ export class DoctorService implements IDoctorService {
    */
   async updateDoctor(id: string, data: UpdateDoctorPayload): Promise<Doctor> {
     try {
-      const response = await this.http.put<Doctor>(
+      const response = await this._http.put<Doctor>(
         `/admin/doctors/${id}`,
         data
       );
@@ -88,7 +86,7 @@ export class DoctorService implements IDoctorService {
    */
   async deleteDoctor(id: string): Promise<void> {
     try {
-      await this.http.delete(`/admin/doctors/${id}`);
+      await this._http.delete(`/admin/doctors/${id}`);
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
     }

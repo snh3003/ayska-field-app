@@ -15,7 +15,7 @@ import {
 } from '../types/AyskaNotificationApiType';
 
 export class NotificationsService implements INotificationService {
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   /**
    * Get notifications with pagination and filters
@@ -37,8 +37,7 @@ export class NotificationsService implements INotificationService {
       const queryString = queryParams.toString();
       const endpoint = `/notifications${queryString ? `?${queryString}` : ''}`;
 
-      const response =
-        await this.http.get<NotificationListResponse>(endpoint);
+      const response = await this._http.get<NotificationListResponse>(endpoint);
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -50,7 +49,7 @@ export class NotificationsService implements INotificationService {
    */
   async getNotificationById(id: string): Promise<Notification> {
     try {
-      const response = await this.http.get<Notification>(
+      const response = await this._http.get<Notification>(
         `/notifications/${id}`
       );
       return response;
@@ -64,7 +63,7 @@ export class NotificationsService implements INotificationService {
    */
   async getNotificationStats(): Promise<NotificationStatsResponse> {
     try {
-      const response = await this.http.get<NotificationStatsResponse>(
+      const response = await this._http.get<NotificationStatsResponse>(
         '/notifications/stats'
       );
       return response;
@@ -78,7 +77,7 @@ export class NotificationsService implements INotificationService {
    */
   async markNotificationAsRead(id: string): Promise<void> {
     try {
-      await this.http.patch(`/notifications/${id}/read`);
+      await this._http.patch(`/notifications/${id}/read`);
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
     }
@@ -91,7 +90,7 @@ export class NotificationsService implements INotificationService {
     data: NotificationBulkReadRequest
   ): Promise<NotificationBulkReadResponse> {
     try {
-      const response = await this.http.post<NotificationBulkReadResponse>(
+      const response = await this._http.post<NotificationBulkReadResponse>(
         '/notifications/bulk-read',
         data
       );
@@ -106,10 +105,9 @@ export class NotificationsService implements INotificationService {
    */
   async markAllAsRead(): Promise<NotificationMarkAllReadResponse> {
     try {
-      const response =
-        await this.http.post<NotificationMarkAllReadResponse>(
-          '/notifications/mark-all-read'
-        );
+      const response = await this._http.post<NotificationMarkAllReadResponse>(
+        '/notifications/mark-all-read'
+      );
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -121,7 +119,7 @@ export class NotificationsService implements INotificationService {
    */
   async deleteNotification(id: string): Promise<void> {
     try {
-      await this.http.delete(`/notifications/${id}`);
+      await this._http.delete(`/notifications/${id}`);
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
     }
