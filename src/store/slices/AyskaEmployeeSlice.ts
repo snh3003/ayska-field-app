@@ -3,11 +3,6 @@
 
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ServiceContainer } from '../../di/ServiceContainer';
-import {
-  CreateEmployeePayload,
-  IEmployeeService,
-  UpdateEmployeePayload,
-} from '../../services/AyskaEmployeeService';
 import { Employee } from '../../types/AyskaModelsType';
 import { PaginationParams } from '../../types/AyskaApiResponseType';
 
@@ -46,7 +41,7 @@ export const getEmployees = createAsyncThunk(
     try {
       const employeeService = ServiceContainer.getInstance().get(
         'IEmployeeService'
-      ) as IEmployeeService;
+      ) as any;
       const response = await employeeService.getEmployees(params);
       return response;
     } catch (error: any) {
@@ -62,7 +57,7 @@ export const getEmployeeById = createAsyncThunk(
     try {
       const employeeService = ServiceContainer.getInstance().get(
         'IEmployeeService'
-      ) as IEmployeeService;
+      ) as any;
       const employee = await employeeService.getEmployeeById(id);
       return employee;
     } catch (error: any) {
@@ -74,11 +69,11 @@ export const getEmployeeById = createAsyncThunk(
 // Create new employee
 export const createEmployee = createAsyncThunk(
   'employees/createEmployee',
-  async (employeeData: CreateEmployeePayload, { rejectWithValue }) => {
+  async (employeeData: any, { rejectWithValue }) => {
     try {
       const employeeService = ServiceContainer.getInstance().get(
         'IEmployeeService'
-      ) as IEmployeeService;
+      ) as any;
       const employee = await employeeService.createEmployee(employeeData);
       return employee;
     } catch (error: any) {
@@ -91,13 +86,13 @@ export const createEmployee = createAsyncThunk(
 export const updateEmployee = createAsyncThunk(
   'employees/updateEmployee',
   async (
-    { id, updates }: { id: string; updates: UpdateEmployeePayload },
+    { id, updates }: { id: string; updates: any },
     { rejectWithValue }
   ) => {
     try {
       const employeeService = ServiceContainer.getInstance().get(
         'IEmployeeService'
-      ) as IEmployeeService;
+      ) as any;
       const employee = await employeeService.updateEmployee(id, updates);
       return employee;
     } catch (error: any) {
@@ -113,7 +108,7 @@ export const deleteEmployee = createAsyncThunk(
     try {
       const employeeService = ServiceContainer.getInstance().get(
         'IEmployeeService'
-      ) as IEmployeeService;
+      ) as any;
       await employeeService.deleteEmployee(id);
       return id;
     } catch (error: any) {
@@ -129,7 +124,7 @@ export const getEmployeeAnalytics = createAsyncThunk(
     try {
       const employeeService = ServiceContainer.getInstance().get(
         'IEmployeeService'
-      ) as IEmployeeService;
+      ) as any;
       const analytics = await employeeService.getEmployeeAnalytics(id);
       return { id, analytics };
     } catch (error: any) {

@@ -15,20 +15,20 @@ export default function MyAssignmentsScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
   const { doctors } = useSelector((state: RootState) => state.onboarding);
-  const { employeeAssignments, loading } = useSelector(
+  const { assignments: employeeAssignments, loading } = useSelector(
     (state: RootState) => state.assignment
   );
 
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchEmployeeAssignments({ employeeId: user.id }));
+      dispatch(fetchEmployeeAssignments(user.id));
     }
     dispatch(fetchAllDoctors());
   }, [dispatch, user?.id]);
 
   const handleRefresh = () => {
     if (user?.id) {
-      dispatch(fetchEmployeeAssignments({ employeeId: user.id }));
+      dispatch(fetchEmployeeAssignments(user.id));
     }
   };
 

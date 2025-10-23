@@ -102,5 +102,7 @@ export const getRetryDelay = (attemptNumber: number): number => {
 
 // Helper function to check if status code is retryable
 export const isRetryableStatusCode = (statusCode: number): boolean => {
-  return API_CONFIG.RETRY.RETRYABLE_STATUS_CODES.includes(statusCode);
+  return (
+    API_CONFIG.RETRY.RETRYABLE_STATUS_CODES as unknown as number[]
+  ).includes(statusCode);
 };

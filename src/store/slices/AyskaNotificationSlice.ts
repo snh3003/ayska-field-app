@@ -215,12 +215,15 @@ const notificationSlice = createSlice({
       .addCase(markNotificationAsRead.fulfilled, (state, _action) => {
         state.loading = false;
         const index = state.notifications.findIndex(
-          n => n.id === action.meta.arg
+          n => n.id === _action.meta.arg
         );
-        if (index !== -1) {
+        if (index !== -1 && state.notifications[index]) {
           state.notifications[index].read = true;
         }
-        if (state.currentNotification?.id === action.meta.arg) {
+        if (
+          state.currentNotification?.id === _action.meta.arg &&
+          state.currentNotification
+        ) {
           state.currentNotification.read = true;
         }
         state.pagination.unreadCount = Math.max(
@@ -245,7 +248,7 @@ const notificationSlice = createSlice({
         // Update notifications in state
         action.payload.notification_ids.forEach(id => {
           const index = state.notifications.findIndex(n => n.id === id);
-          if (index !== -1) {
+          if (index !== -1 && state.notifications[index]) {
             state.notifications[index].read = true;
           }
         });

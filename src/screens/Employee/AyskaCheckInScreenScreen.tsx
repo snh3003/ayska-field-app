@@ -45,7 +45,7 @@ export default function CheckInScreen() {
           doctorId: doctor.id,
           location: location,
           ...(notes && { notes }),
-        })
+        } as any)
       ).unwrap();
 
       Alert.alert('Success', 'Check-in completed successfully!');

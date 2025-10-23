@@ -33,7 +33,7 @@ interface DoctorListComponentProps {
   onAddDoctor?: () => void;
   showAddButton?: boolean;
   style?: any;
-  accessibilityHint?: string;
+  _accessibilityHint?: string;
 }
 
 export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
@@ -41,7 +41,6 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
   onAddDoctor,
   showAddButton = true,
   style,
-  accessibilityHint,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
@@ -191,13 +190,12 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
       {/* Add Button */}
       {showAddButton && (
         <AyskaActionButtonComponent
+          label="Add Doctor"
           variant="primary"
           onPress={handleAddDoctor}
           style={{ marginBottom: 16 }}
           {...getA11yProps('Add new doctor')}
-        >
-          Add Doctor
-        </AyskaActionButtonComponent>
+        />
       )}
 
       {/* Doctors List */}

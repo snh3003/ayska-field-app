@@ -12,10 +12,6 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import {
-  fetchAllAnalytics,
-  generateRoundup,
-} from '../../store/slices/AyskaAnalyticsSlice';
 import { fetchAllEmployees } from '../../store/slices/AyskaOnboardingSlice';
 import { AnalyticsCard } from '../../components/business/AyskaAnalyticsCardComponent';
 import { RoundupCard } from '../../components/business/AyskaRoundupCardComponent';
@@ -26,24 +22,25 @@ import { hapticFeedback } from '../../../utils/haptics';
 export default function EmployeeAnalyticsScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const { employees } = useSelector((state: RootState) => state.onboarding);
-  const { allAnalytics, roundups, loading } = useSelector(
-    (state: RootState) => state.analytics
-  );
+  // TODO: Implement fetchAllAnalytics and generateRoundup thunks in AyskaAnalyticsSlice
+  const allAnalytics: any[] = []; // Placeholder until analytics slice is implemented
+  const roundups: any[] = []; // Placeholder until analytics slice is implemented
+  const loading = false; // Placeholder
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
 
   useEffect(() => {
     dispatch(fetchAllEmployees());
-    dispatch(fetchAllAnalytics());
+    // dispatch(fetchAllAnalytics()); // TODO: Implement this thunk
   }, [dispatch]);
 
   const handleRefresh = () => {
-    dispatch(fetchAllAnalytics());
+    // dispatch(fetchAllAnalytics()); // TODO: Implement this thunk
   };
 
   const handleGenerateDailyRoundup = async () => {
     try {
-      await dispatch(generateRoundup({ period: 'daily' })).unwrap();
+      // await dispatch(generateRoundup({ period: 'daily' })).unwrap(); // TODO: Implement this thunk
       hapticFeedback.success();
     } catch {
       // Error handling
@@ -52,7 +49,7 @@ export default function EmployeeAnalyticsScreen() {
 
   const handleGenerateWeeklyRoundup = async () => {
     try {
-      await dispatch(generateRoundup({ period: 'weekly' })).unwrap();
+      // await dispatch(generateRoundup({ period: 'weekly' })).unwrap(); // TODO: Implement this thunk
       hapticFeedback.success();
     } catch {
       // Error handling
