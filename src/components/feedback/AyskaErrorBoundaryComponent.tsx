@@ -14,6 +14,8 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  isServerDown: boolean;
+  isNetworkError: boolean;
 }
 
 interface ErrorBoundaryWithThemeProps extends Props {
@@ -23,11 +25,29 @@ interface ErrorBoundaryWithThemeProps extends Props {
 class ErrorBoundaryClass extends Component<ErrorBoundaryWithThemeProps, State> {
   constructor(props: ErrorBoundaryWithThemeProps) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = {
+      hasError: false,
+      error: null,
+      isServerDown: false,
+      isNetworkError: false,
+    };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    const isServerDown =
+      error.message?.includes('Server is down') ||
+      error.message?.includes('ECONNREFUSED') ||
+      error.message?.includes('Server Unavailable');
+    const isNetworkError =
+      error.message?.includes('Network Error') ||
+      error.message?.includes('ERR_NETWORK');
+
+    return {
+      hasError: true,
+      error,
+      isServerDown,
+      isNetworkError,
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
@@ -36,11 +56,16 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryWithThemeProps, State> {
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({
+      hasError: false,
+      error: null,
+      isServerDown: false,
+      isNetworkError: false,
+    });
   };
 
   render() {
-    const { hasError, error } = this.state;
+    const { hasError, error, isServerDown, isNetworkError } = this.state;
     const { fallback, children, theme } = this.props;
 
     if (hasError) {
@@ -48,6 +73,111 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryWithThemeProps, State> {
         return fallback;
       }
 
+      // Server down UI
+      if (isServerDown) {
+        return (
+          <TamaguiView
+            flex={1}
+            justifyContent="center"
+            alignItems="center"
+            padding="$xl"
+            backgroundColor={theme.background}
+          >
+            <TamaguiView marginBottom="$lg">
+              <Ionicons name="server" size={64} color={theme.warning} />
+            </TamaguiView>
+            <AyskaTitleComponent
+              level={2}
+              weight="bold"
+              color="text"
+              align="center"
+              style={{ marginBottom: 16 }}
+            >
+              Server Unavailable
+            </AyskaTitleComponent>
+            <AyskaTextComponent
+              variant="bodyLarge"
+              color="textSecondary"
+              align="center"
+              style={{ marginBottom: 24 }}
+            >
+              The server is currently down. Please try again later.
+            </AyskaTextComponent>
+            <TouchableOpacity
+              style={{
+                backgroundColor: theme.primary,
+                paddingVertical: 16,
+                paddingHorizontal: 32,
+                borderRadius: 12,
+              }}
+              onPress={this.handleReset}
+            >
+              <AyskaTextComponent
+                variant="bodyLarge"
+                weight="semibold"
+                color="text"
+                style={{ color: 'white' }}
+              >
+                Retry
+              </AyskaTextComponent>
+            </TouchableOpacity>
+          </TamaguiView>
+        );
+      }
+
+      // Network error UI
+      if (isNetworkError) {
+        return (
+          <TamaguiView
+            flex={1}
+            justifyContent="center"
+            alignItems="center"
+            padding="$xl"
+            backgroundColor={theme.background}
+          >
+            <TamaguiView marginBottom="$lg">
+              <Ionicons name="wifi-off" size={64} color={theme.warning} />
+            </TamaguiView>
+            <AyskaTitleComponent
+              level={2}
+              weight="bold"
+              color="text"
+              align="center"
+              style={{ marginBottom: 16 }}
+            >
+              Connection Error
+            </AyskaTitleComponent>
+            <AyskaTextComponent
+              variant="bodyLarge"
+              color="textSecondary"
+              align="center"
+              style={{ marginBottom: 24 }}
+            >
+              Please check your internet connection and try again.
+            </AyskaTextComponent>
+            <TouchableOpacity
+              style={{
+                backgroundColor: theme.primary,
+                paddingVertical: 16,
+                paddingHorizontal: 32,
+                borderRadius: 12,
+              }}
+              onPress={this.handleReset}
+            >
+              <AyskaTextComponent
+                variant="bodyLarge"
+                weight="semibold"
+                color="text"
+                style={{ color: 'white' }}
+              >
+                Retry
+              </AyskaTextComponent>
+            </TouchableOpacity>
+          </TamaguiView>
+        );
+      }
+
+      // Generic error UI
       return (
         <TamaguiView
           flex={1}

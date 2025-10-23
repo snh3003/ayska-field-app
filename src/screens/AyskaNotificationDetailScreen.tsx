@@ -10,7 +10,7 @@ import { Card } from '../components/ui/AyskaCardComponent';
 import { ButtonPrimary } from '../components/ui/AyskaButtonPrimaryComponent';
 import { ButtonSecondary } from '../components/ui/AyskaButtonSecondaryComponent';
 import { EmptyState } from '../components/feedback/AyskaEmptyStateComponent';
-import { localDataService } from '../services/AyskaLocalDataServiceService';
+import { localDataService } from '../services/AyskaLocalDataService';
 import {
   Assignment,
   Attendance,

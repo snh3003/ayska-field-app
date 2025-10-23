@@ -11,7 +11,7 @@ import { Card } from '../components/ui/AyskaCardComponent';
 import { ThemeToggle } from '../components/layout/AyskaThemeToggleComponent';
 import { Logo } from '../components/layout/AyskaLogoComponent';
 import type { RootState } from '../store';
-import { logout } from '../store/slices/AyskaAuthSliceSlice';
+import { logout } from '../store/slices/AyskaAuthSlice';
 
 export default function Settings() {
   const { name, role } = useSelector((s: RootState) => s.auth);

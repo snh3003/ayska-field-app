@@ -9,10 +9,10 @@ import { Input } from '../../components/ui/AyskaInputComponent';
 import { ButtonPrimary } from '../../components/ui/AyskaButtonPrimaryComponent';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { onboardDoctor } from '../../store/slices/AyskaOnboardingSliceSlice';
-import { CommonValidators } from '../../validation/AyskaCommonValidatorsValidation';
-import { FormValidator } from '../../validation/AyskaFormValidatorValidation';
-import { ValidationContext } from '../../validation/AyskaValidationContextValidation';
+import { onboardDoctor } from '../../store/slices/AyskaOnboardingSlice';
+import { CommonValidators } from '../../validation/AyskaCommonValidators';
+import { FormValidator } from '../../validation/AyskaFormValidator';
+import { ValidationContext } from '../../validation/AyskaValidationContext';
 import { Location } from '../../types/AyskaModelsType';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '../../../constants/theme';
@@ -92,7 +92,8 @@ export default function OnboardDoctorScreen() {
     // Check location is selected
     const locationSelected = selectedLocation !== null;
     return allFieldsFilled && noErrors && locationSelected;
-  }, [formData, errors, selectedLocation, validationRules]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData, errors, selectedLocation]);
 
   const toast = useToast();
 

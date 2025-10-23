@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AdminService } from '../../src/services/AyskaAdminServiceService';
+import { AdminService } from '../../src/services/AyskaAdminService';
 import type { TeamSales } from '../../src/types/AyskaApiType';
 
 describe('AdminService', () => {

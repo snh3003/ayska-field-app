@@ -8,7 +8,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../components/ui/AyskaCardComponent';
 import { StatsCard } from '../../components/ui/AyskaStatsCardComponent';
-import { localDataService } from '../../services/AyskaLocalDataServiceService';
+import { localDataService } from '../../services/AyskaLocalDataService';
 import { Attendance, Doctor, Employee, Visit } from '../../types';
 
 export default function EmployeeDetail() {

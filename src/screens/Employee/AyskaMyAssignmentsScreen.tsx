@@ -6,8 +6,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { fetchEmployeeAssignments } from '../../store/slices/AyskaAssignmentSliceSlice';
-import { fetchAllDoctors } from '../../store/slices/AyskaOnboardingSliceSlice';
+import { fetchEmployeeAssignments } from '../../store/slices/AyskaAssignmentSlice';
+import { fetchAllDoctors } from '../../store/slices/AyskaOnboardingSlice';
 import { AssignmentCard } from '../../components/business/AyskaAssignmentCardComponent';
 import { useAuth } from '../../../hooks/useAuth';
 

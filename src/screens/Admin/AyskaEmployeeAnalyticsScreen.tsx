@@ -15,8 +15,8 @@ import { AppDispatch, RootState } from '../../store';
 import {
   fetchAllAnalytics,
   generateRoundup,
-} from '../../store/slices/AyskaAnalyticsSliceSlice';
-import { fetchAllEmployees } from '../../store/slices/AyskaOnboardingSliceSlice';
+} from '../../store/slices/AyskaAnalyticsSlice';
+import { fetchAllEmployees } from '../../store/slices/AyskaOnboardingSlice';
 import { AnalyticsCard } from '../../components/business/AyskaAnalyticsCardComponent';
 import { RoundupCard } from '../../components/business/AyskaRoundupCardComponent';
 import { useColorScheme } from '../../../hooks/use-color-scheme';

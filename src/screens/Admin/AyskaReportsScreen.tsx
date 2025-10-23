@@ -5,7 +5,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Card } from '../../components/ui/AyskaCardComponent';
 import { StatsCard } from '../../components/ui/AyskaStatsCardComponent';
-import { localDataService } from '../../services/AyskaLocalDataServiceService';
+import { localDataService } from '../../services/AyskaLocalDataService';
 
 export default function Reports() {
   const [reportData, setReportData] = useState({
