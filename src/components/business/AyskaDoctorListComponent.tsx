@@ -169,13 +169,12 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
         message="No doctors match your current search criteria."
         actionLabel="Add Doctor"
         onAction={handleAddDoctor}
-        style={style}
       />
     );
   }
 
   return (
-    <ErrorBoundary style={style} accessibilityHint={accessibilityHint}>
+    <ErrorBoundary>
       <AyskaTitleComponent level={2} weight="bold" style={{ marginBottom: 16 }}>
         Doctors ({pagination.total})
       </AyskaTitleComponent>

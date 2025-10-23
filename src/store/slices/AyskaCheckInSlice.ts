@@ -119,7 +119,7 @@ const checkInSlice = createSlice({
         state.lastCheckIn = action.payload;
         // Add to history if it's a valid check-in
         if (action.payload.is_valid) {
-          state.checkInHistory.unshift({
+          state.checkinHistory.unshift({
             id: action.payload.checkin_id,
             is_valid: action.payload.is_valid,
             distance_meters: action.payload.distance_meters,
@@ -144,7 +144,7 @@ const checkInSlice = createSlice({
       })
       .addCase(fetchCheckInHistory.fulfilled, (state, action) => {
         state.loading = false;
-        state.checkInHistory = action.payload.checkins;
+        state.checkinHistory = action.payload.checkins;
         state.pagination = {
           total: action.payload.total,
           page: action.payload.page,
