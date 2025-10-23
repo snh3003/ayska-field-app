@@ -35,7 +35,7 @@ interface CheckInComponentProps {
   onCheckInSuccess?: (_result: any) => void;
   onCheckInError?: (_error: string) => void;
   style?: any;
-  accessibilityHint?: string;
+  _accessibilityHint?: string;
 }
 
 export const CheckInComponent: React.FC<CheckInComponentProps> = ({
@@ -45,7 +45,6 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
   onCheckInSuccess,
   onCheckInError,
   style,
-  accessibilityHint,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
@@ -175,10 +174,16 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
         const checkInResult = _result.payload as any;
 
         if (checkInResult.is_valid) {
-          showToast(`You have successfully checked in with ${doctorName || 'the doctor'}.`, 'success');
+          showToast(
+            `You have successfully checked in with ${doctorName || 'the doctor'}.`,
+            'success'
+          );
           onCheckInSuccess?.(checkInResult);
         } else {
-          showToast(`You are too far from the doctor's location. Distance: ${checkInResult.distance_meters}m`, 'warning');
+          showToast(
+            `You are too far from the doctor's location. Distance: ${checkInResult.distance_meters}m`,
+            'warning'
+          );
           onCheckInError?.(
             `Distance exceeded: ${checkInResult.distance_meters}m`
           );
@@ -383,6 +388,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
 
         {/* Check-in Button */}
         <AyskaActionButtonComponent
+          label="Check In"
           variant="primary"
           size="lg"
           onPress={handleCheckIn}
@@ -390,9 +396,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
           disabled={loading || !currentLocation}
           style={{ marginBottom: 16 }}
           {...getA11yProps('Submit check-in for this doctor')}
-        >
-          {loading ? 'Checking In...' : 'Check In'}
-        </AyskaActionButtonComponent>
+        />
 
         {/* Last Check-in Result */}
         {lastCheckIn && (
@@ -428,7 +432,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
                 style={{ marginTop: 4 }}
               >
                 Progress: {lastCheckIn.assignment_progress}/
-                {lastCheckIn.assignment_target || 'N/A'}
+                {(lastCheckIn as any).assignment_target || 'N/A'}
               </AyskaTextComponent>
             )}
           </Card>

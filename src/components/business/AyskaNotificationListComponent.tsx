@@ -40,7 +40,7 @@ interface NotificationListComponentProps {
   showFilters?: boolean;
   showBulkActions?: boolean;
   style?: any;
-  accessibilityHint?: string;
+  _accessibilityHint?: string;
 }
 
 export const NotificationListComponent: React.FC<
@@ -51,7 +51,6 @@ export const NotificationListComponent: React.FC<
   showFilters = true,
   showBulkActions = true,
   style,
-  accessibilityHint,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
@@ -134,7 +133,10 @@ export const NotificationListComponent: React.FC<
         bulkMarkAsRead({ notification_ids: selectedNotifications })
       );
       setSelectedNotifications([]);
-      showToast(`${selectedNotifications.length} notifications marked as read.`, 'success');
+      showToast(
+        `${selectedNotifications.length} notifications marked as read.`,
+        'success'
+      );
     } catch (error) {
       if (__DEV__) {
         console.error('Failed to bulk mark as read:', error);
@@ -158,9 +160,9 @@ export const NotificationListComponent: React.FC<
   };
 
   // Handle delete notification
+  // @ts-expect-error - Reserved for individual notification delete feature
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _handleDeleteNotification = async (notificationId: string) => {
-    // Reserved for individual notification delete feature
     hapticFeedback.medium();
     try {
       await dispatch(deleteNotification(notificationId));
@@ -264,14 +266,13 @@ export const NotificationListComponent: React.FC<
 
         {showBulkActions && (
           <AyskaActionButtonComponent
+            label={selectedNotifications.includes(item.id) ? '✓' : '○'}
             variant="ghost"
             size="sm"
             onPress={() => handleToggleSelection(item.id)}
             style={{ marginLeft: 8 }}
             {...getA11yProps(`Select notification: ${item.title}`)}
-          >
-            {selectedNotifications.includes(item.id) ? '✓' : '○'}
-          </AyskaActionButtonComponent>
+          />
         )}
       </View>
     </Card>
@@ -321,6 +322,7 @@ export const NotificationListComponent: React.FC<
           style={{ flexDirection: 'row', marginBottom: 16, flexWrap: 'wrap' }}
         >
           <AyskaActionButtonComponent
+            label={showUnreadOnly ? 'Show All' : 'Unread Only'}
             variant={showUnreadOnly ? 'primary' : 'secondary'}
             size="sm"
             onPress={() => {
@@ -332,12 +334,11 @@ export const NotificationListComponent: React.FC<
             }}
             style={{ marginRight: 8, marginBottom: 8 }}
             {...getA11yProps('Filter unread notifications')}
-          >
-            {showUnreadOnly ? 'Show All' : 'Unread Only'}
-          </AyskaActionButtonComponent>
+          />
 
           {showBulkActions && selectedNotifications.length > 0 && (
             <AyskaActionButtonComponent
+              label="Mark Selected Read"
               variant="secondary"
               size="sm"
               onPress={handleBulkMarkAsRead}
@@ -346,22 +347,19 @@ export const NotificationListComponent: React.FC<
               {...getA11yProps(
                 `Mark ${selectedNotifications.length} notifications as read`
               )}
-            >
-              Mark Selected Read
-            </AyskaActionButtonComponent>
+            />
           )}
 
           {showBulkActions && pagination.unreadCount > 0 && (
             <AyskaActionButtonComponent
+              label="Mark All Read"
               variant="secondary"
               size="sm"
               onPress={handleMarkAllAsRead}
               loading={bulkOperation.loading}
               style={{ marginBottom: 8 }}
               {...getA11yProps('Mark all notifications as read')}
-            >
-              Mark All Read
-            </AyskaActionButtonComponent>
+            />
           )}
         </View>
       )}

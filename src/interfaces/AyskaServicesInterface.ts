@@ -35,6 +35,7 @@ export interface IHttpClient {
   get<T>(_url: string, _config?: any): Promise<T>;
   post<T>(_url: string, _data?: any, _config?: any): Promise<T>;
   put<T>(_url: string, _data?: any, _config?: any): Promise<T>;
+  patch<T>(_url: string, _data?: any, _config?: any): Promise<T>;
   delete<T>(_url: string, _config?: any): Promise<T>;
 }
 

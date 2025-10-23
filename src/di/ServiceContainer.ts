@@ -127,23 +127,11 @@ export class ServiceContainer {
     );
     this.registerFactory(
       'IAssignmentService',
-      () =>
-        new AssignmentService(
-          this.get('IAssignmentRepository'),
-          this.get('INotificationSubject')
-        )
+      () => new AssignmentService((this.get('IHttpClient') as any).axios)
     );
     this.registerFactory(
       'ICheckInService',
-      () =>
-        new CheckInService(
-          this.get('ICheckInRepository'),
-          this.get('IDoctorRepository'),
-          this.get('IAssignmentRepository'),
-          this.get('ILocationValidator'),
-          this.get('INotificationSubject'),
-          this.get('IGeolocationService')
-        )
+      () => new CheckInService((this.get('IHttpClient') as any).axios)
     );
     this.registerFactory(
       'IAnalyticsService',
@@ -197,13 +185,13 @@ export class ServiceContainer {
       );
 
       // Add interceptors - lazy import to avoid circular dependencies
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+
       const AuthInterceptor =
         require('../interceptors/AyskaAuthInterceptor').AuthInterceptor;
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+
       const RetryInterceptor =
         require('../interceptors/AyskaRetryInterceptor').RetryInterceptor;
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+
       const ErrorInterceptor =
         require('../interceptors/AyskaErrorInterceptor').ErrorInterceptor;
 
@@ -292,13 +280,13 @@ export class ServiceContainer {
     const httpClient = new HttpClient(API_CONFIG.BASE_URL, API_CONFIG.TIMEOUT);
 
     // Lazy import to avoid circular dependencies
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+
     const AuthInterceptor =
       require('../interceptors/AyskaAuthInterceptor').AuthInterceptor;
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+
     const RetryInterceptor =
       require('../interceptors/AyskaRetryInterceptor').RetryInterceptor;
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+
     const ErrorInterceptor =
       require('../interceptors/AyskaErrorInterceptor').ErrorInterceptor;
 

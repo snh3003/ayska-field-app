@@ -31,7 +31,7 @@ interface DoctorFormComponentProps {
   onSuccess?: (_doctor: Doctor) => void;
   onCancel?: () => void;
   style?: any;
-  accessibilityHint?: string;
+  _accessibilityHint?: string;
 }
 
 export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
@@ -39,7 +39,6 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
   onSuccess,
   onCancel,
   style,
-  accessibilityHint,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
@@ -315,25 +314,23 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
 
         <View style={{ flexDirection: 'row', marginTop: 24 }}>
           <AyskaActionButtonComponent
+            label="Cancel"
             variant="secondary"
             onPress={handleCancel}
             style={{ flex: 1, marginRight: 8 }}
             disabled={loading}
             {...getA11yProps('Cancel doctor form')}
-          >
-            Cancel
-          </AyskaActionButtonComponent>
+          />
 
           <AyskaActionButtonComponent
+            label={doctor ? 'Update Doctor' : 'Create Doctor'}
             variant="primary"
             onPress={handleSubmit}
             style={{ flex: 1, marginLeft: 8 }}
             loading={loading}
             disabled={loading}
             {...getA11yProps('Save doctor information')}
-          >
-            {doctor ? 'Update Doctor' : 'Create Doctor'}
-          </AyskaActionButtonComponent>
+          />
         </View>
       </ScrollView>
     </ErrorBoundary>
