@@ -39,14 +39,14 @@ export default function MyAssignmentsScreen() {
 
   const getTotalProgress = () => {
     return employeeAssignments.reduce(
-      (sum, assignment) => sum + assignment.currentProgress,
+      (sum: number, assignment: any) => sum + assignment.currentProgress,
       0
     );
   };
 
   const getTotalTarget = () => {
     return employeeAssignments.reduce(
-      (sum, assignment) => sum + assignment.target,
+      (sum: number, assignment: any) => sum + assignment.target,
       0
     );
   };
@@ -221,7 +221,7 @@ export default function MyAssignmentsScreen() {
                 </TamaguiText>
               </TamaguiView>
             ) : (
-              employeeAssignments.map(assignment => (
+              employeeAssignments.map((assignment: any) => (
                 <AssignmentCard
                   key={assignment.id}
                   assignment={assignment}

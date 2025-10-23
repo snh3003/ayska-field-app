@@ -114,16 +114,16 @@ export default function AssignDoctorsScreen() {
     try {
       await dispatch(
         createAssignment({
-          employee_id: formData.employeeId,
-          doctor_ids: [formData.doctor_id],
+          employee_id: formData.employee_id,
+          doctor_ids: [formData.doctorId],
           targets: [parseInt(formData.target)],
           adminId: 'a1', // Default admin ID
         })
       ).unwrap();
 
       // Get employee and doctor names for toast
-      const employee = employees.find(emp => emp.id === formData.employeeId);
-      const doctor = doctors.find(doc => doc.id === formData.doctor_id);
+      const employee = employees.find(emp => emp.id === formData.employee_id);
+      const doctor = doctors.find(doc => doc.id === formData.doctorId);
 
       // Show success toast with names and specialization
       toast.success(
@@ -235,13 +235,13 @@ export default function AssignDoctorsScreen() {
               <Dropdown
                 label="Employee"
                 placeholder="Select employee"
-                value={formData.employeeId}
+                value={formData.employee_id}
                 items={employees.map(emp => ({
                   id: emp.id,
                   name: emp.name,
                   subtitle: emp.email,
                 }))}
-                onSelect={id => handleFieldChange('employeeId', id)}
+                onSelect={id => handleFieldChange('employee_id', id)}
                 icon={
                   <Ionicons
                     name="person-outline"
@@ -249,13 +249,13 @@ export default function AssignDoctorsScreen() {
                     color={theme.textSecondary}
                   />
                 }
-                error={touched.employeeId ? errors.employeeId || '' : ''}
+                error={touched.employee_id ? errors.employee_id || '' : ''}
               />
 
               <Dropdown
                 label="Doctor"
                 placeholder="Select doctor"
-                value={formData.doctor_id}
+                value={formData.doctorId}
                 items={doctors.map(doc => ({
                   id: doc.id,
                   name: doc.name,
@@ -269,7 +269,7 @@ export default function AssignDoctorsScreen() {
                     color={theme.textSecondary}
                   />
                 }
-                error={touched.doctor_id ? errors.doctor_id || '' : ''}
+                error={touched.doctorId ? errors.doctorId || '' : ''}
               />
 
               <Input

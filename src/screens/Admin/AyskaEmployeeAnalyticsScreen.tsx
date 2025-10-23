@@ -202,7 +202,7 @@ export default function EmployeeAnalyticsScreen() {
                   </TamaguiText>
                 </TamaguiView>
 
-                {roundups.slice(0, 3).map(roundup => (
+                {roundups.slice(0, 3).map((roundup: any) => (
                   <RoundupCard key={roundup.id} roundup={roundup} />
                 ))}
               </TamaguiView>
@@ -246,7 +246,7 @@ export default function EmployeeAnalyticsScreen() {
                   </TamaguiText>
                 </TamaguiView>
               ) : (
-                allAnalytics.map(analytics => {
+                allAnalytics.map((analytics: any) => {
                   const employee = employees.find(
                     emp => emp.id === analytics.employeeId
                   );
