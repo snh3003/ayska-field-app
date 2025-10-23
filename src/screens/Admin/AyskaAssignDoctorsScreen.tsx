@@ -38,7 +38,7 @@ export default function AssignDoctorsScreen() {
   const theme = Colors[scheme];
 
   const [formData, setFormData] = useState({
-    employeeId: '',
+    employee_id: '',
     doctorId: '',
     target: '',
   });
@@ -53,7 +53,7 @@ export default function AssignDoctorsScreen() {
   }, [dispatch]);
 
   const validationRules = {
-    employeeId: [CommonValidators.required('Please select an employee')],
+    employee_id: [CommonValidators.required('Please select an employee')],
     doctorId: [CommonValidators.required('Please select a doctor')],
     target: [CommonValidators.required('Target is required')],
   };
@@ -81,7 +81,7 @@ export default function AssignDoctorsScreen() {
     const newErrors = formValidator.validateForm(formData, validationRules);
     setErrors(newErrors);
     setTouched({
-      employeeId: true,
+      employee_id: true,
       doctorId: true,
       target: true,
     });
@@ -114,8 +114,8 @@ export default function AssignDoctorsScreen() {
     try {
       await dispatch(
         createAssignment({
-          employeeId: formData.employeeId,
-          doctorIds: [formData.doctorId],
+          employee_id: formData.employeeId,
+          doctor_ids: [formData.doctor_id],
           targets: [parseInt(formData.target)],
           adminId: 'a1', // Default admin ID
         })
@@ -123,14 +123,14 @@ export default function AssignDoctorsScreen() {
 
       // Get employee and doctor names for toast
       const employee = employees.find(emp => emp.id === formData.employeeId);
-      const doctor = doctors.find(doc => doc.id === formData.doctorId);
+      const doctor = doctors.find(doc => doc.id === formData.doctor_id);
 
       // Show success toast with names and specialization
       toast.success(
         `Doctor ${doctor?.name || 'Unknown'} (${doctor?.specialization || 'Unknown'}) assigned to Employee ${employee?.name || 'Unknown'}`
       );
       hapticFeedback.success();
-      setFormData({ employeeId: '', doctorId: '', target: '' });
+      setFormData({ employee_id: '', doctorId: '', target: '' });
       setErrors({});
       setTouched({});
 
@@ -152,7 +152,7 @@ export default function AssignDoctorsScreen() {
   };
 
   // const selectedEmployee = employees.find(emp => emp.id === formData.employeeId);
-  // const selectedDoctor = doctors.find(doc => doc.id === formData.doctorId);
+  // const selectedDoctor = doctors.find(doc => doc.id === formData.doctor_id);
 
   return (
     <Modal
@@ -255,7 +255,7 @@ export default function AssignDoctorsScreen() {
               <Dropdown
                 label="Doctor"
                 placeholder="Select doctor"
-                value={formData.doctorId}
+                value={formData.doctor_id}
                 items={doctors.map(doc => ({
                   id: doc.id,
                   name: doc.name,
@@ -269,7 +269,7 @@ export default function AssignDoctorsScreen() {
                     color={theme.textSecondary}
                   />
                 }
-                error={touched.doctorId ? errors.doctorId || '' : ''}
+                error={touched.doctor_id ? errors.doctor_id || '' : ''}
               />
 
               <Input
@@ -338,7 +338,7 @@ export default function AssignDoctorsScreen() {
               ) : (
                 assignments.map(assignment => {
                   const doctor = doctors.find(
-                    doc => doc.id === assignment.doctorId
+                    doc => doc.id === assignment.doctor_id
                   );
                   return (
                     <AssignmentCard

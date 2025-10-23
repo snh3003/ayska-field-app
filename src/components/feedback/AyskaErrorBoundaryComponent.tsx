@@ -136,7 +136,7 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryWithThemeProps, State> {
             backgroundColor={theme.background}
           >
             <TamaguiView marginBottom="$lg">
-              <Ionicons name="wifi-off" size={64} color={theme.warning} />
+              <Ionicons name="wifi" size={64} color={theme.warning} />
             </TamaguiView>
             <AyskaTitleComponent
               level={2}

@@ -15,7 +15,7 @@ import {
 } from '../types/AyskaAssignmentApiType';
 
 export class AssignmentService implements IAssignmentService {
-  constructor(private _httpClient: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * Get all assignments with pagination and filters
@@ -38,7 +38,7 @@ export class AssignmentService implements IAssignmentService {
       const endpoint = `/admin/assignments${queryString ? `?${queryString}` : ''}`;
 
       const response =
-        await this.httpClient.get<AssignmentListResponse>(endpoint);
+        await this.http.get<AssignmentListResponse>(endpoint);
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -50,7 +50,7 @@ export class AssignmentService implements IAssignmentService {
    */
   async getAssignmentById(id: string): Promise<Assignment> {
     try {
-      const response = await this.httpClient.get<Assignment>(
+      const response = await this.http.get<Assignment>(
         `/admin/assignments/${id}`
       );
       return response;
@@ -64,7 +64,7 @@ export class AssignmentService implements IAssignmentService {
    */
   async createAssignment(data: CreateAssignmentPayload): Promise<Assignment> {
     try {
-      const response = await this.httpClient.post<Assignment>(
+      const response = await this.http.post<Assignment>(
         '/admin/assignments',
         data
       );
@@ -82,7 +82,7 @@ export class AssignmentService implements IAssignmentService {
     data: UpdateAssignmentPayload
   ): Promise<Assignment> {
     try {
-      const response = await this.httpClient.put<Assignment>(
+      const response = await this.http.put<Assignment>(
         `/admin/assignments/${id}`,
         data
       );
@@ -100,7 +100,7 @@ export class AssignmentService implements IAssignmentService {
     data: AssignmentProgressUpdate
   ): Promise<Assignment> {
     try {
-      const response = await this.httpClient.patch<Assignment>(
+      const response = await this.http.patch<Assignment>(
         `/admin/assignments/${id}/progress`,
         data
       );
@@ -118,7 +118,7 @@ export class AssignmentService implements IAssignmentService {
     data: AssignmentStatusUpdate
   ): Promise<Assignment> {
     try {
-      const response = await this.httpClient.patch<Assignment>(
+      const response = await this.http.patch<Assignment>(
         `/admin/assignments/${id}/status`,
         data
       );
@@ -133,7 +133,7 @@ export class AssignmentService implements IAssignmentService {
    */
   async deleteAssignment(id: string): Promise<void> {
     try {
-      await this.httpClient.delete(`/admin/assignments/${id}`);
+      await this.http.delete(`/admin/assignments/${id}`);
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
     }
@@ -144,7 +144,7 @@ export class AssignmentService implements IAssignmentService {
    */
   async getEmployeeAssignments(employeeId: string): Promise<Assignment[]> {
     try {
-      const response = await this.httpClient.get<Assignment[]>(
+      const response = await this.http.get<Assignment[]>(
         `/admin/assignments/employee/${employeeId}`
       );
       return response;
