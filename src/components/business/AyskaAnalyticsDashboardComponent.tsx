@@ -126,7 +126,7 @@ export const AnalyticsDashboardComponent: React.FC<
     title: string,
     value: string | number,
     subtitle?: string,
-    color?: string
+    color?: 'text' | 'textSecondary' | 'primary' | 'primaryRed' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
   ) => (
     <Card
       style={{
@@ -141,7 +141,7 @@ export const AnalyticsDashboardComponent: React.FC<
       <AyskaTextComponent
         variant="bodyLarge"
         weight="bold"
-        color={color || 'primary'}
+        color={(color as any) || 'primary'}
         style={{ marginBottom: 4 }}
       >
         {value}
@@ -180,7 +180,7 @@ export const AnalyticsDashboardComponent: React.FC<
   }
 
   return (
-    <ErrorBoundary style={style} accessibilityHint={accessibilityHint}>
+    <ErrorBoundary>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={

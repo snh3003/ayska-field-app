@@ -15,7 +15,7 @@ import { Card } from '../ui/AyskaCardComponent';
 import { Skeleton } from '../feedback/AyskaSkeletonLoaderComponent';
 import { ErrorBoundary } from '../feedback/AyskaErrorBoundaryComponent';
 import { FormValidator } from '../../validation/AyskaFormValidator';
-import { CommonValidators } from '../../validation/AyskaCommonValidators';
+import { ValidationContext } from '../../validation/AyskaValidationContext';
 import {
   clearError,
   fetchEmployeeProfile,
@@ -109,7 +109,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
   const formValidator = new FormValidator();
   const validationRules = {
     notes: [
-      CommonValidators.maxLength(500, 'Notes must be less than 500 characters'),
+      // Optional field, no required validator
     ],
   };
 
@@ -118,7 +118,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
     setFormData(prev => ({ ...prev, [field]: value }));
 
     if (touched[field]) {
-      const context = new FormValidator();
+      const context = new ValidationContext();
       validationRules[field as keyof typeof validationRules]?.forEach(rule =>
         context.addRule(rule)
       );
@@ -131,7 +131,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
   const handleInputBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
 
-    const context = new FormValidator();
+    const context = new ValidationContext();
     validationRules[field as keyof typeof validationRules]?.forEach(rule =>
       context.addRule(rule)
     );
@@ -175,18 +175,10 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
         const checkInResult = _result.payload as any;
 
         if (checkInResult.is_valid) {
-          showToast({
-            type: 'success',
-            title: 'Check-in Successful!',
-            message: `You have successfully checked in with ${doctorName || 'the doctor'}.`,
-          });
+          showToast(`You have successfully checked in with ${doctorName || 'the doctor'}.`, 'success');
           onCheckInSuccess?.(checkInResult);
         } else {
-          showToast({
-            type: 'warning',
-            title: 'Check-in Invalid',
-            message: `You are too far from the doctor's location. Distance: ${checkInResult.distance_meters}m`,
-          });
+          showToast(`You are too far from the doctor's location. Distance: ${checkInResult.distance_meters}m`, 'warning');
           onCheckInError?.(
             `Distance exceeded: ${checkInResult.distance_meters}m`
           );
@@ -222,8 +214,8 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
   }
 
   return (
-    <ErrorBoundary style={style} accessibilityHint={accessibilityHint}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <ErrorBoundary>
+      <ScrollView showsVerticalScrollIndicator={false} style={style}>
         <AyskaTitleComponent
           level={2}
           weight="bold"

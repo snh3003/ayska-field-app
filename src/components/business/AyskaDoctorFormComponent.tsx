@@ -14,6 +14,7 @@ import { Card } from '../ui/AyskaCardComponent';
 import { Skeleton } from '../feedback/AyskaSkeletonLoaderComponent';
 import { ErrorBoundary } from '../feedback/AyskaErrorBoundaryComponent';
 import { FormValidator } from '../../validation/AyskaFormValidator';
+import { ValidationContext } from '../../validation/AyskaValidationContext';
 import { CommonValidators } from '../../validation/AyskaCommonValidators';
 import {
   clearError,
@@ -91,7 +92,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
     setFormData(prev => ({ ...prev, [field]: value }));
 
     if (touched[field]) {
-      const context = new FormValidator();
+      const context = new ValidationContext();
       validationRules[field as keyof typeof validationRules]?.forEach(rule =>
         context.addRule(rule)
       );
@@ -104,7 +105,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
   const handleInputBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
 
-    const context = new FormValidator();
+    const context = new ValidationContext();
     validationRules[field as keyof typeof validationRules]?.forEach(rule =>
       context.addRule(rule)
     );
@@ -194,8 +195,8 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
   }
 
   return (
-    <ErrorBoundary style={style} accessibilityHint={accessibilityHint}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <ErrorBoundary>
+      <ScrollView showsVerticalScrollIndicator={false} style={style}>
         <AyskaTitleComponent
           level={2}
           weight="bold"
