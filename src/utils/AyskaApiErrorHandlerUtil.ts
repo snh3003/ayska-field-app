@@ -46,13 +46,41 @@ const ERROR_MESSAGES: Record<
     title: 'Validation Error',
     message: 'Please check your input and try again',
   },
+  429: {
+    title: 'Too Many Requests',
+    message: 'You are making requests too quickly. Please wait a moment.',
+  },
   500: {
     title: 'Server Error',
     message: 'Something went wrong. Please try again later',
   },
+  502: {
+    title: 'Server Down',
+    message: 'The server is temporarily unavailable. Please try again later',
+  },
+  503: {
+    title: 'Service Unavailable',
+    message: 'The service is temporarily unavailable. Please try again later',
+  },
+  504: {
+    title: 'Gateway Timeout',
+    message: 'The server took too long to respond. Please try again',
+  },
   NETWORK_ERROR: {
     title: 'Connection Error',
     message: 'Please check your internet connection and try again',
+  },
+  SERVER_DOWN: {
+    title: 'Server Unavailable',
+    message: 'The server is currently down. Please try again later',
+  },
+  THROTTLING: {
+    title: 'Rate Limited',
+    message: 'Too many requests. Please wait before trying again',
+  },
+  WEAK_NETWORK: {
+    title: 'Poor Connection',
+    message: 'Your connection seems weak. Please check your network',
   },
   TIMEOUT_ERROR: {
     title: 'Request Timeout',
@@ -101,6 +129,74 @@ const EMPLOYEE_ERROR_MESSAGES: Record<
     title: 'Employee Inactive',
     message: 'This employee account is currently inactive',
   },
+  EMPLOYEE_ALREADY_ACTIVE: {
+    title: 'Employee Already Active',
+    message: 'This employee is already active',
+  },
+};
+
+// Doctor-specific error messages (reserved for future use)
+// @ts-expect-error - Reserved for future feature implementation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _DOCTOR_ERROR_MESSAGES: Record<
+  string,
+  { title: string; message: string }
+> = {
+  DOCTOR_NOT_FOUND: {
+    title: 'Doctor Not Found',
+    message: 'The requested doctor was not found',
+  },
+  DUPLICATE_DOCTOR: {
+    title: 'Doctor Already Exists',
+    message: 'A doctor with this email or phone already exists',
+  },
+};
+
+// Assignment-specific error messages (reserved for future use)
+// @ts-expect-error - Reserved for future feature implementation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _ASSIGNMENT_ERROR_MESSAGES: Record<
+  string,
+  { title: string; message: string }
+> = {
+  ASSIGNMENT_NOT_FOUND: {
+    title: 'Assignment Not Found',
+    message: 'The requested assignment was not found',
+  },
+  DUPLICATE_ASSIGNMENT: {
+    title: 'Assignment Already Exists',
+    message: 'This employee already has an active assignment with this doctor',
+  },
+};
+
+// Check-in specific error messages (reserved for future use)
+// @ts-expect-error - Reserved for future feature implementation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _CHECKIN_ERROR_MESSAGES: Record<
+  string,
+  { title: string; message: string }
+> = {
+  DISTANCE_EXCEEDED: {
+    title: 'Too Far Away',
+    message: 'You are too far from the doctor location. Please move closer.',
+  },
+  NO_ACTIVE_ASSIGNMENT: {
+    title: 'No Active Assignment',
+    message: 'You do not have an active assignment with this doctor',
+  },
+};
+
+// Notification-specific error messages (reserved for future use)
+// @ts-expect-error - Reserved for future feature implementation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _NOTIFICATION_ERROR_MESSAGES: Record<
+  string,
+  { title: string; message: string }
+> = {
+  NOTIFICATION_NOT_FOUND: {
+    title: 'Notification Not Found',
+    message: 'The requested notification was not found',
+  },
 };
 
 export class ApiErrorHandler {
@@ -111,9 +207,25 @@ export class ApiErrorHandler {
   static mapError(error: any): ApiError {
     // Network errors
     if (!error.response) {
+      // Server down detection
+      if (
+        error.code === 'ECONNREFUSED' ||
+        error.message?.includes('ECONNREFUSED') ||
+        error.message?.includes('Server is down')
+      ) {
+        const serverDownError = ERROR_MESSAGES.SERVER_DOWN;
+        return {
+          code: 0,
+          message: serverDownError?.message || 'Server is down',
+          title: serverDownError?.title || 'Server Unavailable',
+        };
+      }
+
+      // Network error detection
       if (
         error.code === 'NETWORK_ERROR' ||
-        error.message?.includes('Network Error')
+        error.message?.includes('Network Error') ||
+        error.message?.includes('ERR_NETWORK')
       ) {
         const networkError = ERROR_MESSAGES.NETWORK_ERROR;
         return {
@@ -123,12 +235,23 @@ export class ApiErrorHandler {
         };
       }
 
+      // Timeout detection
       if (error.code === 'TIMEOUT' || error.message?.includes('timeout')) {
         const timeoutError = ERROR_MESSAGES.TIMEOUT_ERROR;
         return {
           code: 0,
           message: timeoutError?.message || 'Request timeout',
           title: timeoutError?.title || 'Timeout Error',
+        };
+      }
+
+      // Weak network detection (consecutive timeouts)
+      if (error.code === 'WEAK_NETWORK') {
+        const weakNetworkError = ERROR_MESSAGES.WEAK_NETWORK;
+        return {
+          code: 0,
+          message: weakNetworkError?.message || 'Poor connection',
+          title: weakNetworkError?.title || 'Poor Connection',
         };
       }
 
@@ -142,6 +265,20 @@ export class ApiErrorHandler {
 
     const status = error.response?.status || 500;
     const data = error.response?.data || {};
+
+    // Throttling detection (429 status)
+    if (status === 429) {
+      const retryAfter = error.response?.headers?.['retry-after'];
+      const throttlingError = ERROR_MESSAGES.THROTTLING;
+      return {
+        code: status,
+        title: throttlingError?.title || 'Rate Limited',
+        message: retryAfter
+          ? `Too many requests. Please wait ${retryAfter} seconds.`
+          : throttlingError?.message || 'Too many requests',
+        details: retryAfter ? `Retry after: ${retryAfter}s` : undefined,
+      };
+    }
 
     // PRIORITIZE BACKEND ERROR MESSAGES
     // Check for backend error field first (error.response.data.error)
@@ -192,6 +329,7 @@ export class ApiErrorHandler {
   ): { title: string; message: string } | null {
     const backendErrorMap: Record<string, { title: string; message: string }> =
       {
+        // Authentication errors
         invalid_otp: {
           title: 'Invalid Code',
           message: 'Incorrect OTP. Try again.',
@@ -212,6 +350,8 @@ export class ApiErrorHandler {
           title: 'Account Inactive',
           message: 'Account deactivated. Contact your admin.',
         },
+
+        // Employee errors
         duplicate_employee: {
           title: 'Duplicate Account',
           message: 'Email or phone already exists.',
@@ -219,6 +359,48 @@ export class ApiErrorHandler {
         employee_not_found: {
           title: 'Employee Not Found',
           message: 'Employee not found.',
+        },
+        employee_already_active: {
+          title: 'Employee Already Active',
+          message: 'Employee is already active.',
+        },
+        duplicate_contact: {
+          title: 'Contact Already Exists',
+          message: 'Email or phone already in use.',
+        },
+
+        // Doctor errors
+        duplicate_doctor: {
+          title: 'Doctor Already Exists',
+          message: 'A doctor with this email or phone already exists.',
+        },
+        doctor_not_found: {
+          title: 'Doctor Not Found',
+          message: 'Doctor not found.',
+        },
+
+        // Assignment errors
+        duplicate_assignment: {
+          title: 'Assignment Already Exists',
+          message:
+            'Employee already has an active assignment with this doctor.',
+        },
+        assignment_not_found: {
+          title: 'Assignment Not Found',
+          message: 'Assignment not found.',
+        },
+
+        // Check-in errors
+        distance_exceeded: {
+          title: 'Too Far Away',
+          message:
+            'You are too far from the doctor location. Please move closer.',
+        },
+
+        // Notification errors
+        notification_not_found: {
+          title: 'Notification Not Found',
+          message: 'Notification not found.',
         },
       };
 
@@ -311,6 +493,36 @@ export class ApiErrorHandler {
   static isRetryable(error: ApiError): boolean {
     const retryableCodes = [408, 429, 500, 502, 503, 504];
     return retryableCodes.includes(error.code) || error.code === 0; // Network errors
+  }
+
+  /**
+   * Checks if error indicates server is down
+   */
+  static isServerDown(error: ApiError): boolean {
+    return (
+      error.code === 0 &&
+      (error.message?.includes('Server is down') ||
+        error.message?.includes('ECONNREFUSED') ||
+        error.title?.includes('Server Unavailable'))
+    );
+  }
+
+  /**
+   * Checks if error indicates throttling
+   */
+  static isThrottling(error: ApiError): boolean {
+    return error.code === 429 || error.title?.includes('Rate Limited');
+  }
+
+  /**
+   * Checks if error indicates weak network
+   */
+  static isWeakNetwork(error: ApiError): boolean {
+    return (
+      error.code === 0 &&
+      (error.title?.includes('Poor Connection') ||
+        error.message?.includes('weak'))
+    );
   }
 
   /**

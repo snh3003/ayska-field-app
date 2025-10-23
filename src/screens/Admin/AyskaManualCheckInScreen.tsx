@@ -6,7 +6,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { ButtonPrimary } from '../../components/ui/AyskaButtonPrimaryComponent';
 import { Card } from '../../components/ui/AyskaCardComponent';
 import { Input } from '../../components/ui/AyskaInputComponent';
-import { localDataService } from '../../services/AyskaLocalDataServiceService';
+import { localDataService } from '../../services/AyskaLocalDataService';
 import { Doctor, Employee } from '../../types';
 
 export default function ManualCheckIn() {

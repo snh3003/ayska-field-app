@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { ReportService } from '../../src/services/AyskaReportServiceService';
+import { ReportService } from '../../src/services/AyskaReportService';
 import type { ReportsResponse } from '../../src/types/AyskaApiType';
 
 describe('ReportService', () => {

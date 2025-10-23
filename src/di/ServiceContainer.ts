@@ -1,31 +1,29 @@
-import { AsyncStorageProvider } from '../providers/AyskaAsyncStorageProviderProvider';
-import { AuthStorageService } from '../services/AyskaAuthStorageServiceService';
-import { CacheStorageService } from '../services/AyskaCacheStorageServiceService';
-import { DraftStorageService } from '../services/AyskaDraftStorageServiceService';
-import { SettingsStorageService } from '../services/AyskaSettingsStorageServiceService';
-import { LocalDataRepository } from '../repositories/AyskaLocalDataRepositoryRepository';
+import { AsyncStorageProvider } from '../providers/AyskaAsyncStorageProvider';
+import { AuthStorageService } from '../services/AyskaAuthStorageService';
+import { CacheStorageService } from '../services/AyskaCacheStorageService';
+import { DraftStorageService } from '../services/AyskaDraftStorageService';
+import { SettingsStorageService } from '../services/AyskaSettingsStorageService';
+import { LocalDataRepository } from '../repositories/AyskaLocalDataRepository';
 // AuthRepository removed - backend handles OTP validation
-import { StatsRepository } from '../repositories/AyskaStatsRepositoryRepository';
-import { NotificationsRepository } from '../repositories/AyskaNotificationsRepositoryRepository';
-import { EmployeeRepository } from '../repositories/AyskaEmployeeRepositoryRepository';
-import { DoctorRepository } from '../repositories/AyskaDoctorRepositoryRepository';
-import { AssignmentRepository } from '../repositories/AyskaAssignmentRepositoryRepository';
-import { CheckInRepository } from '../repositories/AyskaCheckInRepositoryRepository';
-import { AnalyticsRepository } from '../repositories/AyskaAnalyticsRepositoryRepository';
+import { StatsRepository } from '../repositories/AyskaStatsRepository';
+import { NotificationsRepository } from '../repositories/AyskaNotificationsRepository';
+import { EmployeeRepository } from '../repositories/AyskaEmployeeRepository';
+import { DoctorRepository } from '../repositories/AyskaDoctorRepository';
+import { AssignmentRepository } from '../repositories/AyskaAssignmentRepository';
+import { CheckInRepository } from '../repositories/AyskaCheckInRepository';
+import { AnalyticsRepository } from '../repositories/AyskaAnalyticsRepository';
 import { HttpClient } from '../api/HttpClient';
-import { AuthInterceptor } from '../interceptors/AyskaAuthInterceptorInterceptor';
-import { RetryInterceptor } from '../interceptors/AyskaRetryInterceptorInterceptor';
-import { ErrorInterceptor } from '../interceptors/AyskaErrorInterceptorInterceptor';
-import { AdminService } from '../services/AyskaAdminServiceService';
+// Interceptors imported lazily to avoid circular dependencies
+import { AdminService } from '../services/AyskaAdminService';
 // EmployeeService import removed - using new EmployeeService
-import { ReportService } from '../services/AyskaReportServiceService';
-import { NotificationsService } from '../services/AyskaNotificationsServiceService';
+import { ReportService } from '../services/AyskaReportService';
+import { NotificationsService } from '../services/AyskaNotificationsService';
 // EmailService removed - backend handles email sending
-import { OnboardingService } from '../services/AyskaOnboardingServiceService';
-import { AssignmentService } from '../services/AyskaAssignmentServiceService';
-import { CheckInService } from '../services/AyskaCheckInServiceService';
-import { AnalyticsService } from '../services/AyskaAnalyticsServiceService';
-import { GeolocationService } from '../services/AyskaGeolocationServiceService';
+import { OnboardingService } from '../services/AyskaOnboardingService';
+import { AssignmentService } from '../services/AyskaAssignmentService';
+import { CheckInService } from '../services/AyskaCheckInService';
+import { AnalyticsService } from '../services/AyskaAnalyticsService';
+import { GeolocationService } from '../services/AyskaGeolocationService';
 import { AuthService } from '../services/AyskaAuthService';
 import { EmployeeService } from '../services/AyskaEmployeeService';
 import { ProfileService } from '../services/AyskaProfileService';
@@ -36,8 +34,8 @@ import {
   PushNotificationObserver,
 } from '../services/AyskaNotificationObserverService';
 import { ProximityValidator } from '../validation/strategies/AyskaLocationValidatorValidation';
-import { GoogleMapProvider } from '../providers/AyskaGoogleMapProviderProvider';
-import { MapplsMapProvider } from '../providers/AyskaMapplsMapProviderProvider';
+import { GoogleMapProvider } from '../providers/AyskaGoogleMapProvider';
+import { MapplsMapProvider } from '../providers/AyskaMapplsMapProvider';
 import { MapsConfig } from '../config/maps';
 
 export class ServiceContainer {
@@ -191,34 +189,69 @@ export class ServiceContainer {
 
     // HTTP client and interceptors
     this.registerFactory('IHttpClient', () => {
-      const httpClient = new HttpClient('', 15000);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { API_CONFIG } = require('../config/api');
+      const httpClient = new HttpClient(
+        API_CONFIG.BASE_URL,
+        API_CONFIG.TIMEOUT
+      );
 
-      // Add interceptors
+      // Add interceptors - lazy import to avoid circular dependencies
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const AuthInterceptor =
+        require('../interceptors/AyskaAuthInterceptor').AuthInterceptor;
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const RetryInterceptor =
+        require('../interceptors/AyskaRetryInterceptor').RetryInterceptor;
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const ErrorInterceptor =
+        require('../interceptors/AyskaErrorInterceptor').ErrorInterceptor;
+
       httpClient.addInterceptor(
         new AuthInterceptor(() => {
-          // This should be injected from Redux store
-          return null; // TODO: Get from store
+          // Get token from Redux store
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const { store } = require('../store');
+            return store.getState().auth?.token || null;
+          } catch {
+            return null;
+          }
         })
       );
-      httpClient.addInterceptor(new RetryInterceptor(1));
+      httpClient.addInterceptor(new RetryInterceptor(3));
       httpClient.addInterceptor(
         new ErrorInterceptor(() => {
-          // This should dispatch logout action
-          // TODO: Implement proper logout dispatch
+          // Dispatch logout action on 401
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const { store } = require('../store');
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const { logout } = require('../store/slices/AyskaAuthSlice');
+            store.dispatch(logout());
+          } catch (error) {
+            if (__DEV__) {
+              console.error('Failed to dispatch logout:', error);
+            }
+          }
         })
       );
 
       return httpClient;
     });
 
-    // Business services
+    // Register new API services with lazy loading for DoctorService
+    this.registerFactory('IDoctorService', () => {
+      const httpClient = this.get('IHttpClient') as any;
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { DoctorService } = require('../services/AyskaDoctorService');
+      return new DoctorService(httpClient);
+    });
+
+    // Business services (old services expecting AxiosInstance)
     this.registerFactory(
       'IAdminService',
       () => new AdminService((this.get('IHttpClient') as any).axios)
-    );
-    this.registerFactory(
-      'IEmployeeService',
-      () => new EmployeeService((this.get('IHttpClient') as any).axios)
     );
     this.registerFactory(
       'IReportService',
@@ -254,10 +287,23 @@ export class ServiceContainer {
     getToken: () => string | null,
     onUnauthorized: () => void
   ): void {
-    const httpClient = new HttpClient('', 15000);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { API_CONFIG } = require('../config/api');
+    const httpClient = new HttpClient(API_CONFIG.BASE_URL, API_CONFIG.TIMEOUT);
+
+    // Lazy import to avoid circular dependencies
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const AuthInterceptor =
+      require('../interceptors/AyskaAuthInterceptor').AuthInterceptor;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const RetryInterceptor =
+      require('../interceptors/AyskaRetryInterceptor').RetryInterceptor;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ErrorInterceptor =
+      require('../interceptors/AyskaErrorInterceptor').ErrorInterceptor;
 
     httpClient.addInterceptor(new AuthInterceptor(getToken));
-    httpClient.addInterceptor(new RetryInterceptor(1));
+    httpClient.addInterceptor(new RetryInterceptor(3));
     httpClient.addInterceptor(new ErrorInterceptor(onUnauthorized));
 
     this.services.set('IHttpClient', httpClient);

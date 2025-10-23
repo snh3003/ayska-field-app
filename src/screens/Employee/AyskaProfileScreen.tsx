@@ -7,9 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ButtonSecondary } from '../../components/ui/AyskaButtonSecondaryComponent';
 import { Card } from '../../components/ui/AyskaCardComponent';
 import { StatsCard } from '../../components/ui/AyskaStatsCardComponent';
-import { localDataService } from '../../services/AyskaLocalDataServiceService';
+import { localDataService } from '../../services/AyskaLocalDataService';
 import type { RootState } from '../../store';
-import { logout } from '../../store/slices/AyskaAuthSliceSlice';
+import { logout } from '../../store/slices/AyskaAuthSlice';
 
 export default function Profile() {
   const { name, role, userId } = useSelector((s: RootState) => s.auth);
