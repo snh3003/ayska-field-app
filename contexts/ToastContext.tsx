@@ -1,5 +1,6 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Toast } from '../src/components/feedback/AyskaToastComponent';
+import { globalToast } from '../src/utils/AyskaGlobalToastUtil';
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -20,35 +21,36 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+// Counter to ensure unique IDs for rapid successive toasts
+let toastCounter = 0;
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastData[]>([]);
 
-  const showToast = (
-    message: string,
-    type: ToastType = 'info',
-    duration = 10000
-  ) => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type, duration }]);
+  const showToast = (message: string, type: ToastType = 'info', duration = 10000) => {
+    // Use timestamp + counter for guaranteed unique IDs
+    const id = Date.now() + toastCounter++;
+    setToasts((prev) => [...prev, { id, message, type, duration }]);
   };
+
+  // Register toast callback with global toast manager on mount
+  useEffect(() => {
+    globalToast.setToastCallback(showToast);
+  }, []);
 
   const removeToast = (id: number) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
   };
 
-  const success = (message: string, duration?: number) =>
-    showToast(message, 'success', duration);
-  const error = (message: string, duration?: number) =>
-    showToast(message, 'error', duration);
-  const info = (message: string, duration?: number) =>
-    showToast(message, 'info', duration);
-  const warning = (message: string, duration?: number) =>
-    showToast(message, 'warning', duration);
+  const success = (message: string, duration?: number) => showToast(message, 'success', duration);
+  const error = (message: string, duration?: number) => showToast(message, 'error', duration);
+  const info = (message: string, duration?: number) => showToast(message, 'info', duration);
+  const warning = (message: string, duration?: number) => showToast(message, 'warning', duration);
 
   return (
     <ToastContext.Provider value={{ showToast, success, error, info, warning }}>
       {children}
-      {toasts.map(toast => (
+      {toasts.map((toast) => (
         <Toast
           key={toast.id}
           message={toast.message}

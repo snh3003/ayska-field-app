@@ -9,7 +9,6 @@ import {
   OTPVerifyResponse,
   UserProfile,
 } from '../types/AyskaAuthApiType';
-import { ApiErrorHandler } from '../utils/AyskaApiErrorHandlerUtil';
 
 export interface IAuthService {
   requestOTP(_identifier: string): Promise<OTPRequestResponse>;
@@ -28,71 +27,40 @@ export class AuthService implements IAuthService {
    * Request OTP for authentication
    */
   async requestOTP(identifier: string): Promise<OTPRequestResponse> {
-    try {
-      const payload: OTPRequestPayload = { identifier };
-      const response = await this._httpClient.post<OTPRequestResponse>(
-        '/auth/otp/request',
-        payload
-      );
-      return response;
-    } catch (error) {
-      throw ApiErrorHandler.mapError(error);
-    }
+    const payload: OTPRequestPayload = { identifier };
+    const response = await this._httpClient.post<OTPRequestResponse>('/auth/otp/request', payload);
+    return response;
   }
 
   /**
    * Verify OTP and get authentication token
    */
   async verifyOTP(identifier: string, otp: string): Promise<OTPVerifyResponse> {
-    try {
-      const payload: OTPVerifyPayload = { identifier, otp };
-      const response = await this._httpClient.post<OTPVerifyResponse>(
-        '/auth/otp/verify',
-        payload
-      );
-      return response;
-    } catch (error) {
-      throw ApiErrorHandler.mapError(error);
-    }
+    const payload: OTPVerifyPayload = { identifier, otp };
+    const response = await this._httpClient.post<OTPVerifyResponse>('/auth/otp/verify', payload);
+    return response;
   }
 
   /**
    * Get current user profile
    */
   async getProfile(): Promise<UserProfile> {
-    try {
-      const response = await this._httpClient.get<{ user: UserProfile }>(
-        '/auth/profile'
-      );
-      return response.user;
-    } catch (error) {
-      throw ApiErrorHandler.mapError(error);
-    }
+    const response = await this._httpClient.get<{ user: UserProfile }>('/auth/profile');
+    return response.user;
   }
 
   /**
    * Logout user
    */
   async logout(): Promise<void> {
-    try {
-      await this._httpClient.post('/auth/logout');
-    } catch (error) {
-      // Even if logout fails on server, we should clear local data
-      throw ApiErrorHandler.mapError(error);
-    }
+    await this._httpClient.post('/auth/logout');
   }
 
   /**
    * Refresh authentication token
    */
   async refreshToken(): Promise<string> {
-    try {
-      const response = await this._httpClient.post<{ access_token: string }>(
-        '/auth/refresh'
-      );
-      return response.access_token;
-    } catch (error) {
-      throw ApiErrorHandler.mapError(error);
-    }
+    const response = await this._httpClient.post<{ access_token: string }>('/auth/refresh');
+    return response.access_token;
   }
 }

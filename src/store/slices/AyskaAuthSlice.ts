@@ -18,34 +18,27 @@ export const requestOTP = createAsyncThunk(
   'auth/requestOTP',
   async (identifier: string, { rejectWithValue }) => {
     try {
-      const authService = ServiceContainer.getInstance().get(
-        'IAuthService'
-      ) as IAuthService;
+      const authService = ServiceContainer.getInstance().get('IAuthService') as IAuthService;
       const response = await authService.requestOTP(identifier);
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to send OTP');
+      // Error is already mapped by ErrorInterceptor to ApiError object
+      const message = error.message || 'Failed to send OTP';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
 // OTP verification and login thunk
 export const verifyOTP = createAsyncThunk(
   'auth/verifyOTP',
-  async (
-    { identifier, otp }: { identifier: string; otp: string },
-    { rejectWithValue }
-  ) => {
+  async ({ identifier, otp }: { identifier: string; otp: string }, { rejectWithValue }) => {
     try {
-      const authService = ServiceContainer.getInstance().get(
-        'IAuthService'
-      ) as IAuthService;
+      const authService = ServiceContainer.getInstance().get('IAuthService') as IAuthService;
       const response = await authService.verifyOTP(identifier, otp);
 
       // Store token and user data
-      const authStorage = ServiceContainer.getInstance().get(
-        'IAuthStorage'
-      ) as any;
+      const authStorage = ServiceContainer.getInstance().get('IAuthStorage') as any;
       await authStorage.setToken(response.access_token);
       await authStorage.setUser(response.user);
 
@@ -57,9 +50,11 @@ export const verifyOTP = createAsyncThunk(
         user: response.user,
       };
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Invalid verification code');
+      // Error is already mapped by ErrorInterceptor to ApiError object
+      const message = error.message || 'Invalid verification code';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
 // Get user profile thunk
@@ -67,15 +62,15 @@ export const getProfile = createAsyncThunk(
   'auth/getProfile',
   async (_: void, { rejectWithValue }) => {
     try {
-      const authService = ServiceContainer.getInstance().get(
-        'IAuthService'
-      ) as IAuthService;
+      const authService = ServiceContainer.getInstance().get('IAuthService') as IAuthService;
       const user = await authService.getProfile();
       return user;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to get profile');
+      // Error is already mapped by ErrorInterceptor to ApiError object
+      const message = error.message || 'Failed to get profile';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
 // Logout thunk
@@ -83,27 +78,21 @@ export const logout = createAsyncThunk(
   'auth/logout',
   async (_: void, { rejectWithValue: _rejectWithValue }) => {
     try {
-      const authService = ServiceContainer.getInstance().get(
-        'IAuthService'
-      ) as IAuthService;
+      const authService = ServiceContainer.getInstance().get('IAuthService') as IAuthService;
       await authService.logout();
 
       // Clear local storage
-      const authStorage = ServiceContainer.getInstance().get(
-        'IAuthStorage'
-      ) as any;
+      const authStorage = ServiceContainer.getInstance().get('IAuthStorage') as any;
       await authStorage.clearAll();
 
       return true;
     } catch {
       // Even if logout fails on server, clear local data
-      const authStorage = ServiceContainer.getInstance().get(
-        'IAuthStorage'
-      ) as any;
+      const authStorage = ServiceContainer.getInstance().get('IAuthStorage') as any;
       await authStorage.clearAll();
       return true;
     }
-  }
+  },
 );
 
 // Legacy login thunk for backward compatibility
@@ -127,17 +116,14 @@ export const login = createAsyncThunk(
       userId,
       name,
     };
-  }
+  },
 );
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials(
-      state,
-      action: PayloadAction<{ token: string; role: Exclude<UserRole, null> }>
-    ) {
+    setCredentials(state, action: PayloadAction<{ token: string; role: Exclude<UserRole, null> }>) {
       state.token = action.payload.token;
       state.role = action.payload.role;
     },
@@ -150,21 +136,21 @@ const authSlice = createSlice({
         userId: string;
         name: string;
         role: Exclude<UserRole, null>;
-      }>
+      }>,
     ) {
       state.userId = action.payload.userId;
       state.name = action.payload.name;
       state.role = action.payload.role;
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     // OTP Request
     builder
-      .addCase(requestOTP.pending, state => {
+      .addCase(requestOTP.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(requestOTP.fulfilled, state => {
+      .addCase(requestOTP.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
       })
@@ -175,7 +161,7 @@ const authSlice = createSlice({
 
     // OTP Verification
     builder
-      .addCase(verifyOTP.pending, state => {
+      .addCase(verifyOTP.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -194,7 +180,7 @@ const authSlice = createSlice({
 
     // Get Profile
     builder
-      .addCase(getProfile.pending, state => {
+      .addCase(getProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -212,10 +198,10 @@ const authSlice = createSlice({
 
     // Logout
     builder
-      .addCase(logout.pending, state => {
+      .addCase(logout.pending, (state) => {
         state.loading = true;
       })
-      .addCase(logout.fulfilled, state => {
+      .addCase(logout.fulfilled, (state) => {
         state.loading = false;
         state.token = null;
         state.role = null;
@@ -223,7 +209,7 @@ const authSlice = createSlice({
         state.name = null;
         state.error = null;
       })
-      .addCase(logout.rejected, state => {
+      .addCase(logout.rejected, (state) => {
         state.loading = false;
         // Even if logout fails, clear local state
         state.token = null;
@@ -235,7 +221,7 @@ const authSlice = createSlice({
 
     // Legacy login for backward compatibility
     builder
-      .addCase(login.pending, state => {
+      .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
       })

@@ -18,10 +18,7 @@ export interface ApiErrorResponse {
 }
 
 // Error code mapping from backend to user-friendly messages
-const ERROR_MESSAGES: Record<
-  number | string,
-  { title: string; message: string }
-> = {
+const ERROR_MESSAGES: Record<number | string, { title: string; message: string }> = {
   400: {
     title: 'Invalid Request',
     message: 'Please check your input and try again',
@@ -113,10 +110,7 @@ const OTP_ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
 };
 
 // Employee-specific error messages
-const EMPLOYEE_ERROR_MESSAGES: Record<
-  string,
-  { title: string; message: string }
-> = {
+const EMPLOYEE_ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
   EMPLOYEE_NOT_FOUND: {
     title: 'Employee Not Found',
     message: 'The requested employee was not found',
@@ -138,10 +132,7 @@ const EMPLOYEE_ERROR_MESSAGES: Record<
 // Doctor-specific error messages (reserved for future use)
 // @ts-expect-error - Reserved for future feature implementation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _DOCTOR_ERROR_MESSAGES: Record<
-  string,
-  { title: string; message: string }
-> = {
+const _DOCTOR_ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
   DOCTOR_NOT_FOUND: {
     title: 'Doctor Not Found',
     message: 'The requested doctor was not found',
@@ -155,10 +146,7 @@ const _DOCTOR_ERROR_MESSAGES: Record<
 // Assignment-specific error messages (reserved for future use)
 // @ts-expect-error - Reserved for future feature implementation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _ASSIGNMENT_ERROR_MESSAGES: Record<
-  string,
-  { title: string; message: string }
-> = {
+const _ASSIGNMENT_ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
   ASSIGNMENT_NOT_FOUND: {
     title: 'Assignment Not Found',
     message: 'The requested assignment was not found',
@@ -172,10 +160,7 @@ const _ASSIGNMENT_ERROR_MESSAGES: Record<
 // Check-in specific error messages (reserved for future use)
 // @ts-expect-error - Reserved for future feature implementation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _CHECKIN_ERROR_MESSAGES: Record<
-  string,
-  { title: string; message: string }
-> = {
+const _CHECKIN_ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
   DISTANCE_EXCEEDED: {
     title: 'Too Far Away',
     message: 'You are too far from the doctor location. Please move closer.',
@@ -189,10 +174,7 @@ const _CHECKIN_ERROR_MESSAGES: Record<
 // Notification-specific error messages (reserved for future use)
 // @ts-expect-error - Reserved for future feature implementation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _NOTIFICATION_ERROR_MESSAGES: Record<
-  string,
-  { title: string; message: string }
-> = {
+const _NOTIFICATION_ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
   NOTIFICATION_NOT_FOUND: {
     title: 'Notification Not Found',
     message: 'The requested notification was not found',
@@ -311,11 +293,7 @@ export class ApiErrorHandler {
     return {
       code: status,
       title: specificMessage?.title || baseError?.title || 'Error',
-      message:
-        specificMessage?.message ||
-        data.detail ||
-        baseError?.message ||
-        'Unknown error',
+      message: specificMessage?.message || data.detail || baseError?.message || 'Unknown error',
       ...(data.errors && { details: JSON.stringify(data.errors) }),
     };
   }
@@ -325,84 +303,81 @@ export class ApiErrorHandler {
    */
   private static mapBackendErrorCode(
     errorCode: string,
-    _message?: string
+    _message?: string,
   ): { title: string; message: string } | null {
-    const backendErrorMap: Record<string, { title: string; message: string }> =
-      {
-        // Authentication errors
-        invalid_otp: {
-          title: 'Invalid Code',
-          message: 'Incorrect OTP. Try again.',
-        },
-        otp_expired: {
-          title: 'Code Expired',
-          message: 'OTP expired. Request a new one.',
-        },
-        too_many_attempts: {
-          title: 'Too Many Attempts',
-          message: 'Too many attempts. Request new OTP.',
-        },
-        user_not_found: {
-          title: 'Account Not Found',
-          message: 'Account not found. Contact your admin.',
-        },
-        account_inactive: {
-          title: 'Account Inactive',
-          message: 'Account deactivated. Contact your admin.',
-        },
+    const backendErrorMap: Record<string, { title: string; message: string }> = {
+      // Authentication errors
+      invalid_otp: {
+        title: 'Invalid Code',
+        message: 'Incorrect OTP. Try again.',
+      },
+      otp_expired: {
+        title: 'Code Expired',
+        message: 'OTP expired. Request a new one.',
+      },
+      too_many_attempts: {
+        title: 'Too Many Attempts',
+        message: 'Too many attempts. Request new OTP.',
+      },
+      user_not_found: {
+        title: 'Account Not Found',
+        message: 'Account not found. Contact your admin.',
+      },
+      account_inactive: {
+        title: 'Account Inactive',
+        message: 'Account deactivated. Contact your admin.',
+      },
 
-        // Employee errors
-        duplicate_employee: {
-          title: 'Duplicate Account',
-          message: 'Email or phone already exists.',
-        },
-        employee_not_found: {
-          title: 'Employee Not Found',
-          message: 'Employee not found.',
-        },
-        employee_already_active: {
-          title: 'Employee Already Active',
-          message: 'Employee is already active.',
-        },
-        duplicate_contact: {
-          title: 'Contact Already Exists',
-          message: 'Email or phone already in use.',
-        },
+      // Employee errors
+      duplicate_employee: {
+        title: 'Duplicate Account',
+        message: 'Email or phone already exists.',
+      },
+      employee_not_found: {
+        title: 'Employee Not Found',
+        message: 'Employee not found.',
+      },
+      employee_already_active: {
+        title: 'Employee Already Active',
+        message: 'Employee is already active.',
+      },
+      duplicate_contact: {
+        title: 'Contact Already Exists',
+        message: 'Email or phone already in use.',
+      },
 
-        // Doctor errors
-        duplicate_doctor: {
-          title: 'Doctor Already Exists',
-          message: 'A doctor with this email or phone already exists.',
-        },
-        doctor_not_found: {
-          title: 'Doctor Not Found',
-          message: 'Doctor not found.',
-        },
+      // Doctor errors
+      duplicate_doctor: {
+        title: 'Doctor Already Exists',
+        message: 'A doctor with this email or phone already exists.',
+      },
+      doctor_not_found: {
+        title: 'Doctor Not Found',
+        message: 'Doctor not found.',
+      },
 
-        // Assignment errors
-        duplicate_assignment: {
-          title: 'Assignment Already Exists',
-          message:
-            'Employee already has an active assignment with this doctor.',
-        },
-        assignment_not_found: {
-          title: 'Assignment Not Found',
-          message: 'Assignment not found.',
-        },
+      // Assignment errors
+      duplicate_assignment: {
+        title: 'Assignment Already Exists',
+        message: 'Employee already has an active assignment with this doctor.',
+      },
+      assignment_not_found: {
+        title: 'Assignment Not Found',
+        message: 'Assignment not found.',
+      },
 
-        // Check-in errors
-        distance_exceeded: {
-          title: 'Too Far Away',
-          message:
-            'You are too far from the doctor location. Please move closer.',
-        },
+      // Check-in errors
+      distance_exceeded: {
+        title: 'Too Far Away',
+        message: 'You are too far from the doctor location. Please move closer.',
+      },
 
-        // Notification errors
-        notification_not_found: {
-          title: 'Notification Not Found',
-          message: 'Notification not found.',
-        },
-      };
+      // Notification errors
+      notification_not_found: {
+        title: 'Notification Not Found',
+        message: 'Notification not found.',
+      },
+    };
 
     return backendErrorMap[errorCode] || null;
   }
@@ -440,7 +415,7 @@ export class ApiErrorHandler {
    */
   private static getSpecificErrorMessage(
     data: any,
-    status: number
+    status: number,
   ): { title: string; message: string } | null {
     const message = data.message || data.detail || '';
 
@@ -473,7 +448,23 @@ export class ApiErrorHandler {
       }
     }
 
-    // Validation errors (422)
+    // Enhanced 422 validation error handling (FastAPI format)
+    if (status === 422 && Array.isArray(data.detail)) {
+      const fieldErrors = data.detail
+        .map((err: any) => {
+          const field = err.loc?.[err.loc.length - 1] || 'field';
+          const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+          return `${fieldName}: ${err.msg}`;
+        })
+        .join('\n');
+
+      return {
+        title: 'Validation Error',
+        message: fieldErrors || 'Please check your input',
+      };
+    }
+
+    // Validation errors (422) - alternative format
     if (status === 422 && data.errors) {
       const firstError = Object.values(data.errors)[0];
       if (Array.isArray(firstError) && firstError.length > 0) {
@@ -520,8 +511,7 @@ export class ApiErrorHandler {
   static isWeakNetwork(error: ApiError): boolean {
     return (
       error.code === 0 &&
-      (error.title?.includes('Poor Connection') ||
-        error.message?.includes('weak'))
+      (error.title?.includes('Poor Connection') || error.message?.includes('weak'))
     );
   }
 
@@ -549,9 +539,7 @@ export class ApiErrorHandler {
 }
 
 // Convenience function for quick error mapping
-export const mapApiError = (error: any): ApiError =>
-  ApiErrorHandler.mapError(error);
+export const mapApiError = (error: any): ApiError => ApiErrorHandler.mapError(error);
 
 // Convenience function for checking retryability
-export const isRetryableError = (error: ApiError): boolean =>
-  ApiErrorHandler.isRetryable(error);
+export const isRetryableError = (error: ApiError): boolean => ApiErrorHandler.isRetryable(error);
