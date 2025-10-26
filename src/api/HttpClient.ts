@@ -1,8 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import {
-  IHttpClient,
-  IHttpInterceptor,
-} from '../interfaces/AyskaServicesInterface';
+import { IHttpClient, IHttpInterceptor } from '../interfaces/AyskaServicesInterface';
 
 export class HttpClient implements IHttpClient {
   private instance: AxiosInstance;
@@ -21,30 +18,59 @@ export class HttpClient implements IHttpClient {
   }
 
   private setupInterceptors(): void {
-    // Request interceptor
+    // Request interceptor - add timing metadata
     this.instance.interceptors.request.use(
-      config => {
+      (config) => {
+        // Add request start time for duration calculation
+        if (__DEV__) {
+          (config as any).metadata = { startTime: Date.now() };
+        }
+
         return this.interceptors.reduce((acc, interceptor) => {
           return interceptor.onRequest ? interceptor.onRequest(acc) : acc;
         }, config);
       },
-      error => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
-    // Response interceptor
+    // Response interceptor - log success and errors
     this.instance.interceptors.response.use(
-      response => {
+      (response) => {
+        // Enhanced success logging for debugging (solo developer)
+        if (__DEV__) {
+          const duration = (response.config as any).metadata?.startTime
+            ? Date.now() - (response.config as any).metadata.startTime
+            : 'unknown';
+
+          // eslint-disable-next-line no-console
+          console.group(
+            `✅ API SUCCESS: ${response.config.method?.toUpperCase()} ${response.config.url}`,
+          );
+          // eslint-disable-next-line no-console
+          console.log('📊 Status Code:', response.status);
+          // eslint-disable-next-line no-console
+          console.log('📦 Response Data:', JSON.stringify(response.data, null, 2));
+          // eslint-disable-next-line no-console
+          console.log('📋 Request Data:', response.config.data || 'No data');
+          // eslint-disable-next-line no-console
+          console.log('🔗 Full URL:', `${response.config.baseURL}${response.config.url}`);
+          // eslint-disable-next-line no-console
+          console.log('⏱️ Duration:', `${duration}ms`);
+          // eslint-disable-next-line no-console
+          console.log('⏱️ Timestamp:', new Date().toISOString());
+          // eslint-disable-next-line no-console
+          console.groupEnd();
+        }
+
         return this.interceptors.reduce((acc, interceptor) => {
           return interceptor.onResponse ? interceptor.onResponse(acc) : acc;
         }, response);
       },
-      error => {
+      (error) => {
         return this.interceptors.reduce((acc, interceptor) => {
-          return interceptor.onError
-            ? interceptor.onError(acc)
-            : Promise.reject(acc);
+          return interceptor.onError ? interceptor.onError(acc) : acc;
         }, error);
-      }
+      },
     );
   }
 
@@ -53,42 +79,18 @@ export class HttpClient implements IHttpClient {
     return response.data;
   }
 
-  async post<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
-    const response: AxiosResponse<T> = await this.instance.post(
-      url,
-      data,
-      config
-    );
+  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.instance.post(url, data, config);
     return response.data;
   }
 
-  async put<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
-    const response: AxiosResponse<T> = await this.instance.put(
-      url,
-      data,
-      config
-    );
+  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.instance.put(url, data, config);
     return response.data;
   }
 
-  async patch<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
-    const response: AxiosResponse<T> = await this.instance.patch(
-      url,
-      data,
-      config
-    );
+  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.instance.patch(url, data, config);
     return response.data;
   }
 

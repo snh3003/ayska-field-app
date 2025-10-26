@@ -56,31 +56,28 @@ export class ServiceContainer {
 
   private registerServices(): void {
     // Storage providers
-    this.registerSingleton(
-      'IStorageProvider',
-      () => new AsyncStorageProvider()
-    );
+    this.registerSingleton('IStorageProvider', () => new AsyncStorageProvider());
 
     // Storage services
     this.registerSingleton(
       'IAuthStorage',
-      () => new AuthStorageService(this.get('IStorageProvider'))
+      () => new AuthStorageService(this.get('IStorageProvider')),
     );
     this.registerSingleton(
       'ICacheStorage',
-      () => new CacheStorageService(this.get('IStorageProvider'))
+      () => new CacheStorageService(this.get('IStorageProvider')),
     );
     this.registerSingleton(
       'IDraftStorage',
-      () => new DraftStorageService(this.get('IStorageProvider'))
+      () => new DraftStorageService(this.get('IStorageProvider')),
     );
     this.registerSingleton(
       'ISettingsStorage',
-      () => new SettingsStorageService(this.get('IStorageProvider'))
+      () => new SettingsStorageService(this.get('IStorageProvider')),
     );
     this.registerSingleton(
       'INotificationsService',
-      () => new NotificationsService(this.get('INotificationsRepository'))
+      () => new NotificationsService(this.get('INotificationsRepository')),
     );
 
     // Pattern implementations
@@ -91,56 +88,39 @@ export class ServiceContainer {
       subject.attach(new PushNotificationObserver());
       return subject;
     });
-    this.registerSingleton(
-      'ILocationValidator',
-      () => new ProximityValidator()
-    );
+    this.registerSingleton('ILocationValidator', () => new ProximityValidator());
 
     // New services
     // IEmailService removed - backend handles email sending
-    this.registerSingleton(
-      'IGeolocationService',
-      () => new GeolocationService()
-    );
+    this.registerSingleton('IGeolocationService', () => new GeolocationService());
 
     // API Services
-    this.registerFactory(
-      'IAuthService',
-      () => new AuthService(this.get('IHttpClient'))
-    );
-    this.registerFactory(
-      'IEmployeeService',
-      () => new EmployeeService(this.get('IHttpClient'))
-    );
-    this.registerFactory(
-      'IProfileService',
-      () => new ProfileService(this.get('IHttpClient'))
-    );
+    this.registerFactory('IAuthService', () => new AuthService(this.get('IHttpClient')));
+    this.registerFactory('IEmployeeService', () => new EmployeeService(this.get('IHttpClient')));
+    this.registerFactory('IProfileService', () => new ProfileService(this.get('IHttpClient')));
     this.registerFactory(
       'IOnboardingService',
       () =>
         new OnboardingService(
           this.get('IEmployeeRepository'),
           this.get('IDoctorRepository'),
-          this.get('INotificationSubject')
-        )
+          this.get('INotificationSubject'),
+        ),
     );
     this.registerFactory(
       'IAssignmentService',
-      () => new AssignmentService((this.get('IHttpClient') as any).axios)
+      () => new AssignmentService((this.get('IHttpClient') as any).axios),
     );
     this.registerFactory(
       'ICheckInService',
-      () => new CheckInService((this.get('IHttpClient') as any).axios)
+      () => new CheckInService((this.get('IHttpClient') as any).axios),
     );
     this.registerFactory(
       'IAnalyticsService',
-      () => new AnalyticsService(this.get('IAnalyticsRepository'))
+      () => new AnalyticsService(this.get('IAnalyticsRepository')),
     );
     this.registerFactory('IMapProvider', () => {
-      return MapsConfig.provider === 'google'
-        ? new GoogleMapProvider()
-        : new MapplsMapProvider();
+      return MapsConfig.provider === 'google' ? new GoogleMapProvider() : new MapplsMapProvider();
     });
 
     // Data repositories
@@ -148,52 +128,46 @@ export class ServiceContainer {
     // IAuthRepository removed - backend handles OTP validation
     this.registerSingleton(
       'IStatsRepository',
-      () => new StatsRepository(this.get('IDataRepository'))
+      () => new StatsRepository(this.get('IDataRepository')),
     );
     this.registerSingleton(
       'INotificationsRepository',
-      () => new NotificationsRepository(this.get('IDataRepository'))
+      () => new NotificationsRepository(this.get('IDataRepository')),
     );
     this.registerSingleton(
       'IEmployeeRepository',
-      () => new EmployeeRepository(this.get('IDataRepository'))
+      () => new EmployeeRepository(this.get('IDataRepository')),
     );
     this.registerSingleton(
       'IDoctorRepository',
-      () => new DoctorRepository(this.get('IDataRepository'))
+      () => new DoctorRepository(this.get('IDataRepository')),
     );
     this.registerSingleton(
       'IAssignmentRepository',
-      () => new AssignmentRepository(this.get('IDataRepository'))
+      () => new AssignmentRepository(this.get('IDataRepository')),
     );
     this.registerSingleton(
       'ICheckInRepository',
-      () => new CheckInRepository(this.get('IDataRepository'))
+      () => new CheckInRepository(this.get('IDataRepository')),
     );
     this.registerSingleton(
       'IAnalyticsRepository',
-      () => new AnalyticsRepository(this.get('IDataRepository'))
+      () => new AnalyticsRepository(this.get('IDataRepository')),
     );
 
     // HTTP client and interceptors
     this.registerFactory('IHttpClient', () => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { API_CONFIG } = require('../config/api');
-      const httpClient = new HttpClient(
-        API_CONFIG.BASE_URL,
-        API_CONFIG.TIMEOUT
-      );
+      const httpClient = new HttpClient(API_CONFIG.BASE_URL, API_CONFIG.TIMEOUT);
 
       // Add interceptors - lazy import to avoid circular dependencies
 
-      const AuthInterceptor =
-        require('../interceptors/AyskaAuthInterceptor').AuthInterceptor;
+      const AuthInterceptor = require('../interceptors/AyskaAuthInterceptor').AuthInterceptor;
 
-      const RetryInterceptor =
-        require('../interceptors/AyskaRetryInterceptor').RetryInterceptor;
+      const RetryInterceptor = require('../interceptors/AyskaRetryInterceptor').RetryInterceptor;
 
-      const ErrorInterceptor =
-        require('../interceptors/AyskaErrorInterceptor').ErrorInterceptor;
+      const ErrorInterceptor = require('../interceptors/AyskaErrorInterceptor').ErrorInterceptor;
 
       httpClient.addInterceptor(
         new AuthInterceptor(() => {
@@ -205,24 +179,40 @@ export class ServiceContainer {
           } catch {
             return null;
           }
-        })
+        }),
       );
       httpClient.addInterceptor(new RetryInterceptor(3));
       httpClient.addInterceptor(
-        new ErrorInterceptor(() => {
-          // Dispatch logout action on 401
-          try {
-            // eslint-disable-next-line @typescript-eslint/no-require-imports
-            const { store } = require('../store');
-            // eslint-disable-next-line @typescript-eslint/no-require-imports
-            const { logout } = require('../store/slices/AyskaAuthSlice');
-            store.dispatch(logout());
-          } catch (error) {
-            if (__DEV__) {
-              console.error('Failed to dispatch logout:', error);
+        new ErrorInterceptor(
+          () => {
+            // Dispatch logout action on 401
+            try {
+              // eslint-disable-next-line @typescript-eslint/no-require-imports
+              const { store } = require('../store');
+              // eslint-disable-next-line @typescript-eslint/no-require-imports
+              const { logout } = require('../store/slices/AyskaAuthSlice');
+              store.dispatch(logout());
+            } catch (error) {
+              if (__DEV__) {
+                console.error('Failed to dispatch logout:', error);
+              }
             }
-          }
-        })
+          },
+          (apiError: { code: number; message: string; title: string }) => {
+            // Show toast for non-401 errors
+            if (apiError.code !== 401) {
+              try {
+                // eslint-disable-next-line @typescript-eslint/no-require-imports
+                const { globalToast } = require('../utils/AyskaGlobalToastUtil');
+                globalToast.error(apiError.message);
+              } catch (error) {
+                if (__DEV__) {
+                  console.error('Failed to show error toast:', error);
+                }
+              }
+            }
+          },
+        ),
       );
 
       return httpClient;
@@ -239,11 +229,11 @@ export class ServiceContainer {
     // Business services (old services expecting AxiosInstance)
     this.registerFactory(
       'IAdminService',
-      () => new AdminService((this.get('IHttpClient') as any).axios)
+      () => new AdminService((this.get('IHttpClient') as any).axios),
     );
     this.registerFactory(
       'IReportService',
-      () => new ReportService((this.get('IHttpClient') as any).axios)
+      () => new ReportService((this.get('IHttpClient') as any).axios),
     );
   }
 
@@ -271,24 +261,18 @@ export class ServiceContainer {
   }
 
   // Method to update HTTP client with store dependencies
-  updateHttpClientDependencies(
-    getToken: () => string | null,
-    onUnauthorized: () => void
-  ): void {
+  updateHttpClientDependencies(getToken: () => string | null, onUnauthorized: () => void): void {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { API_CONFIG } = require('../config/api');
     const httpClient = new HttpClient(API_CONFIG.BASE_URL, API_CONFIG.TIMEOUT);
 
     // Lazy import to avoid circular dependencies
 
-    const AuthInterceptor =
-      require('../interceptors/AyskaAuthInterceptor').AuthInterceptor;
+    const AuthInterceptor = require('../interceptors/AyskaAuthInterceptor').AuthInterceptor;
 
-    const RetryInterceptor =
-      require('../interceptors/AyskaRetryInterceptor').RetryInterceptor;
+    const RetryInterceptor = require('../interceptors/AyskaRetryInterceptor').RetryInterceptor;
 
-    const ErrorInterceptor =
-      require('../interceptors/AyskaErrorInterceptor').ErrorInterceptor;
+    const ErrorInterceptor = require('../interceptors/AyskaErrorInterceptor').ErrorInterceptor;
 
     httpClient.addInterceptor(new AuthInterceptor(getToken));
     httpClient.addInterceptor(new RetryInterceptor(3));
