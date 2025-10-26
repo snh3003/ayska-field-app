@@ -55,28 +55,60 @@ Jest tests in `__tests__/services/*.test.ts` mock axios and cover success/error 
 
 ## Development Guidelines
 
-### Preventing Duplicate Files
+### Pre-commit Hooks
 
-This project has experienced issues with duplicate configuration files due to macOS file conflicts and cloud sync issues. To prevent this:
+The project uses an automated pre-commit hook that **blocks commits** containing duplicate files with " 2" suffix (a common Cursor IDE issue).
 
-#### Do NOT:
-
-- Manually copy native config files (`android/`, `ios/` directories)
-- Create files with " 2", " 3" suffixes (macOS conflict artifacts)
-- Commit duplicate files to git
-
-#### Do:
-
-- Use `expo prebuild --clean` to regenerate native directories
-- Resolve git conflicts properly (don't create copies)
-- Run `npm run check-duplicates` before committing
-- Disable cloud sync for `ios/` and `android/` directories
-
-#### Available Scripts:
+**Test the hook:**
 
 ```bash
-npm run check-duplicates  # Scan for duplicate files
-npm run pre-commit        # Run duplicate check + linting
+.git/hooks/pre-commit
 ```
 
-The `.gitignore` file includes patterns to prevent accidental duplicate commits.
+**If hook blocks your commit:**
+
+```bash
+# 1. Compare duplicate with original
+diff "file.ts" "file 2.ts"
+
+# 2. Delete if identical, or merge changes then delete
+rm "file 2.ts"
+
+# 3. Commit again
+git commit -m "Your message"
+```
+
+### Available Scripts
+
+```bash
+# Development
+npm start                 # Start Expo dev server
+npm run android          # Run on Android
+npm run ios              # Run on iOS
+
+# Code Quality
+npm run lint             # Run ESLint
+npm run lint:fix         # Fix linting issues
+npm run type-check       # TypeScript type checking
+npm test                 # Run tests
+npm run test:watch       # Run tests in watch mode
+
+# Duplicate File Management
+npm run check-duplicates # Scan and clean duplicate files
+npm run clean:duplicates # Alias for check-duplicates
+
+# Pre-commit (runs automatically)
+npm run pre-commit       # Duplicate check + linting
+```
+
+### Preventing Duplicate Files
+
+Cursor IDE sometimes creates files with " 2" suffix. The pre-commit hook prevents these from being committed.
+
+**Manual cleanup:**
+
+```bash
+npm run check-duplicates  # Interactive scan and cleanup
+```
+
+**See full documentation:** `docs/PREVENTING-DUPLICATE-FILES.md`

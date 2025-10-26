@@ -15,7 +15,8 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "check-duplicates": "./scripts/clean-duplicates.sh",
+    "check-duplicates": "./scripts/check-duplicates.sh",
+    "clean:duplicates": "./scripts/check-duplicates.sh",
     "prepare": "husky install",
     "pre-commit": "npm run check-duplicates && lint-staged"
   },

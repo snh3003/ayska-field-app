@@ -1120,6 +1120,129 @@ diff file1.ts "file 2.ts"
 diff -y file1.ts "file 2.ts" | head -50
 ```
 
+## 🛡️ AUTOMATED DUPLICATE PREVENTION (IMPLEMENTED)
+
+### Three-Layer Defense System
+
+We have implemented an automated system to prevent duplicate files from entering the codebase:
+
+#### Layer 1: Pre-commit Git Hook (ACTIVE)
+
+**Location:** `.git/hooks/pre-commit`
+
+**What it does:**
+- Automatically runs before every commit
+- Scans staged files for " 2" suffix pattern
+- BLOCKS commit if duplicates detected
+- Shows helpful error message with fix instructions
+
+```bash
+# Hook automatically catches this:
+git add "Component 2.tsx"
+git commit -m "Update"
+# ❌ COMMIT BLOCKED: Duplicate files detected!
+```
+
+#### Layer 2: Manual Check Command
+
+**Commands:**
+```bash
+npm run check-duplicates
+npm run clean:duplicates  # Alias
+```
+
+**What it does:**
+- Scans entire codebase for " 2" files
+- Compares each with original using diff
+- Auto-deletes identical duplicates
+- Flags non-identical files for manual review
+
+**When to use:**
+- Before starting work session
+- When you notice duplicate files appear
+- Before creating pull requests
+- As part of regular codebase maintenance
+
+#### Layer 3: Documentation
+
+**Location:** `docs/PREVENTING-DUPLICATE-FILES.md`
+
+Complete guide covering:
+- Why duplicates happen (Cursor IDE behavior)
+- How prevention system works
+- How to handle duplicates when found
+- Best practices to avoid creating them
+- Troubleshooting guide
+
+### Why Duplicates Happen (Cursor IDE Issue)
+
+Cursor IDE creates " 2" files when:
+- File conflicts during save operations
+- Copy-paste operations in file explorer
+- Undo/redo creates versioned copies
+- Multiple simultaneous edits to same file
+- Race conditions in file system operations
+
+### Prevention Rules for AI Assistants
+
+**NEVER:**
+- Create files with " 2" suffix
+- Ignore duplicate files you see
+- Commit without checking for duplicates
+- Bypass the pre-commit hook
+
+**ALWAYS:**
+- Check for duplicates before creating new files
+- Use `find . -name "* 2.*"` to verify no duplicates exist
+- Compare and merge duplicates immediately when found
+- Run `npm run check-duplicates` periodically
+
+### Quick Reference
+
+```bash
+# Check for duplicates
+npm run check-duplicates
+
+# Find duplicates manually
+find . -name "* 2.*" -not -path "*/node_modules/*"
+
+# Test pre-commit hook
+.git/hooks/pre-commit
+
+# Compare duplicate with original
+diff "file.ts" "file 2.ts"
+
+# If identical, delete
+rm "file 2.ts"
+
+# If different, merge then delete
+# (merge changes into file.ts first)
+rm "file 2.ts"
+```
+
+### If Pre-commit Hook Blocks Your Commit
+
+This is GOOD - the system is working! Follow these steps:
+
+```bash
+# 1. See what duplicates exist
+git status
+
+# 2. Compare each duplicate
+diff "file.ts" "file 2.ts"
+
+# 3. If identical, unstage and delete
+git reset HEAD "file 2.ts"
+rm "file 2.ts"
+
+# 4. If different, merge changes then delete
+# (Edit file.ts to include unique changes from file 2.ts)
+rm "file 2.ts"
+
+# 5. Commit again - will now succeed
+git commit -m "Your message"
+```
+
 ## 🧹 UTILITY FILE CLEANUP (MANDATORY)
 
 ### Temporary vs Permanent Files
