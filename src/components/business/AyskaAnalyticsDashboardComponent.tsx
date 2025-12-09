@@ -11,7 +11,7 @@ import { AyskaTitleComponent } from '../ui/AyskaTitleComponent';
 import { AyskaTextComponent } from '../ui/AyskaTextComponent';
 import { AyskaActionButtonComponent } from '../ui/AyskaActionButtonComponent';
 import { Card } from '../ui/AyskaCardComponent';
-import { Skeleton } from '../feedback/AyskaSkeletonLoaderComponent';
+import { StatCardSkeleton } from '../feedback/AyskaSkeletonLoaderComponent';
 import { ErrorBoundary } from '../feedback/AyskaErrorBoundaryComponent';
 import {
   clearError,
@@ -39,9 +39,11 @@ interface AnalyticsDashboardComponentProps {
   _accessibilityHint?: string;
 }
 
-export const AnalyticsDashboardComponent: React.FC<
-  AnalyticsDashboardComponentProps
-> = ({ onViewDetails, onGenerateReport, style }) => {
+export const AnalyticsDashboardComponent: React.FC<AnalyticsDashboardComponentProps> = ({
+  onViewDetails,
+  onGenerateReport,
+  style,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
 
@@ -136,7 +138,7 @@ export const AnalyticsDashboardComponent: React.FC<
       | 'success'
       | 'warning'
       | 'error'
-      | 'info'
+      | 'info',
   ) => (
     <Card
       style={{
@@ -165,11 +167,7 @@ export const AnalyticsDashboardComponent: React.FC<
         {title}
       </AyskaTextComponent>
       {subtitle && (
-        <AyskaTextComponent
-          variant="bodySmall"
-          color="textSecondary"
-          align="center"
-        >
+        <AyskaTextComponent variant="bodySmall" color="textSecondary" align="center">
           {subtitle}
         </AyskaTextComponent>
       )}
@@ -179,13 +177,23 @@ export const AnalyticsDashboardComponent: React.FC<
   // Render loading skeleton
   if (loading && !dashboard) {
     return (
-      <View style={style}>
-        {[...Array(6)].map((_, i) => (
-          <View key={i} style={{ marginBottom: 12 }}>
-            <Skeleton height={120} />
-          </View>
-        ))}
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false} style={style}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 }}>
+          {[...Array(4)].map((_, i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 }}>
+          {[...Array(4)].map((_, i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+          {[...Array(4)].map((_, i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </View>
+      </ScrollView>
     );
   }
 
@@ -193,26 +201,16 @@ export const AnalyticsDashboardComponent: React.FC<
     <ErrorBoundary>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
-        <AyskaTitleComponent
-          level={1}
-          weight="bold"
-          style={{ marginBottom: 24 }}
-        >
+        <AyskaTitleComponent level={1} weight="bold" style={{ marginBottom: 24 }}>
           Analytics Dashboard
         </AyskaTitleComponent>
 
         {/* Overview KPIs */}
         {dashboard && (
           <Card style={{ marginBottom: 24 }}>
-            <AyskaTitleComponent
-              level={2}
-              weight="semibold"
-              style={{ marginBottom: 16 }}
-            >
+            <AyskaTitleComponent level={2} weight="semibold" style={{ marginBottom: 16 }}>
               Overview
             </AyskaTitleComponent>
 
@@ -223,13 +221,8 @@ export const AnalyticsDashboardComponent: React.FC<
               {renderKPICard('Total Assignments', dashboard.total_assignments)}
             </View>
 
-            <View
-              style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 16 }}
-            >
-              {renderKPICard(
-                'Active Assignments',
-                dashboard.active_assignments
-              )}
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 16 }}>
+              {renderKPICard('Active Assignments', dashboard.active_assignments)}
               {renderKPICard('Completed', dashboard.completed_assignments)}
               {renderKPICard('Check-ins', dashboard.total_checkins)}
               {renderKPICard('Valid Check-ins', dashboard.valid_checkins)}
@@ -240,11 +233,7 @@ export const AnalyticsDashboardComponent: React.FC<
         {/* Performance KPIs */}
         {kpis && (
           <Card style={{ marginBottom: 24 }}>
-            <AyskaTitleComponent
-              level={2}
-              weight="semibold"
-              style={{ marginBottom: 16 }}
-            >
+            <AyskaTitleComponent level={2} weight="semibold" style={{ marginBottom: 16 }}>
               Key Performance Indicators
             </AyskaTitleComponent>
 
@@ -253,25 +242,25 @@ export const AnalyticsDashboardComponent: React.FC<
                 'Completion Rate',
                 `${(kpis.assignment_completion_rate * 100).toFixed(1)}%`,
                 'Assignments',
-                'success'
+                'success',
               )}
               {renderKPICard(
                 'Success Rate',
                 `${(kpis.checkin_success_rate * 100).toFixed(1)}%`,
                 'Check-ins',
-                'success'
+                'success',
               )}
               {renderKPICard(
                 'Productivity',
                 `${(kpis.employee_productivity * 100).toFixed(1)}%`,
                 'Score',
-                'primary'
+                'primary',
               )}
               {renderKPICard(
                 'System Uptime',
                 `${(kpis.system_uptime * 100).toFixed(1)}%`,
                 'Availability',
-                'info'
+                'info',
               )}
             </View>
           </Card>
@@ -303,14 +292,8 @@ export const AnalyticsDashboardComponent: React.FC<
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
               {renderKPICard('Total', assignmentAnalytics.total_assignments)}
               {renderKPICard('Active', assignmentAnalytics.active_assignments)}
-              {renderKPICard(
-                'Completed',
-                assignmentAnalytics.completed_assignments
-              )}
-              {renderKPICard(
-                'Cancelled',
-                assignmentAnalytics.cancelled_assignments
-              )}
+              {renderKPICard('Completed', assignmentAnalytics.completed_assignments)}
+              {renderKPICard('Cancelled', assignmentAnalytics.cancelled_assignments)}
             </View>
           </Card>
         )}
@@ -346,7 +329,7 @@ export const AnalyticsDashboardComponent: React.FC<
                 'Success Rate',
                 `${(checkinAnalytics.success_rate * 100).toFixed(1)}%`,
                 undefined,
-                'success'
+                'success',
               )}
             </View>
           </Card>
@@ -376,24 +359,18 @@ export const AnalyticsDashboardComponent: React.FC<
             </View>
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-              {renderKPICard(
-                'Total Employees',
-                employeePerformance.total_employees
-              )}
+              {renderKPICard('Total Employees', employeePerformance.total_employees)}
               {renderKPICard(
                 'Avg Completion',
                 `${(employeePerformance.average_completion_rate * 100).toFixed(1)}%`,
-                'Rate'
+                'Rate',
               )}
               {renderKPICard(
                 'Avg Success',
                 `${(employeePerformance.average_success_rate * 100).toFixed(1)}%`,
-                'Rate'
+                'Rate',
               )}
-              {renderKPICard(
-                'Top Performer',
-                employeePerformance.top_performer
-              )}
+              {renderKPICard('Top Performer', employeePerformance.top_performer)}
             </View>
           </Card>
         )}

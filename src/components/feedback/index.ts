@@ -6,4 +6,6 @@ export {
   CardSkeleton,
   StatCardSkeleton,
   ListItemSkeleton,
+  FormSkeleton,
 } from './AyskaSkeletonLoaderComponent';
+export type { CardSkeletonProps, FormSkeletonProps } from './AyskaSkeletonLoaderComponent';

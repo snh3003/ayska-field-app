@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { IHttpInterceptor } from '../interfaces/AyskaServicesInterface';
+import { ApiError } from '../utils/AyskaApiErrorHandlerUtil';
 import { getRetryDelay, isRetryableStatusCode } from '../config/api';
 
 export class RetryInterceptor implements IHttpInterceptor {
@@ -11,19 +12,38 @@ export class RetryInterceptor implements IHttpInterceptor {
     this.maxRetries = maxRetries;
   }
 
-  onError(error: AxiosError & { config: any }): any {
+  onError(error: (AxiosError & { config: any }) | ApiError): any {
+    // Guard: Check if error is already an ApiError (skip retry, pass through)
+    if (
+      error &&
+      typeof error === 'object' &&
+      typeof (error as ApiError).code === 'number' &&
+      typeof (error as ApiError).message === 'string' &&
+      typeof (error as ApiError).title === 'string' &&
+      !(error as AxiosError).config &&
+      !(error as AxiosError).response
+    ) {
+      // Already mapped - pass through without retry
+      if (__DEV__) {
+        // eslint-disable-next-line no-console
+        console.log('⚠️ RETRY: Already-mapped error, passing to ErrorInterceptor');
+      }
+      return error;
+    }
+
     // Debug: Check what RetryInterceptor receives
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.log('🔄 RETRY INTERCEPTOR RECEIVED:', {
-        hasConfig: !!error.config,
-        hasResponse: !!error.response,
-        errorCode: error.code,
-        errorMessage: error.message,
+        hasConfig: !!(error as AxiosError).config,
+        hasResponse: !!(error as AxiosError).response,
+        errorCode: (error as AxiosError).code,
+        errorMessage: (error as AxiosError).message,
       });
     }
 
-    const originalRequest = error.config;
+    const axiosError = error as AxiosError & { config: any };
+    const originalRequest = axiosError.config;
 
     // Guard against undefined config - pass to next interceptor
     if (!originalRequest) {
@@ -34,16 +54,16 @@ export class RetryInterceptor implements IHttpInterceptor {
       return error;
     }
 
-    const status = error.response?.status;
+    const status = axiosError.response?.status;
 
     // Check if this is a retryable error
-    const isNetworkOr5xx = !error.response || (status ? status >= 500 : false);
+    const isNetworkOr5xx = !axiosError.response || (status ? status >= 500 : false);
     const isRetryable = isNetworkOr5xx || (status ? isRetryableStatusCode(status) : false);
     const retryCount = originalRequest.__retryCount || 0;
 
     // Handle throttling (429) with Retry-After header
     if (status === 429) {
-      const retryAfter = error.response?.headers?.['retry-after'];
+      const retryAfter = axiosError.response?.headers?.['retry-after'];
       const delay = retryAfter ? parseInt(retryAfter) * 1000 : getRetryDelay(retryCount + 1);
 
       if (retryCount < this.maxRetries) {
@@ -60,12 +80,12 @@ export class RetryInterceptor implements IHttpInterceptor {
     // Handle network/5xx errors with exponential backoff
     if (isRetryable && retryCount < this.maxRetries) {
       // Track consecutive timeouts for weak network detection
-      if (error.code === 'TIMEOUT' || error.message?.includes('timeout')) {
+      if (axiosError.code === 'TIMEOUT' || axiosError.message?.includes('timeout')) {
         this.consecutiveTimeouts++;
 
         // Mark as weak network if too many consecutive timeouts
         if (this.consecutiveTimeouts >= this.weakNetworkThreshold) {
-          error.code = 'WEAK_NETWORK';
+          axiosError.code = 'WEAK_NETWORK';
         }
       } else {
         this.consecutiveTimeouts = 0; // Reset on successful request

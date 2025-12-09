@@ -12,18 +12,16 @@ import { AyskaTextComponent } from '../ui/AyskaTextComponent';
 import { AyskaActionButtonComponent } from '../ui/AyskaActionButtonComponent';
 import { Input } from '../ui/AyskaInputComponent';
 import { Card } from '../ui/AyskaCardComponent';
-import { Skeleton } from '../feedback/AyskaSkeletonLoaderComponent';
+import { CardSkeleton } from '../feedback/AyskaSkeletonLoaderComponent';
 import { EmptyState } from '../feedback/AyskaEmptyStateComponent';
 import { ErrorBoundary } from '../feedback/AyskaErrorBoundaryComponent';
 import {
   clearError,
   fetchDoctors,
   selectDoctorError,
-  selectDoctorFilters,
   selectDoctorLoading,
   selectDoctorPagination,
   selectDoctors,
-  setFilters,
 } from '../../store/slices/AyskaDoctorSlice';
 import type { AppDispatch } from '../../store';
 import type { Doctor } from '../../types/AyskaDoctorApiType';
@@ -49,9 +47,9 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
   const loading = useSelector(selectDoctorLoading);
   const error = useSelector(selectDoctorError);
   const pagination = useSelector(selectDoctorPagination);
-  const filters = useSelector(selectDoctorFilters);
 
-  const [searchQuery, setSearchQuery] = useState(filters.search || '');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<any>({ page: 1, size: 10 });
   const [refreshing, setRefreshing] = useState(false);
 
   // Load doctors on mount
@@ -63,7 +61,7 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     const newFilters = { ...filters, search: query, page: 1 };
-    dispatch(setFilters(newFilters));
+    setFilters(newFilters);
     dispatch(fetchDoctors(newFilters));
   };
 
@@ -84,9 +82,9 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
 
   // Handle load more
   const handleLoadMore = () => {
-    if (pagination.hasNext && !loading) {
+    if (pagination.has_next && !loading) {
       const newFilters = { ...filters, page: pagination.page + 1 };
-      dispatch(setFilters(newFilters));
+      setFilters(newFilters);
       dispatch(fetchDoctors(newFilters));
     }
   };
@@ -116,33 +114,19 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
     <Card
       style={{ marginBottom: 12 }}
       onPress={() => handleDoctorSelect(item)}
-      {...getA11yProps(
-        `Doctor: ${item.name}. Specialization: ${item.specialization}`
-      )}
+      {...getA11yProps(`Doctor: ${item.name}. Specialization: ${item.specialization}`)}
     >
-      <AyskaTitleComponent
-        level={3}
-        weight="semibold"
-        style={{ marginBottom: 8 }}
-      >
+      <AyskaTitleComponent level={3} weight="semibold" style={{ marginBottom: 8 }}>
         {item.name}
       </AyskaTitleComponent>
-      <AyskaTextComponent
-        variant="body"
-        color="textSecondary"
-        style={{ marginBottom: 4 }}
-      >
+      <AyskaTextComponent variant="body" color="textSecondary" style={{ marginBottom: 4 }}>
         {item.specialization}
       </AyskaTextComponent>
       <AyskaTextComponent variant="bodySmall" color="textSecondary">
         {item.phone} • {item.email}
       </AyskaTextComponent>
-      <AyskaTextComponent
-        variant="bodySmall"
-        color="textSecondary"
-        style={{ marginTop: 4 }}
-      >
-        {item.address}
+      <AyskaTextComponent variant="bodySmall" color="textSecondary" style={{ marginTop: 4 }}>
+        {item.location_address}
       </AyskaTextComponent>
     </Card>
   );
@@ -152,9 +136,7 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
     return (
       <View style={style}>
         {[...Array(5)].map((_, i) => (
-          <View key={i} style={{ marginBottom: 12 }}>
-            <Skeleton height={120} />
-          </View>
+          <CardSkeleton key={i} variant="doctor" />
         ))}
       </View>
     );
@@ -202,10 +184,8 @@ export const DoctorListComponent: React.FC<DoctorListComponentProps> = ({
       <FlatList
         data={doctors}
         renderItem={renderDoctorItem}
-        keyExtractor={item => item.id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
+        keyExtractor={(item) => item.id}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.1}
         showsVerticalScrollIndicator={false}

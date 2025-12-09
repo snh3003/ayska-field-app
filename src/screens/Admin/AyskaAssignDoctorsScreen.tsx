@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Modal, ScrollView, TouchableOpacity } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { Input } from '../../components/ui/AyskaInputComponent';
@@ -9,14 +9,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import {
-  createAssignment,
-  fetchAssignments,
-} from '../../store/slices/AyskaAssignmentSlice';
-import {
-  fetchAllDoctors,
-  fetchAllEmployees,
-} from '../../store/slices/AyskaOnboardingSlice';
+import { createAssignment, fetchAssignments } from '../../store/slices/AyskaAssignmentSlice';
+import { fetchAllDoctors, fetchAllEmployees } from '../../store/slices/AyskaOnboardingSlice';
 import { AssignmentCard } from '../../components/business/AyskaAssignmentCardComponent';
 import { CommonValidators } from '../../validation/AyskaCommonValidators';
 import { FormValidator } from '../../validation/AyskaFormValidator';
@@ -28,12 +22,8 @@ import { useToast } from '../../../contexts/ToastContext';
 
 export default function AssignDoctorsScreen() {
   const dispatch = useDispatch<AppDispatch>();
-  const { employees, doctors } = useSelector(
-    (state: RootState) => state.onboarding
-  );
-  const { assignments, loading } = useSelector(
-    (state: RootState) => state.assignment
-  );
+  const { employees, doctors } = useSelector((state: RootState) => state.onboarding);
+  const { assignments, loading } = useSelector((state: RootState) => state.assignment);
   const scheme = useColorScheme() ?? 'light';
   const theme = Colors[scheme];
 
@@ -59,20 +49,20 @@ export default function AssignDoctorsScreen() {
   };
 
   const handleFieldChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
     if (touched[field]) {
       const context = new ValidationContext();
-      validationRules[field as keyof typeof validationRules]?.forEach(rule =>
-        context.addRule(rule)
+      validationRules[field as keyof typeof validationRules]?.forEach((rule) =>
+        context.addRule(rule),
       );
       const result = context.validate(value);
-      setErrors(prev => ({ ...prev, [field]: result.error || '' }));
+      setErrors((prev) => ({ ...prev, [field]: result.error || '' }));
     }
   };
 
   const handleFieldBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
     handleFieldChange(field, formData[field as keyof typeof formData]);
   };
 
@@ -91,11 +81,10 @@ export default function AssignDoctorsScreen() {
   const isFormValid = useMemo(() => {
     // Check all required fields are filled
     const allFieldsFilled = Object.keys(validationRules).every(
-      field =>
-        formData[field as keyof typeof formData]?.toString().trim() !== ''
+      (field) => formData[field as keyof typeof formData]?.toString().trim() !== '',
     );
     // Check no validation errors exist
-    const noErrors = Object.values(errors).every(err => !err);
+    const noErrors = Object.values(errors).every((err) => !err);
     return allFieldsFilled && noErrors;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData, errors]);
@@ -104,10 +93,8 @@ export default function AssignDoctorsScreen() {
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      Alert.alert(
-        'Validation Error',
-        'Please fix the errors before submitting'
-      );
+      toast.error('Please fix the errors before submitting');
+      hapticFeedback.error();
       return;
     }
 
@@ -118,16 +105,16 @@ export default function AssignDoctorsScreen() {
           doctor_id: formData.doctorId,
           target: parseInt(formData.target),
           adminId: 'a1', // Default admin ID
-        } as any)
+        } as any),
       ).unwrap();
 
       // Get employee and doctor names for toast
-      const employee = employees.find(emp => emp.id === formData.employee_id);
-      const doctor = doctors.find(doc => doc.id === formData.doctorId);
+      const employee = employees.find((emp) => emp.id === formData.employee_id);
+      const doctor = doctors.find((doc) => doc.id === formData.doctorId);
 
       // Show success toast with names and specialization
       toast.success(
-        `Doctor ${doctor?.name || 'Unknown'} (${doctor?.specialization || 'Unknown'}) assigned to Employee ${employee?.name || 'Unknown'}`
+        `Doctor ${doctor?.name || 'Unknown'} (${doctor?.specialization || 'Unknown'}) assigned to Employee ${employee?.name || 'Unknown'}`,
       );
       hapticFeedback.success();
       setFormData({ employee_id: '', doctorId: '', target: '' });
@@ -136,8 +123,11 @@ export default function AssignDoctorsScreen() {
 
       // Close modal instantly after successful assignment
       router.back();
-    } catch {
-      Alert.alert('Error', 'Failed to assign doctor');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.payload || 'Failed to assign doctor. Please try again.';
+      toast.error(errorMessage);
+      hapticFeedback.error();
     }
   };
 
@@ -208,27 +198,14 @@ export default function AssignDoctorsScreen() {
               padding="$md"
               marginBottom="$md"
             >
-              <TamaguiView
-                flexDirection="row"
-                alignItems="center"
-                marginBottom="$md"
-              >
+              <TamaguiView flexDirection="row" alignItems="center" marginBottom="$md">
                 <Ionicons name="link" size={24} color={theme.warning} />
-                <TamaguiText
-                  fontSize="$5"
-                  fontWeight="bold"
-                  color="$text"
-                  marginLeft="$sm"
-                >
+                <TamaguiText fontSize="$5" fontWeight="bold" color="$text" marginLeft="$sm">
                   New Assignment
                 </TamaguiText>
               </TamaguiView>
 
-              <TamaguiText
-                fontSize="$3"
-                color="$textSecondary"
-                marginBottom="$md"
-              >
+              <TamaguiText fontSize="$3" color="$textSecondary" marginBottom="$md">
                 Assign a doctor to an employee with a target number of visits.
               </TamaguiText>
 
@@ -236,19 +213,13 @@ export default function AssignDoctorsScreen() {
                 label="Employee"
                 placeholder="Select employee"
                 value={formData.employee_id}
-                items={employees.map(emp => ({
+                items={employees.map((emp) => ({
                   id: emp.id,
                   name: emp.name,
                   subtitle: emp.email,
                 }))}
-                onSelect={id => handleFieldChange('employee_id', id)}
-                icon={
-                  <Ionicons
-                    name="person-outline"
-                    size={20}
-                    color={theme.textSecondary}
-                  />
-                }
+                onSelect={(id) => handleFieldChange('employee_id', id)}
+                icon={<Ionicons name="person-outline" size={20} color={theme.textSecondary} />}
                 error={touched.employee_id ? errors.employee_id || '' : ''}
               />
 
@@ -256,36 +227,24 @@ export default function AssignDoctorsScreen() {
                 label="Doctor"
                 placeholder="Select doctor"
                 value={formData.doctorId}
-                items={doctors.map(doc => ({
+                items={doctors.map((doc) => ({
                   id: doc.id,
                   name: doc.name,
                   subtitle: doc.specialization,
                 }))}
-                onSelect={id => handleFieldChange('doctorId', id)}
-                icon={
-                  <Ionicons
-                    name="medical-outline"
-                    size={20}
-                    color={theme.textSecondary}
-                  />
-                }
+                onSelect={(id) => handleFieldChange('doctorId', id)}
+                icon={<Ionicons name="medical-outline" size={20} color={theme.textSecondary} />}
                 error={touched.doctorId ? errors.doctorId || '' : ''}
               />
 
               <Input
                 label="Target Visits"
                 value={formData.target}
-                onChangeText={value => handleFieldChange('target', value)}
+                onChangeText={(value) => handleFieldChange('target', value)}
                 onBlur={() => handleFieldBlur('target')}
                 placeholder="Enter target number of visits"
                 keyboardType="numeric"
-                icon={
-                  <Ionicons
-                    name="flag-outline"
-                    size={20}
-                    color={theme.textSecondary}
-                  />
-                }
+                icon={<Ionicons name="flag-outline" size={20} color={theme.textSecondary} />}
                 error={touched.target ? errors.target || '' : ''}
               />
 
@@ -299,47 +258,24 @@ export default function AssignDoctorsScreen() {
             </TamaguiView>
 
             {/* Existing Assignments */}
-            <TamaguiView
-              backgroundColor="$card"
-              borderRadius="$md"
-              padding="$md"
-            >
-              <TamaguiView
-                flexDirection="row"
-                alignItems="center"
-                marginBottom="$md"
-              >
+            <TamaguiView backgroundColor="$card" borderRadius="$md" padding="$md">
+              <TamaguiView flexDirection="row" alignItems="center" marginBottom="$md">
                 <Ionicons name="list" size={24} color={theme.primary} />
-                <TamaguiText
-                  fontSize="$5"
-                  fontWeight="bold"
-                  color="$text"
-                  marginLeft="$sm"
-                >
+                <TamaguiText fontSize="$5" fontWeight="bold" color="$text" marginLeft="$sm">
                   Existing Assignments
                 </TamaguiText>
               </TamaguiView>
 
               {assignments.length === 0 ? (
                 <TamaguiView alignItems="center" padding="$lg">
-                  <Ionicons
-                    name="document-outline"
-                    size={48}
-                    color={theme.textSecondary}
-                  />
-                  <TamaguiText
-                    fontSize="$4"
-                    color="$textSecondary"
-                    marginTop="$sm"
-                  >
+                  <Ionicons name="document-outline" size={48} color={theme.textSecondary} />
+                  <TamaguiText fontSize="$4" color="$textSecondary" marginTop="$sm">
                     No assignments yet
                   </TamaguiText>
                 </TamaguiView>
               ) : (
-                assignments.map(assignment => {
-                  const doctor = doctors.find(
-                    doc => doc.id === assignment.doctor_id
-                  );
+                assignments.map((assignment) => {
+                  const doctor = doctors.find((doc) => doc.id === assignment.doctor_id);
                   return (
                     <AssignmentCard
                       key={assignment.id}

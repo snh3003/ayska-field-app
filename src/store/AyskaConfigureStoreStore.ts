@@ -3,12 +3,13 @@ import { ServiceContainer } from '../di/ServiceContainer';
 import authReducer from './slices/AyskaAuthSlice';
 import adminReducer from './slices/AyskaAdminSlice';
 import employeeReducer from './slices/AyskaEmployeeSlice';
+import employeeViewReducer from './slices/AyskaEmployeeViewSlice';
 import profileReducer from './slices/AyskaProfileSlice';
 import notificationsReducer from './slices/AyskaNotificationsSlice';
 import notificationReducer from './slices/AyskaNotificationSlice';
 import onboardingReducer from './slices/AyskaOnboardingSlice';
 import assignmentReducer from './slices/AyskaAssignmentSlice';
-import checkInReducer from './slices/AyskaCheckInSlice';
+import checkinReducer from './slices/AyskaCheckInSlice';
 import analyticsReducer from './slices/AyskaAnalyticsSlice';
 import doctorReducer from './slices/AyskaDoctorSlice';
 
@@ -19,16 +20,17 @@ export const store = configureStore({
     auth: authReducer,
     admin: adminReducer,
     employee: employeeReducer,
+    employeeView: employeeViewReducer,
     profile: profileReducer,
     notifications: notificationsReducer,
     notification: notificationReducer,
     onboarding: onboardingReducer,
     assignment: assignmentReducer,
-    checkIn: checkInReducer,
+    checkin: checkinReducer,
     analytics: analyticsReducer,
     doctor: doctorReducer,
   },
-  middleware: getDefaultMiddleware =>
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       thunk: {
         extraArgument: {

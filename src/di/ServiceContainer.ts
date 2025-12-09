@@ -75,9 +75,9 @@ export class ServiceContainer {
       'ISettingsStorage',
       () => new SettingsStorageService(this.get('IStorageProvider')),
     );
-    this.registerSingleton(
-      'INotificationsService',
-      () => new NotificationsService(this.get('INotificationsRepository')),
+    this.registerFactory(
+      'INotificationService',
+      () => new NotificationsService(this.get('IHttpClient')),
     );
 
     // Pattern implementations
@@ -109,12 +109,9 @@ export class ServiceContainer {
     );
     this.registerFactory(
       'IAssignmentService',
-      () => new AssignmentService((this.get('IHttpClient') as any).axios),
+      () => new AssignmentService(this.get('IHttpClient')),
     );
-    this.registerFactory(
-      'ICheckInService',
-      () => new CheckInService((this.get('IHttpClient') as any).axios),
-    );
+    this.registerFactory('ICheckInService', () => new CheckInService(this.get('IHttpClient')));
     this.registerFactory(
       'IAnalyticsService',
       () => new AnalyticsService(this.get('IAnalyticsRepository')),

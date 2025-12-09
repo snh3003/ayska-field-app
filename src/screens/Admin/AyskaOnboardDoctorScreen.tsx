@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Alert, Modal, ScrollView, TouchableOpacity } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { router } from 'expo-router';
@@ -32,9 +32,7 @@ export default function OnboardDoctorScreen() {
     phone: '',
   });
 
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    null
-  );
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -46,20 +44,20 @@ export default function OnboardDoctorScreen() {
   };
 
   const handleFieldChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
     if (touched[field]) {
       const context = new ValidationContext();
-      validationRules[field as keyof typeof validationRules]?.forEach(rule =>
-        context.addRule(rule)
+      validationRules[field as keyof typeof validationRules]?.forEach((rule) =>
+        context.addRule(rule),
       );
       const result = context.validate(value);
-      setErrors(prev => ({ ...prev, [field]: result.error || '' }));
+      setErrors((prev) => ({ ...prev, [field]: result.error || '' }));
     }
   };
 
   const handleFieldBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
     handleFieldChange(field, formData[field as keyof typeof formData]);
   };
 
@@ -84,11 +82,10 @@ export default function OnboardDoctorScreen() {
   const isFormValid = useMemo(() => {
     // Check all required fields are filled
     const allFieldsFilled = Object.keys(validationRules).every(
-      field =>
-        formData[field as keyof typeof formData]?.toString().trim() !== ''
+      (field) => formData[field as keyof typeof formData]?.toString().trim() !== '',
     );
     // Check no validation errors exist
-    const noErrors = Object.values(errors).every(err => !err);
+    const noErrors = Object.values(errors).every((err) => !err);
     // Check location is selected
     const locationSelected = selectedLocation !== null;
     return allFieldsFilled && noErrors && locationSelected;
@@ -99,10 +96,8 @@ export default function OnboardDoctorScreen() {
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      Alert.alert(
-        'Validation Error',
-        'Please fix the errors before submitting'
-      );
+      toast.error('Please fix the errors before submitting');
+      hapticFeedback.error();
       return;
     }
 
@@ -115,17 +110,18 @@ export default function OnboardDoctorScreen() {
           location: selectedLocation!,
           phone: formData.phone,
           adminId: 'a1', // Default admin ID
-        })
+        }),
       ).unwrap();
 
       // Show success toast
-      toast.success(
-        `Doctor ${formData.name} (${formData.specialization}) onboarded successfully`
-      );
+      toast.success(`Doctor ${formData.name} (${formData.specialization}) onboarded successfully`);
       hapticFeedback.success();
       router.back();
-    } catch {
-      Alert.alert('Error', 'Failed to onboard doctor');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.payload || 'Failed to onboard doctor. Please try again.';
+      toast.error(errorMessage);
+      hapticFeedback.error();
     }
   };
 
@@ -192,106 +188,62 @@ export default function OnboardDoctorScreen() {
               padding="$md"
               marginBottom="$md"
             >
-              <TamaguiView
-                flexDirection="row"
-                alignItems="center"
-                marginBottom="$md"
-              >
+              <TamaguiView flexDirection="row" alignItems="center" marginBottom="$md">
                 <Ionicons name="medical" size={24} color={theme.success} />
-                <TamaguiText
-                  fontSize="$5"
-                  fontWeight="bold"
-                  color="$text"
-                  marginLeft="$sm"
-                >
+                <TamaguiText fontSize="$5" fontWeight="bold" color="$text" marginLeft="$sm">
                   New Doctor Details
                 </TamaguiText>
               </TamaguiView>
 
-              <TamaguiText
-                fontSize="$3"
-                color="$textSecondary"
-                marginBottom="$md"
-              >
-                Fill in the details below to onboard a new doctor. Include their
-                location for employee check-ins.
+              <TamaguiText fontSize="$3" color="$textSecondary" marginBottom="$md">
+                Fill in the details below to onboard a new doctor. Include their location for
+                employee check-ins.
               </TamaguiText>
 
               <Input
                 label="Name"
                 value={formData.name}
-                onChangeText={value => handleFieldChange('name', value)}
+                onChangeText={(value) => handleFieldChange('name', value)}
                 onBlur={() => handleFieldBlur('name')}
                 placeholder="Enter doctor name"
-                icon={
-                  <Ionicons
-                    name="person-outline"
-                    size={20}
-                    color={theme.textSecondary}
-                  />
-                }
+                icon={<Ionicons name="person-outline" size={20} color={theme.textSecondary} />}
                 error={touched.name ? errors.name || '' : ''}
               />
 
               <Input
                 label="Age"
                 value={formData.age}
-                onChangeText={value => handleFieldChange('age', value)}
+                onChangeText={(value) => handleFieldChange('age', value)}
                 onBlur={() => handleFieldBlur('age')}
                 placeholder="Enter age"
                 keyboardType="numeric"
-                icon={
-                  <Ionicons
-                    name="calendar-outline"
-                    size={20}
-                    color={theme.textSecondary}
-                  />
-                }
+                icon={<Ionicons name="calendar-outline" size={20} color={theme.textSecondary} />}
                 error={touched.age ? errors.age || '' : ''}
               />
 
               <Input
                 label="Specialization"
                 value={formData.specialization}
-                onChangeText={value =>
-                  handleFieldChange('specialization', value)
-                }
+                onChangeText={(value) => handleFieldChange('specialization', value)}
                 onBlur={() => handleFieldBlur('specialization')}
                 placeholder="Enter specialization"
-                icon={
-                  <Ionicons
-                    name="medical-outline"
-                    size={20}
-                    color={theme.textSecondary}
-                  />
-                }
-                error={
-                  touched.specialization ? errors.specialization || '' : ''
-                }
+                icon={<Ionicons name="medical-outline" size={20} color={theme.textSecondary} />}
+                error={touched.specialization ? errors.specialization || '' : ''}
               />
 
               <Input
                 label="Phone"
                 value={formData.phone}
-                onChangeText={value => handleFieldChange('phone', value)}
+                onChangeText={(value) => handleFieldChange('phone', value)}
                 onBlur={() => handleFieldBlur('phone')}
                 placeholder="Enter phone number"
                 keyboardType="phone-pad"
-                icon={
-                  <Ionicons
-                    name="call-outline"
-                    size={20}
-                    color={theme.textSecondary}
-                  />
-                }
+                icon={<Ionicons name="call-outline" size={20} color={theme.textSecondary} />}
                 error={touched.phone ? errors.phone || '' : ''}
               />
 
               <TamaguiView marginBottom="$lg">
-                <MapPicker
-                  onLocationSelect={setSelectedLocation}
-                  title="Doctor Location"
-                />
+                <MapPicker onLocationSelect={setSelectedLocation} title="Doctor Location" />
                 {errors.location && (
                   <TamaguiText color="$error" fontSize="$3" marginTop="$xs">
                     {errors.location}

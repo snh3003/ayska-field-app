@@ -20,17 +20,14 @@ export class NotificationsService implements INotificationService {
   /**
    * Get notifications with pagination and filters
    */
-  async getNotifications(
-    params?: NotificationQueryParams
-  ): Promise<NotificationListResponse> {
+  async getNotifications(params?: NotificationQueryParams): Promise<NotificationListResponse> {
     try {
       const queryParams = new URLSearchParams();
 
       if (params?.page) queryParams.append('page', params.page.toString());
       if (params?.size) queryParams.append('size', params.size.toString());
       if (params?.type) queryParams.append('type', params.type);
-      if (params?.read !== undefined)
-        queryParams.append('read', params.read.toString());
+      if (params?.read !== undefined) queryParams.append('read', params.read.toString());
       if (params?.actionable !== undefined)
         queryParams.append('actionable', params.actionable.toString());
 
@@ -49,9 +46,7 @@ export class NotificationsService implements INotificationService {
    */
   async getNotificationById(id: string): Promise<Notification> {
     try {
-      const response = await this._http.get<Notification>(
-        `/notifications/${id}`
-      );
+      const response = await this._http.get<Notification>(`/notifications/${id}`);
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -63,9 +58,7 @@ export class NotificationsService implements INotificationService {
    */
   async getNotificationStats(): Promise<NotificationStatsResponse> {
     try {
-      const response = await this._http.get<NotificationStatsResponse>(
-        '/notifications/stats'
-      );
+      const response = await this._http.get<NotificationStatsResponse>('/notifications/stats');
       return response;
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
@@ -77,7 +70,7 @@ export class NotificationsService implements INotificationService {
    */
   async markNotificationAsRead(id: string): Promise<void> {
     try {
-      await this._http.patch(`/notifications/${id}/read`);
+      await this._http.put(`/notifications/${id}/read`, {});
     } catch (error) {
       throw ApiErrorHandler.mapError(error);
     }
@@ -86,13 +79,11 @@ export class NotificationsService implements INotificationService {
   /**
    * Bulk mark notifications as read
    */
-  async bulkMarkAsRead(
-    data: NotificationBulkReadRequest
-  ): Promise<NotificationBulkReadResponse> {
+  async bulkMarkAsRead(data: NotificationBulkReadRequest): Promise<NotificationBulkReadResponse> {
     try {
-      const response = await this._http.post<NotificationBulkReadResponse>(
-        '/notifications/bulk-read',
-        data
+      const response = await this._http.put<NotificationBulkReadResponse>(
+        '/notifications/bulk/read',
+        data,
       );
       return response;
     } catch (error) {
@@ -105,8 +96,9 @@ export class NotificationsService implements INotificationService {
    */
   async markAllAsRead(): Promise<NotificationMarkAllReadResponse> {
     try {
-      const response = await this._http.post<NotificationMarkAllReadResponse>(
-        '/notifications/mark-all-read'
+      const response = await this._http.put<NotificationMarkAllReadResponse>(
+        '/notifications/all/read',
+        {},
       );
       return response;
     } catch (error) {

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 import { View as TamaguiView } from '@tamagui/core';
 import { Button } from '@tamagui/button';
 import { Input } from '@tamagui/input';
@@ -8,14 +7,13 @@ import { AyskaCaptionComponent } from '../ui/AyskaCaptionComponent';
 import { useTheme } from '../../../utils/theme';
 import { Doctor } from '../../types/AyskaModelsType';
 import { Ionicons } from '@expo/vector-icons';
+import { useToast } from '../../../contexts/ToastContext';
+import { hapticFeedback } from '../../../utils/haptics';
 
 interface CheckInButtonProps {
   doctor: Doctor;
   employeeId: string;
-  onCheckIn: (
-    _location: { lat: number; lng: number },
-    _notes?: string
-  ) => Promise<void>;
+  onCheckIn: (_location: { lat: number; lng: number }, _notes?: string) => Promise<void>;
   loading?: boolean;
 }
 
@@ -26,6 +24,7 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
   loading = false,
 }) => {
   const theme = useTheme();
+  const toast = useToast();
 
   const [notes, setNotes] = useState('');
   const [currentLocation, setCurrentLocation] = useState<{
@@ -54,22 +53,24 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
         console.log('Current location:', mockLocation);
         console.log('Distance to doctor:', calculatedDistance, 'meters');
       }
-    } catch {
-      Alert.alert('Error', 'Failed to get current location');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.payload || 'Failed to get current location. Please try again.';
+      toast.error(errorMessage);
+      hapticFeedback.error();
     }
   };
 
   const handleCheckIn = async () => {
     if (!currentLocation) {
-      Alert.alert('Error', 'Please get your current location first');
+      toast.error('Please get your current location first');
+      hapticFeedback.error();
       return;
     }
 
     if (!isValidLocation) {
-      Alert.alert(
-        'Error',
-        `You are ${Math.round(distance || 0)}m away. Must be within 50m of the doctor.`
-      );
+      toast.error(`You are ${Math.round(distance || 0)}m away. Must be within 50m of the doctor.`);
+      hapticFeedback.error();
       return;
     }
 
@@ -79,18 +80,16 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
       setCurrentLocation(null);
       setDistance(null);
       setIsValidLocation(false);
-    } catch {
-      Alert.alert('Error', 'Failed to check in');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.payload || 'Failed to check in. Please try again.';
+      toast.error(errorMessage);
+      hapticFeedback.error();
     }
   };
 
   return (
-    <TamaguiView
-      padding="$md"
-      backgroundColor="$card"
-      borderRadius="$md"
-      marginBottom="$md"
-    >
+    <TamaguiView padding="$md" backgroundColor="$card" borderRadius="$md" marginBottom="$md">
       <AyskaTextComponent
         variant="bodyLarge"
         weight="bold"
@@ -108,18 +107,13 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
           </AyskaTextComponent>
         </TamaguiView>
         <AyskaCaptionComponent color="textSecondary">
-          Lat: {doctor.location.lat.toFixed(4)}, Lng:{' '}
-          {doctor.location.lng.toFixed(4)}
+          Lat: {doctor.location.lat.toFixed(4)}, Lng: {doctor.location.lng.toFixed(4)}
         </AyskaCaptionComponent>
       </TamaguiView>
 
       {currentLocation && (
         <TamaguiView marginBottom="$md">
-          <TamaguiView
-            flexDirection="row"
-            alignItems="center"
-            marginBottom="$sm"
-          >
+          <TamaguiView flexDirection="row" alignItems="center" marginBottom="$sm">
             <Ionicons
               name={isValidLocation ? 'checkmark-circle' : 'close-circle'}
               size={20}
@@ -129,19 +123,14 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
               Your Location
             </AyskaTextComponent>
           </TamaguiView>
-          <AyskaCaptionComponent
-            color="textSecondary"
-            style={{ marginBottom: 4 }}
-          >
-            Lat: {currentLocation.lat.toFixed(4)}, Lng:{' '}
-            {currentLocation.lng.toFixed(4)}
+          <AyskaCaptionComponent color="textSecondary" style={{ marginBottom: 4 }}>
+            Lat: {currentLocation.lat.toFixed(4)}, Lng: {currentLocation.lng.toFixed(4)}
           </AyskaCaptionComponent>
           <AyskaCaptionComponent
             color={isValidLocation ? 'success' : 'error'}
             style={{ fontWeight: 'bold' }}
           >
-            Distance: {Math.round(distance || 0)}m{' '}
-            {isValidLocation ? '(Valid)' : '(Too far)'}
+            Distance: {Math.round(distance || 0)}m {isValidLocation ? '(Valid)' : '(Too far)'}
           </AyskaCaptionComponent>
         </TamaguiView>
       )}
@@ -172,9 +161,7 @@ export const CheckInButton: React.FC<CheckInButtonProps> = ({
 
         <Button
           onPress={handleCheckIn}
-          backgroundColor={
-            isValidLocation ? theme.success : theme.textSecondary
-          }
+          backgroundColor={isValidLocation ? theme.success : theme.textSecondary}
           color="white"
           flex={1}
           disabled={!isValidLocation || loading}

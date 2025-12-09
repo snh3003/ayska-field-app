@@ -357,7 +357,7 @@ src/repositories/
 src/store/slices/
 
 # Store configuration
-src/store/AyskaConfigureStoreStore.ts
+src/store/AyskaConfigureStore.ts
 ```
 
 #### Types & Interfaces

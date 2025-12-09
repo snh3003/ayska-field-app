@@ -13,6 +13,7 @@ export interface OTPRequestResponse {
   expires_in: number; // seconds
   identifier: string;
   identifier_type: 'email' | 'phone';
+  dev_otp?: string; // Only present in dev mode for testing
 }
 
 // OTP Verification payload

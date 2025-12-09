@@ -11,7 +11,7 @@ import { AyskaTitleComponent } from '../ui/AyskaTitleComponent';
 import { AyskaActionButtonComponent } from '../ui/AyskaActionButtonComponent';
 import { Input } from '../ui/AyskaInputComponent';
 import { Card } from '../ui/AyskaCardComponent';
-import { Skeleton } from '../feedback/AyskaSkeletonLoaderComponent';
+import { FormSkeleton } from '../feedback/AyskaSkeletonLoaderComponent';
 import { ErrorBoundary } from '../feedback/AyskaErrorBoundaryComponent';
 import { FormValidator } from '../../validation/AyskaFormValidator';
 import { ValidationContext } from '../../validation/AyskaValidationContext';
@@ -53,7 +53,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
     email: doctor?.email || '',
     location_lat: doctor?.location_lat?.toString() || '',
     location_lng: doctor?.location_lng?.toString() || '',
-    address: doctor?.address || '',
+    location_address: doctor?.location_address || '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -66,15 +66,9 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
     specialization: [CommonValidators.required('Specialization is required')],
     phone: [
       CommonValidators.required('Phone is required'),
-      CommonValidators.pattern(
-        /^[0-9+\-\s()]+$/,
-        'Invalid phone number format'
-      ),
+      CommonValidators.pattern(/^[0-9+\-\s()]+$/, 'Invalid phone number format'),
     ],
-    email: [
-      CommonValidators.required('Email is required'),
-      CommonValidators.email,
-    ],
+    email: [CommonValidators.required('Email is required'), CommonValidators.email],
     location_lat: [
       CommonValidators.required('Latitude is required'),
       CommonValidators.pattern(/^-?\d+\.?\d*$/, 'Invalid latitude format'),
@@ -83,33 +77,33 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
       CommonValidators.required('Longitude is required'),
       CommonValidators.pattern(/^-?\d+\.?\d*$/, 'Invalid longitude format'),
     ],
-    address: [CommonValidators.required('Address is required')],
+    location_address: [CommonValidators.required('Address is required')],
   };
 
   // Handle input change
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
     if (touched[field]) {
       const context = new ValidationContext();
-      validationRules[field as keyof typeof validationRules]?.forEach(rule =>
-        context.addRule(rule)
+      validationRules[field as keyof typeof validationRules]?.forEach((rule) =>
+        context.addRule(rule),
       );
       const result = context.validate(value);
-      setErrors(prev => ({ ...prev, [field]: result.error || '' }));
+      setErrors((prev) => ({ ...prev, [field]: result.error || '' }));
     }
   };
 
   // Handle input blur
   const handleInputBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
 
     const context = new ValidationContext();
-    validationRules[field as keyof typeof validationRules]?.forEach(rule =>
-      context.addRule(rule)
+    validationRules[field as keyof typeof validationRules]?.forEach((rule) =>
+      context.addRule(rule),
     );
     const result = context.validate(formData[field as keyof typeof formData]);
-    setErrors(prev => ({ ...prev, [field]: result.error || '' }));
+    setErrors((prev) => ({ ...prev, [field]: result.error || '' }));
   };
 
   // Validate all fields
@@ -123,7 +117,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
       email: true,
       location_lat: true,
       location_lng: true,
-      address: true,
+      location_address: true,
     });
     return Object.keys(newErrors).length === 0;
   };
@@ -145,7 +139,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
         email: formData.email,
         location_lat: parseFloat(formData.location_lat),
         location_lng: parseFloat(formData.location_lng),
-        address: formData.address,
+        location_address: formData.location_address,
       };
 
       if (doctor) {
@@ -183,33 +177,23 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
   // Render loading skeleton
   if (loading) {
     return (
-      <View style={style}>
-        {[...Array(8)].map((_, i) => (
-          <View key={i} style={{ marginBottom: 12 }}>
-            <Skeleton height={60} />
-          </View>
-        ))}
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false} style={style}>
+        <FormSkeleton fieldCount={2} />
+        <FormSkeleton fieldCount={2} />
+        <FormSkeleton fieldCount={3} />
+      </ScrollView>
     );
   }
 
   return (
     <ErrorBoundary>
       <ScrollView showsVerticalScrollIndicator={false} style={style}>
-        <AyskaTitleComponent
-          level={2}
-          weight="bold"
-          style={{ marginBottom: 24 }}
-        >
+        <AyskaTitleComponent level={2} weight="bold" style={{ marginBottom: 24 }}>
           {doctor ? 'Edit Doctor' : 'Add New Doctor'}
         </AyskaTitleComponent>
 
         <Card style={{ marginBottom: 16 }}>
-          <AyskaTitleComponent
-            level={3}
-            weight="semibold"
-            style={{ marginBottom: 16 }}
-          >
+          <AyskaTitleComponent level={3} weight="semibold" style={{ marginBottom: 16 }}>
             Basic Information
           </AyskaTitleComponent>
 
@@ -217,7 +201,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
             label="Name"
             placeholder="Enter doctor name"
             value={formData.name}
-            onChangeText={value => handleInputChange('name', value)}
+            onChangeText={(value) => handleInputChange('name', value)}
             onBlur={() => handleInputBlur('name')}
             error={errors.name}
             style={{ marginBottom: 16 }}
@@ -227,7 +211,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
             label="Specialization"
             placeholder="Enter specialization"
             value={formData.specialization}
-            onChangeText={value => handleInputChange('specialization', value)}
+            onChangeText={(value) => handleInputChange('specialization', value)}
             onBlur={() => handleInputBlur('specialization')}
             error={errors.specialization}
             style={{ marginBottom: 16 }}
@@ -235,11 +219,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
         </Card>
 
         <Card style={{ marginBottom: 16 }}>
-          <AyskaTitleComponent
-            level={3}
-            weight="semibold"
-            style={{ marginBottom: 16 }}
-          >
+          <AyskaTitleComponent level={3} weight="semibold" style={{ marginBottom: 16 }}>
             Contact Information
           </AyskaTitleComponent>
 
@@ -247,7 +227,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
             label="Phone"
             placeholder="Enter phone number"
             value={formData.phone}
-            onChangeText={value => handleInputChange('phone', value)}
+            onChangeText={(value) => handleInputChange('phone', value)}
             onBlur={() => handleInputBlur('phone')}
             error={errors.phone}
             keyboardType="phone-pad"
@@ -258,7 +238,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
             label="Email"
             placeholder="Enter email address"
             value={formData.email}
-            onChangeText={value => handleInputChange('email', value)}
+            onChangeText={(value) => handleInputChange('email', value)}
             onBlur={() => handleInputBlur('email')}
             error={errors.email}
             keyboardType="email-address"
@@ -267,11 +247,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
         </Card>
 
         <Card style={{ marginBottom: 16 }}>
-          <AyskaTitleComponent
-            level={3}
-            weight="semibold"
-            style={{ marginBottom: 16 }}
-          >
+          <AyskaTitleComponent level={3} weight="semibold" style={{ marginBottom: 16 }}>
             Location Information
           </AyskaTitleComponent>
 
@@ -280,7 +256,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
               label="Latitude"
               placeholder="Enter latitude"
               value={formData.location_lat}
-              onChangeText={value => handleInputChange('location_lat', value)}
+              onChangeText={(value) => handleInputChange('location_lat', value)}
               onBlur={() => handleInputBlur('location_lat')}
               error={errors.location_lat}
               keyboardType="numeric"
@@ -291,7 +267,7 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
               label="Longitude"
               placeholder="Enter longitude"
               value={formData.location_lng}
-              onChangeText={value => handleInputChange('location_lng', value)}
+              onChangeText={(value) => handleInputChange('location_lng', value)}
               onBlur={() => handleInputBlur('location_lng')}
               error={errors.location_lng}
               keyboardType="numeric"
@@ -302,10 +278,10 @@ export const DoctorFormComponent: React.FC<DoctorFormComponentProps> = ({
           <Input
             label="Address"
             placeholder="Enter full address"
-            value={formData.address}
-            onChangeText={value => handleInputChange('address', value)}
-            onBlur={() => handleInputBlur('address')}
-            error={errors.address}
+            value={formData.location_address}
+            onChangeText={(value) => handleInputChange('location_address', value)}
+            onBlur={() => handleInputBlur('location_address')}
+            error={errors.location_address}
             multiline
             numberOfLines={3}
             style={{ marginBottom: 16 }}

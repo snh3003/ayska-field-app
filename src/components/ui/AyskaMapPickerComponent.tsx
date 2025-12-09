@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { View as TamaguiView } from '@tamagui/core';
 import { Button } from '@tamagui/button';
 import { Input } from '@tamagui/input';
@@ -10,6 +10,8 @@ import { Location } from '../../types/AyskaModelsType';
 import { MapsConfig } from '../../config/maps';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../utils/theme';
+import { useToast } from '../../../contexts/ToastContext';
+import { hapticFeedback } from '../../../utils/haptics';
 
 interface MapPickerProps {
   onLocationSelect: (_location: Location) => void;
@@ -23,11 +25,12 @@ export const MapPicker: React.FC<MapPickerProps> = ({
   title = 'Select Location',
 }) => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    initialLocation || null
+    initialLocation || null,
   );
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
+  const toast = useToast();
 
   // Mock map component - in real app, this would be react-native-maps
   const MockMapView = () => (
@@ -40,11 +43,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({
       marginBottom="$md"
     >
       <Ionicons name="map" size={48} color={theme.textSecondary} />
-      <AyskaTextComponent
-        variant="body"
-        color="textSecondary"
-        style={{ marginTop: 8 }}
-      >
+      <AyskaTextComponent variant="body" color="textSecondary" style={{ marginTop: 8 }}>
         Map View ({MapsConfig.provider})
       </AyskaTextComponent>
       <AyskaCaptionComponent color="textSecondary" style={{ marginTop: 4 }}>
@@ -61,9 +60,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({
     };
 
     setSelectedLocation(mockLocation);
-    setAddress(
-      `Selected: ${mockLocation.lat.toFixed(4)}, ${mockLocation.lng.toFixed(4)}`
-    );
+    setAddress(`Selected: ${mockLocation.lat.toFixed(4)}, ${mockLocation.lng.toFixed(4)}`);
   };
 
   const handleAddressSearch = async () => {
@@ -80,13 +77,13 @@ export const MapPicker: React.FC<MapPickerProps> = ({
       setSelectedLocation(mockLocation);
 
       if (__DEV__) {
-        console.log(
-          `[${MapsConfig.provider}] Geocoded "${address}" to:`,
-          mockLocation
-        );
+        console.log(`[${MapsConfig.provider}] Geocoded "${address}" to:`, mockLocation);
       }
-    } catch {
-      Alert.alert('Error', 'Failed to find location');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.payload || 'Failed to find location. Please try again.';
+      toast.error(errorMessage);
+      hapticFeedback.error();
     } finally {
       setLoading(false);
     }
@@ -94,7 +91,8 @@ export const MapPicker: React.FC<MapPickerProps> = ({
 
   const handleConfirmLocation = () => {
     if (!selectedLocation) {
-      Alert.alert('Error', 'Please select a location first');
+      toast.error('Please select a location first');
+      hapticFeedback.error();
       return;
     }
 
@@ -111,15 +109,16 @@ export const MapPicker: React.FC<MapPickerProps> = ({
       };
 
       setSelectedLocation(mockLocation);
-      setAddress(
-        `Current: ${mockLocation.lat.toFixed(4)}, ${mockLocation.lng.toFixed(4)}`
-      );
+      setAddress(`Current: ${mockLocation.lat.toFixed(4)}, ${mockLocation.lng.toFixed(4)}`);
 
       if (__DEV__) {
         console.log('Current location:', mockLocation);
       }
-    } catch {
-      Alert.alert('Error', 'Failed to get current location');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.payload || 'Failed to get current location. Please try again.';
+      toast.error(errorMessage);
+      hapticFeedback.error();
     } finally {
       setLoading(false);
     }
@@ -137,11 +136,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({
       </AyskaTitleComponent>
 
       <TamaguiView marginBottom="$md">
-        <AyskaTextComponent
-          variant="bodyLarge"
-          color="textSecondary"
-          style={{ marginBottom: 8 }}
-        >
+        <AyskaTextComponent variant="bodyLarge" color="textSecondary" style={{ marginBottom: 8 }}>
           Search Address
         </AyskaTextComponent>
         <TamaguiView flexDirection="row" gap="$sm">
@@ -233,11 +228,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({
 
       {selectedLocation && (
         <TamaguiView marginBottom="$md">
-          <AyskaTextComponent
-            variant="bodyLarge"
-            color="textSecondary"
-            style={{ marginBottom: 8 }}
-          >
+          <AyskaTextComponent variant="bodyLarge" color="textSecondary" style={{ marginBottom: 8 }}>
             Selected Location
           </AyskaTextComponent>
           <TamaguiView
@@ -247,27 +238,15 @@ export const MapPicker: React.FC<MapPickerProps> = ({
             borderWidth={1}
             borderColor="$border"
           >
-            <TamaguiView
-              flexDirection="row"
-              alignItems="center"
-              marginBottom="$xs"
-            >
+            <TamaguiView flexDirection="row" alignItems="center" marginBottom="$xs">
               <Ionicons name="location" size={16} color={theme.success} />
-              <AyskaTextComponent
-                variant="body"
-                color="textSecondary"
-                style={{ marginLeft: 8 }}
-              >
+              <AyskaTextComponent variant="body" color="textSecondary" style={{ marginLeft: 8 }}>
                 Latitude: {selectedLocation.lat.toFixed(6)}
               </AyskaTextComponent>
             </TamaguiView>
             <TamaguiView flexDirection="row" alignItems="center">
               <Ionicons name="location" size={16} color={theme.success} />
-              <AyskaTextComponent
-                variant="body"
-                color="textSecondary"
-                style={{ marginLeft: 8 }}
-              >
+              <AyskaTextComponent variant="body" color="textSecondary" style={{ marginLeft: 8 }}>
                 Longitude: {selectedLocation.lng.toFixed(6)}
               </AyskaTextComponent>
             </TamaguiView>

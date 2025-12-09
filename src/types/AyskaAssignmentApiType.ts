@@ -8,13 +8,16 @@ export interface Assignment {
   doctor_id: string;
   target: number;
   current_progress: number;
-  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  status: 'active' | 'completed' | 'cancelled';
   assigned_date: string;
   created_at: string;
   updated_at: string;
   assigned_by: string;
   employee_name?: string;
   doctor_name?: string;
+  progress_percentage?: number;
+  is_completed?: boolean;
+  doctor_specialization?: string;
 }
 
 // Create assignment payload
@@ -31,12 +34,12 @@ export interface UpdateAssignmentPayload {
 
 // Assignment progress update
 export interface AssignmentProgressUpdate {
-  progress: number;
+  current_progress: number;
 }
 
 // Assignment status update
 export interface AssignmentStatusUpdate {
-  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  status: 'active' | 'completed' | 'cancelled';
 }
 
 // Assignment list response with pagination
@@ -60,23 +63,12 @@ export interface AssignmentQueryParams {
 
 // Assignment service interface
 export interface IAssignmentService {
-  getAssignments(
-    _params?: AssignmentQueryParams
-  ): Promise<AssignmentListResponse>;
+  getAssignments(_params?: AssignmentQueryParams): Promise<AssignmentListResponse>;
   getAssignmentById(_id: string): Promise<Assignment>;
   createAssignment(_data: CreateAssignmentPayload): Promise<Assignment>;
-  updateAssignment(
-    _id: string,
-    _data: UpdateAssignmentPayload
-  ): Promise<Assignment>;
-  updateAssignmentProgress(
-    _id: string,
-    _data: AssignmentProgressUpdate
-  ): Promise<Assignment>;
-  updateAssignmentStatus(
-    _id: string,
-    _data: AssignmentStatusUpdate
-  ): Promise<Assignment>;
+  updateAssignment(_id: string, _data: UpdateAssignmentPayload): Promise<Assignment>;
+  updateAssignmentProgress(_id: string, _data: AssignmentProgressUpdate): Promise<Assignment>;
+  updateAssignmentStatus(_id: string, _data: AssignmentStatusUpdate): Promise<Assignment>;
   deleteAssignment(_id: string): Promise<void>;
   getEmployeeAssignments(_employeeId: string): Promise<Assignment[]>;
 }

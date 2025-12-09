@@ -5,8 +5,8 @@
 export interface Notification {
   id: string;
   user_id: string;
-  user_role: 'ADMIN' | 'EMPLOYEE';
-  type: 'ASSIGNMENT' | 'CHECKIN' | 'SYSTEM';
+  user_role: 'admin' | 'employee';
+  type: 'assignment' | 'visit' | 'system' | 'attendance';
   title: string;
   message: string;
   read: boolean;
@@ -69,15 +69,11 @@ export interface NotificationMarkAllReadResponse {
 
 // Notification service interface
 export interface INotificationService {
-  getNotifications(
-    _params?: NotificationQueryParams
-  ): Promise<NotificationListResponse>;
+  getNotifications(_params?: NotificationQueryParams): Promise<NotificationListResponse>;
   getNotificationById(_id: string): Promise<Notification>;
   getNotificationStats(): Promise<NotificationStatsResponse>;
   markNotificationAsRead(_id: string): Promise<void>;
-  bulkMarkAsRead(
-    _data: NotificationBulkReadRequest
-  ): Promise<NotificationBulkReadResponse>;
+  bulkMarkAsRead(_data: NotificationBulkReadRequest): Promise<NotificationBulkReadResponse>;
   markAllAsRead(): Promise<NotificationMarkAllReadResponse>;
   deleteNotification(_id: string): Promise<void>;
 }

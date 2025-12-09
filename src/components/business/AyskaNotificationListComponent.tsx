@@ -11,7 +11,7 @@ import { AyskaTitleComponent } from '../ui/AyskaTitleComponent';
 import { AyskaTextComponent } from '../ui/AyskaTextComponent';
 import { AyskaActionButtonComponent } from '../ui/AyskaActionButtonComponent';
 import { Card } from '../ui/AyskaCardComponent';
-import { Skeleton } from '../feedback/AyskaSkeletonLoaderComponent';
+import { CardSkeleton } from '../feedback/AyskaSkeletonLoaderComponent';
 import { EmptyState } from '../feedback/AyskaEmptyStateComponent';
 import { ErrorBoundary } from '../feedback/AyskaErrorBoundaryComponent';
 import {
@@ -22,14 +22,12 @@ import {
   fetchNotificationStats,
   markAllAsRead,
   markNotificationAsRead,
-  selectBulkOperation,
   selectNotificationError,
-  selectNotificationFilters,
   selectNotificationLoading,
   selectNotificationPagination,
   selectNotifications,
   selectNotificationStats,
-  setFilters,
+  selectUnreadCount,
 } from '../../store/slices/AyskaNotificationSlice';
 import type { AppDispatch } from '../../store';
 import type { Notification } from '../../types/AyskaNotificationApiType';
@@ -43,9 +41,7 @@ interface NotificationListComponentProps {
   _accessibilityHint?: string;
 }
 
-export const NotificationListComponent: React.FC<
-  NotificationListComponentProps
-> = ({
+export const NotificationListComponent: React.FC<NotificationListComponentProps> = ({
   onNotificationSelect,
   onMarkAllAsRead,
   showFilters = true,
@@ -60,14 +56,12 @@ export const NotificationListComponent: React.FC<
   const loading = useSelector(selectNotificationLoading);
   const error = useSelector(selectNotificationError);
   const pagination = useSelector(selectNotificationPagination);
-  const filters = useSelector(selectNotificationFilters);
-  const bulkOperation = useSelector(selectBulkOperation);
+  const unreadCount = useSelector(selectUnreadCount);
 
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
-    []
-  );
+  const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
+  const [filters, setFilters] = useState<any>({ page: 1, size: 10 });
 
   // Load notifications on mount
   useEffect(() => {
@@ -95,9 +89,9 @@ export const NotificationListComponent: React.FC<
 
   // Handle load more
   const handleLoadMore = () => {
-    if (pagination.hasNext && !loading) {
+    if (pagination.has_next && !loading) {
       const newFilters = { ...filters, page: pagination.page + 1 };
-      dispatch(setFilters(newFilters));
+      setFilters(newFilters);
       dispatch(fetchNotifications(newFilters));
     }
   };
@@ -116,10 +110,10 @@ export const NotificationListComponent: React.FC<
   // Handle toggle selection
   const handleToggleSelection = (notificationId: string) => {
     hapticFeedback.light();
-    setSelectedNotifications(prev =>
+    setSelectedNotifications((prev) =>
       prev.includes(notificationId)
-        ? prev.filter(id => id !== notificationId)
-        : [...prev, notificationId]
+        ? prev.filter((id) => id !== notificationId)
+        : [...prev, notificationId],
     );
   };
 
@@ -129,14 +123,9 @@ export const NotificationListComponent: React.FC<
 
     hapticFeedback.medium();
     try {
-      await dispatch(
-        bulkMarkAsRead({ notification_ids: selectedNotifications })
-      );
+      await dispatch(bulkMarkAsRead({ notification_ids: selectedNotifications }));
       setSelectedNotifications([]);
-      showToast(
-        `${selectedNotifications.length} notifications marked as read.`,
-        'success'
-      );
+      showToast(`${selectedNotifications.length} notifications marked as read.`, 'success');
     } catch (error) {
       if (__DEV__) {
         console.error('Failed to bulk mark as read:', error);
@@ -176,7 +165,7 @@ export const NotificationListComponent: React.FC<
 
   // Handle filter change
   const handleFilterChange = (newFilters: any) => {
-    dispatch(setFilters(newFilters));
+    setFilters(newFilters);
     dispatch(fetchNotifications(newFilters));
   };
 
@@ -223,11 +212,7 @@ export const NotificationListComponent: React.FC<
         }}
       >
         <View style={{ flex: 1, marginRight: 12 }}>
-          <AyskaTitleComponent
-            level={4}
-            weight="semibold"
-            style={{ marginBottom: 4 }}
-          >
+          <AyskaTitleComponent level={4} weight="semibold" style={{ marginBottom: 4 }}>
             {item.title}
           </AyskaTitleComponent>
 
@@ -283,9 +268,7 @@ export const NotificationListComponent: React.FC<
     return (
       <View style={style}>
         {[...Array(5)].map((_, i) => (
-          <View key={i} style={{ marginBottom: 12 }}>
-            <Skeleton height={100} />
-          </View>
+          <CardSkeleton key={i} variant="notification" />
         ))}
       </View>
     );
@@ -293,12 +276,7 @@ export const NotificationListComponent: React.FC<
 
   // Render empty state
   if (!loading && notifications.length === 0) {
-    return (
-      <EmptyState
-        title="No Notifications"
-        message="You don't have any notifications yet."
-      />
-    );
+    return <EmptyState title="No Notifications" message="You don't have any notifications yet." />;
   }
 
   return (
@@ -306,21 +284,15 @@ export const NotificationListComponent: React.FC<
       <AyskaTitleComponent level={2} weight="bold" style={{ marginBottom: 16 }}>
         Notifications
         {stats && (
-          <AyskaTextComponent
-            variant="body"
-            color="textSecondary"
-            style={{ marginTop: 4 }}
-          >
-            {pagination.total} total • {pagination.unreadCount} unread
+          <AyskaTextComponent variant="body" color="textSecondary" style={{ marginTop: 4 }}>
+            {pagination.total} total • {unreadCount} unread
           </AyskaTextComponent>
         )}
       </AyskaTitleComponent>
 
       {/* Filters and Actions */}
       {showFilters && (
-        <View
-          style={{ flexDirection: 'row', marginBottom: 16, flexWrap: 'wrap' }}
-        >
+        <View style={{ flexDirection: 'row', marginBottom: 16, flexWrap: 'wrap' }}>
           <AyskaActionButtonComponent
             label={showUnreadOnly ? 'Show All' : 'Unread Only'}
             variant={showUnreadOnly ? 'primary' : 'secondary'}
@@ -342,21 +314,19 @@ export const NotificationListComponent: React.FC<
               variant="secondary"
               size="sm"
               onPress={handleBulkMarkAsRead}
-              loading={bulkOperation.loading}
+              loading={loading}
               style={{ marginRight: 8, marginBottom: 8 }}
-              {...getA11yProps(
-                `Mark ${selectedNotifications.length} notifications as read`
-              )}
+              {...getA11yProps(`Mark ${selectedNotifications.length} notifications as read`)}
             />
           )}
 
-          {showBulkActions && pagination.unreadCount > 0 && (
+          {showBulkActions && unreadCount > 0 && (
             <AyskaActionButtonComponent
               label="Mark All Read"
               variant="secondary"
               size="sm"
               onPress={handleMarkAllAsRead}
-              loading={bulkOperation.loading}
+              loading={loading}
               style={{ marginBottom: 8 }}
               {...getA11yProps('Mark all notifications as read')}
             />
@@ -368,10 +338,8 @@ export const NotificationListComponent: React.FC<
       <FlatList
         data={notifications}
         renderItem={renderNotificationItem}
-        keyExtractor={item => item.id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
+        keyExtractor={(item) => item.id}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.1}
         showsVerticalScrollIndicator={false}

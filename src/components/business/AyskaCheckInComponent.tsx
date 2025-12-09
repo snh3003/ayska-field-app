@@ -12,19 +12,22 @@ import { AyskaTextComponent } from '../ui/AyskaTextComponent';
 import { AyskaActionButtonComponent } from '../ui/AyskaActionButtonComponent';
 import { Input } from '../ui/AyskaInputComponent';
 import { Card } from '../ui/AyskaCardComponent';
-import { Skeleton } from '../feedback/AyskaSkeletonLoaderComponent';
+import { CardSkeleton, FormSkeleton } from '../feedback/AyskaSkeletonLoaderComponent';
 import { ErrorBoundary } from '../feedback/AyskaErrorBoundaryComponent';
 import { FormValidator } from '../../validation/AyskaFormValidator';
 import { ValidationContext } from '../../validation/AyskaValidationContext';
 import {
-  clearError,
-  fetchEmployeeProfile,
-  selectCheckInError,
-  selectCheckInLoading,
-  selectEmployeeProfile,
-  selectLastCheckIn,
-  submitCheckIn,
+  clearError as clearCheckinError,
+  performCheckin,
+  selectCheckinError,
+  selectCheckinLoading,
+  selectLastCheckin,
 } from '../../store/slices/AyskaCheckInSlice';
+import {
+  fetchMyProfile,
+  selectEmployeeViewLoading,
+  selectMyProfile,
+} from '../../store/slices/AyskaEmployeeViewSlice';
 import type { AppDispatch } from '../../store';
 import type { CheckinRequest } from '../../types/AyskaCheckInApiType';
 
@@ -49,10 +52,12 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
 
-  const employeeProfile = useSelector(selectEmployeeProfile);
-  const loading = useSelector(selectCheckInLoading);
-  const error = useSelector(selectCheckInError);
-  const lastCheckIn = useSelector(selectLastCheckIn);
+  const employeeProfile = useSelector(selectMyProfile);
+  const checkinLoading = useSelector(selectCheckinLoading);
+  const employeeViewLoading = useSelector(selectEmployeeViewLoading);
+  const loading = checkinLoading || employeeViewLoading;
+  const error = useSelector(selectCheckinError);
+  const lastCheckIn = useSelector(selectLastCheckin);
 
   const [formData, setFormData] = useState({
     notes: '',
@@ -67,7 +72,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
 
   // Load employee profile on mount
   useEffect(() => {
-    dispatch(fetchEmployeeProfile());
+    dispatch(fetchMyProfile());
   }, [dispatch]);
 
   // Get current location
@@ -76,22 +81,22 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
       try {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
-            position => {
+            (position) => {
               setCurrentLocation({
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
               });
             },
-            error => {
+            (error) => {
               if (__DEV__) {
                 console.error('Location error:', error);
               }
               showToast(
                 'Unable to get your current location. Please enable location services.',
-                'error'
+                'error',
               );
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
           );
         }
       } catch (error) {
@@ -114,28 +119,28 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
 
   // Handle input change
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
     if (touched[field]) {
       const context = new ValidationContext();
-      validationRules[field as keyof typeof validationRules]?.forEach(rule =>
-        context.addRule(rule)
+      validationRules[field as keyof typeof validationRules]?.forEach((rule) =>
+        context.addRule(rule),
       );
       const result = context.validate(value);
-      setErrors(prev => ({ ...prev, [field]: result.error || '' }));
+      setErrors((prev) => ({ ...prev, [field]: result.error || '' }));
     }
   };
 
   // Handle input blur
   const handleInputBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
 
     const context = new ValidationContext();
-    validationRules[field as keyof typeof validationRules]?.forEach(rule =>
-      context.addRule(rule)
+    validationRules[field as keyof typeof validationRules]?.forEach((rule) =>
+      context.addRule(rule),
     );
     const result = context.validate(formData[field as keyof typeof formData]);
-    setErrors(prev => ({ ...prev, [field]: result.error || '' }));
+    setErrors((prev) => ({ ...prev, [field]: result.error || '' }));
   };
 
   // Validate form
@@ -168,7 +173,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
         notes: formData.notes.trim() || undefined,
       };
 
-      const _result = await dispatch(submitCheckIn(payload));
+      const _result = await dispatch(performCheckin(payload));
 
       if (_result.payload) {
         const checkInResult = _result.payload as any;
@@ -176,17 +181,15 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
         if (checkInResult.is_valid) {
           showToast(
             `You have successfully checked in with ${doctorName || 'the doctor'}.`,
-            'success'
+            'success',
           );
           onCheckInSuccess?.(checkInResult);
         } else {
           showToast(
             `You are too far from the doctor's location. Distance: ${checkInResult.distance_meters}m`,
-            'warning'
+            'warning',
           );
-          onCheckInError?.(
-            `Distance exceeded: ${checkInResult.distance_meters}m`
-          );
+          onCheckInError?.(`Distance exceeded: ${checkInResult.distance_meters}m`);
         }
       }
     } catch (error) {
@@ -201,58 +204,40 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
   useEffect(() => {
     if (error) {
       showToast(error, 'error');
-      dispatch(clearError());
+      dispatch(clearCheckinError());
     }
   }, [error, showToast, dispatch]);
 
   // Render loading skeleton
   if (loading && !employeeProfile) {
     return (
-      <View style={style}>
-        {[...Array(4)].map((_, i) => (
-          <View key={i} style={{ marginBottom: 12 }}>
-            <Skeleton height={80} />
-          </View>
-        ))}
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false} style={style}>
+        <CardSkeleton variant="doctor" />
+        <CardSkeleton variant="default" />
+        <FormSkeleton fieldCount={1} />
+      </ScrollView>
     );
   }
 
   return (
     <ErrorBoundary>
       <ScrollView showsVerticalScrollIndicator={false} style={style}>
-        <AyskaTitleComponent
-          level={2}
-          weight="bold"
-          style={{ marginBottom: 24 }}
-        >
+        <AyskaTitleComponent level={2} weight="bold" style={{ marginBottom: 24 }}>
           Check-in with Doctor
         </AyskaTitleComponent>
 
         {/* Doctor Information */}
         <Card style={{ marginBottom: 24 }}>
-          <AyskaTitleComponent
-            level={3}
-            weight="semibold"
-            style={{ marginBottom: 12 }}
-          >
+          <AyskaTitleComponent level={3} weight="semibold" style={{ marginBottom: 12 }}>
             Doctor Information
           </AyskaTitleComponent>
 
-          <AyskaTextComponent
-            variant="bodyLarge"
-            weight="semibold"
-            style={{ marginBottom: 4 }}
-          >
+          <AyskaTextComponent variant="bodyLarge" weight="semibold" style={{ marginBottom: 4 }}>
             {doctorName || 'Doctor Name'}
           </AyskaTextComponent>
 
           {doctorSpecialization && (
-            <AyskaTextComponent
-              variant="body"
-              color="textSecondary"
-              style={{ marginBottom: 8 }}
-            >
+            <AyskaTextComponent variant="body" color="textSecondary" style={{ marginBottom: 8 }}>
               {doctorSpecialization}
             </AyskaTextComponent>
           )}
@@ -264,21 +249,13 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
 
         {/* Location Status */}
         <Card style={{ marginBottom: 24 }}>
-          <AyskaTitleComponent
-            level={3}
-            weight="semibold"
-            style={{ marginBottom: 12 }}
-          >
+          <AyskaTitleComponent level={3} weight="semibold" style={{ marginBottom: 12 }}>
             Location Status
           </AyskaTitleComponent>
 
           {currentLocation ? (
             <View>
-              <AyskaTextComponent
-                variant="body"
-                color="success"
-                style={{ marginBottom: 8 }}
-              >
+              <AyskaTextComponent variant="body" color="success" style={{ marginBottom: 8 }}>
                 ✓ Location detected
               </AyskaTextComponent>
               <AyskaTextComponent variant="bodySmall" color="textSecondary">
@@ -298,11 +275,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
         {/* Employee Profile */}
         {employeeProfile && (
           <Card style={{ marginBottom: 24 }}>
-            <AyskaTitleComponent
-              level={3}
-              weight="semibold"
-              style={{ marginBottom: 12 }}
-            >
+            <AyskaTitleComponent level={3} weight="semibold" style={{ marginBottom: 12 }}>
               Your Performance
             </AyskaTitleComponent>
 
@@ -320,11 +293,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
                 <AyskaTextComponent variant="bodySmall" color="textSecondary">
                   Success Rate
                 </AyskaTextComponent>
-                <AyskaTextComponent
-                  variant="bodyLarge"
-                  weight="semibold"
-                  color="success"
-                >
+                <AyskaTextComponent variant="bodyLarge" weight="semibold" color="success">
                   {(employeeProfile.success_rate * 100).toFixed(1)}%
                 </AyskaTextComponent>
               </View>
@@ -342,11 +311,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
                 <AyskaTextComponent variant="bodySmall" color="textSecondary">
                   Completed
                 </AyskaTextComponent>
-                <AyskaTextComponent
-                  variant="bodyLarge"
-                  weight="semibold"
-                  color="primary"
-                >
+                <AyskaTextComponent variant="bodyLarge" weight="semibold" color="primary">
                   {employeeProfile.completed_assignments}
                 </AyskaTextComponent>
               </View>
@@ -356,11 +321,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
 
         {/* Check-in Form */}
         <Card style={{ marginBottom: 24 }}>
-          <AyskaTitleComponent
-            level={3}
-            weight="semibold"
-            style={{ marginBottom: 16 }}
-          >
+          <AyskaTitleComponent level={3} weight="semibold" style={{ marginBottom: 16 }}>
             Check-in Details
           </AyskaTitleComponent>
 
@@ -368,7 +329,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
             label="Notes (Optional)"
             placeholder="Add any notes about this visit..."
             value={formData.notes}
-            onChangeText={value => handleInputChange('notes', value)}
+            onChangeText={(value) => handleInputChange('notes', value)}
             onBlur={() => handleInputBlur('notes')}
             error={errors.notes}
             multiline
@@ -381,8 +342,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
             color="textSecondary"
             style={{ marginBottom: 16 }}
           >
-            Make sure you are within the doctor&apos;s location radius before
-            checking in.
+            Make sure you are within the doctor&apos;s location radius before checking in.
           </AyskaTextComponent>
         </Card>
 
@@ -405,11 +365,7 @@ export const CheckInComponent: React.FC<CheckInComponentProps> = ({
               backgroundColor: lastCheckIn.is_valid ? '#f0f9ff' : '#fef2f2',
             }}
           >
-            <AyskaTitleComponent
-              level={4}
-              weight="semibold"
-              style={{ marginBottom: 8 }}
-            >
+            <AyskaTitleComponent level={4} weight="semibold" style={{ marginBottom: 8 }}>
               Last Check-in Result
             </AyskaTitleComponent>
 

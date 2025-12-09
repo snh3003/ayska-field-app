@@ -8,7 +8,7 @@ import { useTheme } from '../../../utils/theme';
 import { AyskaOTPInputProps } from '../../types';
 
 export const AyskaOTPInputComponent: React.FC<AyskaOTPInputProps> = ({
-  length = 4,
+  length = 6,
   value = '',
   onChange,
   onComplete,
@@ -16,7 +16,7 @@ export const AyskaOTPInputComponent: React.FC<AyskaOTPInputProps> = ({
   error,
   style,
   accessibilityLabel = 'OTP input',
-  accessibilityHint = 'Enter the 4-digit verification code',
+  accessibilityHint = 'Enter the 6-digit verification code',
 }) => {
   const theme = useTheme();
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
@@ -51,10 +51,7 @@ export const AyskaOTPInputComponent: React.FC<AyskaOTPInputProps> = ({
     }
 
     // Check if all digits are entered
-    if (
-      updatedValue.length === length &&
-      updatedValue.replace(/\s/g, '').length === length
-    ) {
+    if (updatedValue.length === length && updatedValue.replace(/\s/g, '').length === length) {
       onComplete?.(updatedValue);
     }
   };
@@ -88,11 +85,7 @@ export const AyskaOTPInputComponent: React.FC<AyskaOTPInputProps> = ({
     width: 48,
     height: 48,
     borderWidth: 1.5,
-    borderColor: hasError
-      ? theme.error
-      : focusedIndex === index
-        ? theme.primary
-        : theme.border,
+    borderColor: hasError ? theme.error : focusedIndex === index ? theme.primary : theme.border,
     borderRadius: 8,
     backgroundColor: disabled ? theme.background : theme.card,
     textAlign: 'center' as const,
@@ -126,18 +119,16 @@ export const AyskaOTPInputComponent: React.FC<AyskaOTPInputProps> = ({
             {...getA11yProps(
               `Digit ${idx + 1}`,
               `Enter digit ${idx + 1} of the verification code`,
-              'button'
+              'button',
             )}
           >
             <TextInput
-              ref={ref => {
+              ref={(ref) => {
                 inputRefs.current[idx] = ref;
               }}
               value={value[idx] || ''}
-              onChangeText={text => handleChange(text, idx)}
-              onKeyPress={({ nativeEvent }) =>
-                handleKeyPress(nativeEvent.key, idx)
-              }
+              onChangeText={(text) => handleChange(text, idx)}
+              onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, idx)}
               onFocus={() => handleFocus(idx)}
               onBlur={handleBlur}
               keyboardType="numeric"

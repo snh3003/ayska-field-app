@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
@@ -44,16 +39,11 @@ export default function LoginScreen() {
   const [resendCountdown, setResendCountdown] = useState(0);
 
   // Get auth service from container
-  const authService = ServiceContainer.getInstance().get(
-    'IAuthService'
-  ) as IAuthService;
+  const authService = ServiceContainer.getInstance().get('IAuthService') as IAuthService;
 
   const formValidator = new FormValidator();
   const validationRules: Record<string, any[]> = {
-    email: [
-      CommonValidators.required('Email or phone is required'),
-      CommonValidators.emailOrPhone,
-    ],
+    email: [CommonValidators.required('Email or phone is required'), CommonValidators.emailOrPhone],
   };
 
   // Countdown timer effect
@@ -61,20 +51,20 @@ export default function LoginScreen() {
     let interval: ReturnType<typeof setInterval>;
     if (resendCountdown > 0) {
       interval = setInterval(() => {
-        setResendCountdown(prev => prev - 1);
+        setResendCountdown((prev) => prev - 1);
       }, 1000);
     }
     return () => clearInterval(interval);
   }, [resendCountdown]);
 
   const handleChange = (field: string, value: string) => {
-    setValues(prev => ({ ...prev, [field]: value }));
+    setValues((prev) => ({ ...prev, [field]: value }));
 
     if (touched[field]) {
       const context = new ValidationContext();
       validationRules[field]?.forEach((rule: any) => context.addRule(rule));
       const result = context.validate(value);
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
         [field]: result.isValid ? '' : result.error || '',
       }));
@@ -82,12 +72,12 @@ export default function LoginScreen() {
   };
 
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
 
     const context = new ValidationContext();
     validationRules[field]?.forEach((rule: any) => context.addRule(rule));
     const result = context.validate(values[field as keyof typeof values]);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [field]: result.isValid ? '' : result.error || '',
     }));
@@ -96,19 +86,19 @@ export default function LoginScreen() {
   const validateEmail = (): boolean => {
     const newErrors = formValidator.validateForm(
       { email: values.email },
-      { email: validationRules.email || [] }
+      { email: validationRules.email || [] },
     );
-    setErrors(prev => ({ ...prev, email: newErrors.email || '' }));
-    setTouched(prev => ({ ...prev, email: true }));
+    setErrors((prev) => ({ ...prev, email: newErrors.email || '' }));
+    setTouched((prev) => ({ ...prev, email: true }));
     return !newErrors.email;
   };
 
   const validateOTP = (): boolean => {
-    if (values.otp.length !== 4) {
-      setErrors(prev => ({ ...prev, otp: 'Please enter the 4-digit code' }));
+    if (values.otp.length !== 6) {
+      setErrors((prev) => ({ ...prev, otp: 'Please enter the 6-digit code' }));
       return false;
     }
-    setErrors(prev => ({ ...prev, otp: '' }));
+    setErrors((prev) => ({ ...prev, otp: '' }));
     return true;
   };
 
@@ -129,18 +119,17 @@ export default function LoginScreen() {
       toast.success(response.message);
     } catch (error: any) {
       hapticFeedback.error();
-      toast.error(
-        error.message || 'Failed to send verification code. Please try again.'
-      );
+      toast.error(error.message || 'Failed to send verification code. Please try again.');
     } finally {
       setOtpLoading(false);
     }
   };
 
   const verifyOTP = async () => {
+    // Validate OTP length first
     if (!validateOTP()) {
       hapticFeedback.error();
-      toast.error('Please enter the 4-digit verification code');
+      toast.error('Please enter the 6-digit verification code');
       return;
     }
 
@@ -149,9 +138,7 @@ export default function LoginScreen() {
       const response = await authService.verifyOTP(values.email, values.otp);
 
       // Store token and user data
-      const authStorage = ServiceContainer.getInstance().get(
-        'IAuthStorage'
-      ) as any;
+      const authStorage = ServiceContainer.getInstance().get('IAuthStorage') as any;
       await authStorage.setToken(response.access_token);
       await authStorage.setUser(response.user);
 
@@ -162,7 +149,7 @@ export default function LoginScreen() {
           role: response.user.role as any,
           userId: response.user.id,
           name: response.user.name,
-        }) as any
+        }) as any,
       );
 
       if (action.type.endsWith('fulfilled')) {
@@ -172,9 +159,14 @@ export default function LoginScreen() {
       }
     } catch (error: any) {
       hapticFeedback.error();
-      toast.error(
-        error.message || 'Invalid verification code. Please try again.'
-      );
+      // Extract error message from API error (already mapped by ErrorInterceptor)
+      // ErrorInterceptor converts errors to ApiError with message property
+      const errorMessage =
+        error?.message ||
+        error?.response?.data?.message ||
+        error?.response?.data?.detail?.message ||
+        'Invalid verification code. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setOtpLoading(false);
     }
@@ -188,7 +180,7 @@ export default function LoginScreen() {
 
   // Determine if email/phone is valid for enabling Send OTP button
   const isEmailValid = values.email.length > 0 && !errors.email;
-  const isOTPValid = values.otp.length === 4;
+  const isOTPValid = values.otp.length === 6;
 
   // Get adaptive button text color for light/dark mode
   const getButtonTextColor = ():
@@ -205,10 +197,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: theme.background }}
-      edges={['top']}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -267,19 +256,10 @@ export default function LoginScreen() {
               align="center"
               style={{ marginBottom: Spacing.md }}
             >
-              <AyskaTitleComponent
-                level={3}
-                weight="bold"
-                color="text"
-                align="center"
-              >
+              <AyskaTitleComponent level={3} weight="bold" color="text" align="center">
                 Welcome Back
               </AyskaTitleComponent>
-              <AyskaTextComponent
-                variant="body"
-                color="textSecondary"
-                align="center"
-              >
+              <AyskaTextComponent variant="body" color="textSecondary" align="center">
                 Sign in to continue
               </AyskaTextComponent>
             </AyskaStackComponent>
@@ -287,16 +267,10 @@ export default function LoginScreen() {
             <AyskaFormFieldComponent
               label="Email or Phone"
               value={values.email}
-              onChange={text => handleChange('email', text)}
+              onChange={(text) => handleChange('email', text)}
               onBlur={() => handleBlur('email')}
               placeholder="Enter email or phone number"
-              leadingIcon={
-                <Ionicons
-                  name="mail-outline"
-                  size={20}
-                  color={theme.textSecondary}
-                />
-              }
+              leadingIcon={<Ionicons name="mail-outline" size={20} color={theme.textSecondary} />}
               keyboardType="email-address"
               autoCapitalize="none"
               error={touched.email ? errors.email || '' : ''}
@@ -332,26 +306,12 @@ export default function LoginScreen() {
                 align="center"
                 style={{ marginTop: Spacing.sm, width: '100%' }}
               >
-                <AyskaStackComponent
-                  direction="vertical"
-                  spacing="xs"
-                  align="center"
-                >
-                  <AyskaTextComponent
-                    variant="body"
-                    color="text"
-                    align="center"
-                    weight="medium"
-                  >
+                <AyskaStackComponent direction="vertical" spacing="xs" align="center">
+                  <AyskaTextComponent variant="body" color="text" align="center" weight="medium">
                     Verification Code
                   </AyskaTextComponent>
-                  <AyskaTextComponent
-                    variant="body"
-                    color="text"
-                    align="center"
-                    weight="medium"
-                  >
-                    Enter the 4-digit code sent to
+                  <AyskaTextComponent variant="body" color="text" align="center" weight="medium">
+                    Enter the 6-digit code sent to
                   </AyskaTextComponent>
                   <AyskaTextComponent
                     variant="bodySmall"
@@ -364,12 +324,12 @@ export default function LoginScreen() {
                 </AyskaStackComponent>
 
                 <AyskaOTPInputComponent
+                  length={6}
                   value={values.otp}
-                  onChange={value => handleChange('otp', value)}
-                  onComplete={verifyOTP}
+                  onChange={(value) => handleChange('otp', value)}
                   error={touched.otp ? errors.otp || '' : ''}
                   accessibilityLabel="Enter verification code"
-                  accessibilityHint="Enter the 4-digit verification code sent to your email or phone"
+                  accessibilityHint="Enter the 6-digit verification code sent to your email or phone"
                 />
 
                 <AyskaActionButtonComponent
@@ -399,8 +359,7 @@ export default function LoginScreen() {
                     paddingVertical: Spacing.sm,
                     paddingHorizontal: Spacing.md,
                     borderRadius: 6,
-                    backgroundColor:
-                      resendCountdown > 0 ? theme.background : 'transparent',
+                    backgroundColor: resendCountdown > 0 ? theme.background : 'transparent',
                     borderWidth: resendCountdown > 0 ? 0 : 1,
                     borderColor: theme.border,
                   }}

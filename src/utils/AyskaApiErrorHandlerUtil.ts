@@ -187,13 +187,100 @@ export class ApiErrorHandler {
    * Prioritizes backend error messages over hardcoded ones
    */
   static mapError(error: any): ApiError {
-    // Network errors
+    // Guard: Check if error is already an ApiError (prevent re-mapping)
+    if (
+      error &&
+      typeof error === 'object' &&
+      typeof error.code === 'number' &&
+      typeof error.message === 'string' &&
+      typeof error.title === 'string' &&
+      !error.response &&
+      !error.config
+    ) {
+      // Already mapped - return as-is
+      return error as ApiError;
+    }
+
+    // Network errors - enhanced detection for corrupted error objects
     if (!error.response) {
-      // Server down detection
+      // Helper function to detect if error object is corrupted (has non-standard keys)
+      const isCorruptedError = (err: any): boolean => {
+        if (!err || typeof err !== 'object') return false;
+        const keys = Object.keys(err);
+        // Corrupted objects often have keys like _h, _i, _j, _k (minified/internal properties)
+        const hasCorruptedKeys = keys.some((key) => key.startsWith('_') && key.length <= 2);
+        // Also check if it has no standard error properties
+        const hasNoStandardProps = !err.code && !err.message && !err.response && !err.config;
+        return hasCorruptedKeys || (hasNoStandardProps && keys.length > 0);
+      };
+
+      // Helper function to extract error information from corrupted objects
+      const getErrorInfo = (err: any): { code?: string; message?: string } => {
+        const info: { code?: string; message?: string } = {};
+
+        // Direct property access
+        if (err.code) info.code = String(err.code);
+        if (err.message) info.message = String(err.message);
+
+        // Check stringified error for network indicators
+        try {
+          const errorString = JSON.stringify(err).toLowerCase();
+          if (errorString.includes('err_network') || errorString.includes('network error')) {
+            info.code = info.code || 'ERR_NETWORK';
+            info.message = info.message || 'Network Error';
+          }
+          if (errorString.includes('econnrefused') || errorString.includes('server is down')) {
+            info.code = info.code || 'ECONNREFUSED';
+            info.message = info.message || 'Server is down';
+          }
+        } catch {
+          // Ignore JSON stringify errors
+        }
+
+        // Check object keys for network error patterns (handle corrupted objects with _h, _i, etc.)
+        const keys = Object.keys(err);
+        for (const key of keys) {
+          const value = err[key];
+          if (typeof value === 'string') {
+            const lowerValue = value.toLowerCase();
+            if (lowerValue.includes('err_network') || lowerValue.includes('network error')) {
+              info.code = info.code || 'ERR_NETWORK';
+              info.message = info.message || 'Network Error';
+            }
+            if (lowerValue.includes('econnrefused') || lowerValue.includes('server is down')) {
+              info.code = info.code || 'ECONNREFUSED';
+              info.message = info.message || 'Server is down';
+            }
+          }
+        }
+
+        return info;
+      };
+
+      const errorInfo = getErrorInfo(error);
+      const errorCode = errorInfo.code || error.code;
+      const errorMessage = errorInfo.message || error.message || '';
+
+      // CRITICAL FIX: If error object is corrupted and has no response, treat as network error
+      // This handles cases where error object loses its properties during retry process
+      if (isCorruptedError(error) && !errorCode && !errorMessage) {
+        // Corrupted error with no response = network/server error
+        // Default to network error (most common case)
+        const networkError = ERROR_MESSAGES.NETWORK_ERROR;
+        return {
+          code: 0,
+          message: networkError?.message || 'Network error',
+          title: networkError?.title || 'Connection Error',
+        };
+      }
+
+      // Server down detection - enhanced
       if (
-        error.code === 'ECONNREFUSED' ||
-        error.message?.includes('ECONNREFUSED') ||
-        error.message?.includes('Server is down')
+        errorCode === 'ECONNREFUSED' ||
+        errorMessage?.includes('ECONNREFUSED') ||
+        errorMessage?.includes('Server is down') ||
+        errorMessage?.includes('Server Unavailable') ||
+        (typeof errorCode === 'string' && errorCode.toLowerCase().includes('econnrefused'))
       ) {
         const serverDownError = ERROR_MESSAGES.SERVER_DOWN;
         return {
@@ -203,11 +290,13 @@ export class ApiErrorHandler {
         };
       }
 
-      // Network error detection
+      // Network error detection - enhanced
       if (
-        error.code === 'NETWORK_ERROR' ||
-        error.message?.includes('Network Error') ||
-        error.message?.includes('ERR_NETWORK')
+        errorCode === 'NETWORK_ERROR' ||
+        errorCode === 'ERR_NETWORK' ||
+        errorMessage?.includes('Network Error') ||
+        errorMessage?.includes('ERR_NETWORK') ||
+        (typeof errorCode === 'string' && errorCode.toLowerCase().includes('network'))
       ) {
         const networkError = ERROR_MESSAGES.NETWORK_ERROR;
         return {
@@ -217,8 +306,13 @@ export class ApiErrorHandler {
         };
       }
 
-      // Timeout detection
-      if (error.code === 'TIMEOUT' || error.message?.includes('timeout')) {
+      // Timeout detection - enhanced
+      if (
+        errorCode === 'TIMEOUT' ||
+        error.code === 'TIMEOUT' ||
+        errorMessage?.includes('timeout') ||
+        error.message?.includes('timeout')
+      ) {
         const timeoutError = ERROR_MESSAGES.TIMEOUT_ERROR;
         return {
           code: 0,
@@ -228,7 +322,7 @@ export class ApiErrorHandler {
       }
 
       // Weak network detection (consecutive timeouts)
-      if (error.code === 'WEAK_NETWORK') {
+      if (errorCode === 'WEAK_NETWORK' || error.code === 'WEAK_NETWORK') {
         const weakNetworkError = ERROR_MESSAGES.WEAK_NETWORK;
         return {
           code: 0,
@@ -263,7 +357,92 @@ export class ApiErrorHandler {
     }
 
     // PRIORITIZE BACKEND ERROR MESSAGES
-    // Check for backend error field first (error.response.data.error)
+    // Priority order:
+    // 1. data.message (highest priority - from API)
+    // 2. data.detail (for auth errors like 401/403)
+    // 3. mapBackendErrorCode(data.error) if message not available
+    // 4. Hardcoded fallback messages
+
+    // Use backend message field as PRIMARY message (highest priority)
+    if (data.message) {
+      // If we have both error code and message, use message but get title from error code if helpful
+      let title = this.getTitleFromMessage(data.message, status);
+
+      // If error code exists, try to get a better title from it
+      if (data.error) {
+        const backendError = this.mapBackendErrorCode(data.error, data.message);
+        if (backendError) {
+          // Use error code mapping for title, but keep API message
+          title = backendError.title;
+        }
+      }
+
+      return {
+        code: status,
+        title,
+        message: data.message, // Always use API's message field
+        ...(data.errors && { details: JSON.stringify(data.errors) }),
+      };
+    }
+
+    // Handle data.detail field (used in 401/403 responses)
+    if (data.detail) {
+      // Handle array format (FastAPI validation errors)
+      if (Array.isArray(data.detail)) {
+        const fieldErrors = data.detail
+          .map((err: any) => {
+            const field = err.loc?.[err.loc.length - 1] || 'field';
+            const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+            return `${fieldName}: ${err.msg}`;
+          })
+          .join('\n');
+
+        return {
+          code: status,
+          title: 'Validation Error',
+          message: fieldErrors || 'Please check your input',
+          ...(data.errors && { details: JSON.stringify(data.errors) }),
+        };
+      }
+
+      // Handle object format (nested error objects with message/error properties)
+      if (typeof data.detail === 'object' && data.detail !== null && !Array.isArray(data.detail)) {
+        // Extract message from nested object
+        const detailMessage = (data.detail as any).message;
+        const detailError = (data.detail as any).error;
+
+        if (detailMessage) {
+          // Use message from detail object
+          let title = this.getTitleFromMessage(detailMessage, status);
+
+          // If error code exists in detail, try to get a better title from it
+          if (detailError) {
+            const backendError = this.mapBackendErrorCode(detailError, detailMessage);
+            if (backendError) {
+              title = backendError.title;
+            }
+          }
+
+          return {
+            code: status,
+            title,
+            message: detailMessage,
+            ...(data.errors && { details: JSON.stringify(data.errors) }),
+          };
+        }
+        // If no message in object, fall through to string conversion
+      }
+
+      // Handle string format (auth errors)
+      return {
+        code: status,
+        title: this.getTitleFromMessage(String(data.detail), status),
+        message: String(data.detail),
+        ...(data.errors && { details: JSON.stringify(data.errors) }),
+      };
+    }
+
+    // Check for backend error field (only if message/detail not available)
     if (data.error) {
       const backendError = this.mapBackendErrorCode(data.error, data.message);
       if (backendError) {
@@ -276,16 +455,6 @@ export class ApiErrorHandler {
       }
     }
 
-    // Use backend message field as primary message
-    if (data.message) {
-      return {
-        code: status,
-        title: this.getTitleFromMessage(data.message, status),
-        message: data.message,
-        ...(data.errors && { details: JSON.stringify(data.errors) }),
-      };
-    }
-
     // Fall back to hardcoded messages only if backend doesn't provide them
     const baseError = ERROR_MESSAGES[status] || ERROR_MESSAGES.UNKNOWN_ERROR;
     const specificMessage = this.getSpecificErrorMessage(data, status);
@@ -293,7 +462,7 @@ export class ApiErrorHandler {
     return {
       code: status,
       title: specificMessage?.title || baseError?.title || 'Error',
-      message: specificMessage?.message || data.detail || baseError?.message || 'Unknown error',
+      message: specificMessage?.message || baseError?.message || 'Unknown error',
       ...(data.errors && { details: JSON.stringify(data.errors) }),
     };
   }
@@ -351,6 +520,10 @@ export class ApiErrorHandler {
         title: 'Doctor Already Exists',
         message: 'A doctor with this email or phone already exists.',
       },
+      duplicate_doctor_phone: {
+        title: 'Doctor Phone Exists',
+        message: 'Doctor with this phone already exists.',
+      },
       doctor_not_found: {
         title: 'Doctor Not Found',
         message: 'Doctor not found.',
@@ -361,9 +534,21 @@ export class ApiErrorHandler {
         title: 'Assignment Already Exists',
         message: 'Employee already has an active assignment with this doctor.',
       },
+      assignment_exists: {
+        title: 'Assignment Exists',
+        message: 'Active assignment already exists for this employee-doctor pair.',
+      },
       assignment_not_found: {
         title: 'Assignment Not Found',
         message: 'Assignment not found.',
+      },
+      invalid_progress: {
+        title: 'Invalid Progress',
+        message: 'Progress cannot exceed target.',
+      },
+      invalid_status_change: {
+        title: 'Invalid Status Change',
+        message: 'Cannot reactivate completed assignment.',
       },
 
       // Check-in errors

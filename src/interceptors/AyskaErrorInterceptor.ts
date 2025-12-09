@@ -15,16 +15,50 @@ export class ErrorInterceptor implements IHttpInterceptor {
     this.authStorage = null; // Will be initialized when needed
   }
 
-  onError(error: AxiosError): any {
+  onError(error: AxiosError | ApiError): any {
+    // Guard: Check if error is already an ApiError (prevent re-mapping)
+    if (
+      error &&
+      typeof error === 'object' &&
+      typeof (error as ApiError).code === 'number' &&
+      typeof (error as ApiError).message === 'string' &&
+      typeof (error as ApiError).title === 'string' &&
+      !(error as AxiosError).response &&
+      !(error as AxiosError).config
+    ) {
+      // Already mapped - just show toast and return
+      const apiError = error as ApiError;
+
+      // Handle authentication errors
+      if (apiError.code === 401) {
+        const message = apiError.message?.toLowerCase() || '';
+        const isRoleError =
+          message.includes('access required') ||
+          message.includes('admin access') ||
+          message.includes('employee access');
+
+        if (!isRoleError) {
+          this.handleUnauthorized();
+        }
+      }
+
+      // Show user-friendly error message
+      if (this.onErrorCallback && apiError.code !== 401) {
+        this.onErrorCallback(apiError);
+      }
+
+      return Promise.reject(apiError);
+    }
+
     // Debug: Log the raw error to see what we're receiving
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.log('🔍 RAW ERROR RECEIVED:', {
-        hasConfig: !!error.config,
-        hasResponse: !!error.response,
+        hasConfig: !!(error as AxiosError).config,
+        hasResponse: !!(error as AxiosError).response,
         errorType: typeof error,
         errorKeys: Object.keys(error),
-        isAxiosError: error.isAxiosError,
+        isAxiosError: (error as AxiosError).isAxiosError,
         rawError: error,
       });
     }
@@ -34,7 +68,7 @@ export class ErrorInterceptor implements IHttpInterceptor {
     // Handle authentication errors - distinguish auth failure from role denial
     if (mappedError.code === 401) {
       const message = mappedError.message?.toLowerCase() || '';
-      const detail = (error.response?.data as any)?.detail?.toLowerCase() || '';
+      const detail = ((error as AxiosError).response?.data as any)?.detail?.toLowerCase() || '';
 
       // Check if this is a role-based access denial (don't logout)
       const isRoleError =
@@ -60,22 +94,25 @@ export class ErrorInterceptor implements IHttpInterceptor {
 
     // Enhanced logging for debugging (solo developer)
     if (__DEV__) {
-      const method = error.config?.method?.toUpperCase() || 'UNKNOWN';
-      const url = error.config?.url || 'UNKNOWN';
-      const baseURL = error.config?.baseURL || '';
+      const axiosError = error as AxiosError;
+      const method = axiosError.config?.method?.toUpperCase() || 'UNKNOWN';
+      const url = axiosError.config?.url || 'UNKNOWN';
+      const baseURL = axiosError.config?.baseURL || '';
       const fullURL = baseURL && url !== 'UNKNOWN' ? `${baseURL}${url}` : 'UNKNOWN';
 
       // eslint-disable-next-line no-console
       console.group(`🔴 API ERROR: ${method} ${url}`);
       // eslint-disable-next-line no-console
-      console.log('📊 Status Code:', error.response?.status || 'No Response');
+      console.log('📊 Status Code:', axiosError.response?.status || 'No Response');
       // eslint-disable-next-line no-console
       console.log(
         '📦 Response Data:',
-        error.response?.data ? JSON.stringify(error.response.data, null, 2) : 'No response data',
+        axiosError.response?.data
+          ? JSON.stringify(axiosError.response.data, null, 2)
+          : 'No response data',
       );
       // eslint-disable-next-line no-console
-      console.log('📋 Request Data:', error.config?.data || 'No request data');
+      console.log('📋 Request Data:', axiosError.config?.data || 'No request data');
       // eslint-disable-next-line no-console
       console.log('🔗 Full URL:', fullURL);
       // eslint-disable-next-line no-console
@@ -83,7 +120,7 @@ export class ErrorInterceptor implements IHttpInterceptor {
       // eslint-disable-next-line no-console
       console.log('💬 User Message:', mappedError.message);
       // eslint-disable-next-line no-console
-      console.log('🔧 Error Type:', error.code || 'No error code');
+      console.log('🔧 Error Type:', axiosError.code || 'No error code');
       // eslint-disable-next-line no-console
       console.groupEnd();
     }

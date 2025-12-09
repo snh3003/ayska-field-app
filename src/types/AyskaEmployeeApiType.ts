@@ -28,6 +28,7 @@ export interface EmployeeResponse {
   phone?: string;
   age: number;
   area_of_operation: string;
+  role: 'admin' | 'employee';
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -41,18 +42,16 @@ export interface EmployeeListResponse {
   employees: EmployeeResponse[];
   total: number;
   page: number;
-  page_size: number;
-  total_pages: number;
+  size: number;
   has_next: boolean;
-  has_previous: boolean;
 }
 
 // Employee list parameters
 export interface EmployeeListParams {
   page?: number;
-  page_size?: number;
+  size?: number;
   search?: string;
-  is_active?: boolean;
+  include_inactive?: boolean;
   area_of_operation?: string;
   sort_by?: 'name' | 'created_at' | 'last_login';
   sort_order?: 'asc' | 'desc';

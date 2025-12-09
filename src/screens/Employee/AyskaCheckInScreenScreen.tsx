@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text as TamaguiText, View as TamaguiView } from '@tamagui/core';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { submitCheckIn } from '../../store/slices/AyskaCheckInSlice';
+import { performCheckin } from '../../store/slices/AyskaCheckInSlice';
 import { fetchAllDoctors } from '../../store/slices/AyskaOnboardingSlice';
 import { CheckInButton } from '../../components/business/AyskaCheckInButtonComponent';
 import { useAuth } from '../../../hooks/useAuth';
 import { Location } from '../../types/AyskaModelsType';
+import { useToast } from '../../../contexts/ToastContext';
+import { hapticFeedback } from '../../../utils/haptics';
 
 export default function CheckInScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
   const { doctors } = useSelector((state: RootState) => state.onboarding);
-  const { loading } = useSelector((state: RootState) => state.checkIn);
+  const { loading } = useSelector((state: RootState) => state.checkin);
   const { doctorId } = useLocalSearchParams<{ doctorId: string }>();
+  const toast = useToast();
 
   const [doctor, setDoctor] = useState<any>(null);
 
@@ -27,31 +30,36 @@ export default function CheckInScreen() {
 
   useEffect(() => {
     if (doctorId && doctors.length > 0) {
-      const foundDoctor = doctors.find(doc => doc.id === doctorId);
+      const foundDoctor = doctors.find((doc) => doc.id === doctorId);
       setDoctor(foundDoctor);
     }
   }, [doctorId, doctors]);
 
   const handleCheckIn = async (location: Location, notes?: string) => {
     if (!user?.id || !doctor) {
-      Alert.alert('Error', 'Missing user or doctor information');
+      toast.error('Missing user or doctor information');
+      hapticFeedback.error();
       return;
     }
 
     try {
       await dispatch(
-        submitCheckIn({
+        performCheckin({
           employeeId: user.id,
           doctorId: doctor.id,
           location: location,
           ...(notes && { notes }),
-        } as any)
+        } as any),
       ).unwrap();
 
-      Alert.alert('Success', 'Check-in completed successfully!');
+      toast.success('Check-in completed successfully!');
+      hapticFeedback.success();
       router.back();
-    } catch {
-      Alert.alert('Error', 'Failed to check in. Please try again.');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.payload || 'Failed to check in. Please try again.';
+      toast.error(errorMessage);
+      hapticFeedback.error();
     }
   };
 
@@ -66,11 +74,7 @@ export default function CheckInScreen() {
           borderBottomWidth={1}
           borderBottomColor="#e0e0e0"
         >
-          <TamaguiView
-            onPress={() => router.back()}
-            padding="$sm"
-            marginRight="$sm"
-          >
+          <TamaguiView onPress={() => router.back()} padding="$sm" marginRight="$sm">
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TamaguiView>
           <TamaguiText fontSize="$6" fontWeight="bold" color="$text">
@@ -78,12 +82,7 @@ export default function CheckInScreen() {
           </TamaguiText>
         </TamaguiView>
 
-        <TamaguiView
-          flex={1}
-          justifyContent="center"
-          alignItems="center"
-          padding="$md"
-        >
+        <TamaguiView flex={1} justifyContent="center" alignItems="center" padding="$md">
           <Ionicons name="medical-outline" size={48} color="#ccc" />
           <TamaguiText fontSize="$4" color="$textSecondary" marginTop="$sm">
             Doctor not found
@@ -103,11 +102,7 @@ export default function CheckInScreen() {
         borderBottomWidth={1}
         borderBottomColor="#e0e0e0"
       >
-        <TamaguiView
-          onPress={() => router.back()}
-          padding="$sm"
-          marginRight="$sm"
-        >
+        <TamaguiView onPress={() => router.back()} padding="$sm" marginRight="$sm">
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TamaguiView>
         <TamaguiText fontSize="$6" fontWeight="bold" color="$text">
@@ -118,50 +113,23 @@ export default function CheckInScreen() {
       <ScrollView style={{ flex: 1 }}>
         <TamaguiView padding="$md">
           {/* Doctor Info */}
-          <TamaguiView
-            backgroundColor="white"
-            borderRadius="$md"
-            padding="$md"
-            marginBottom="$md"
-          >
-            <TamaguiView
-              flexDirection="row"
-              alignItems="center"
-              marginBottom="$md"
-            >
+          <TamaguiView backgroundColor="white" borderRadius="$md" padding="$md" marginBottom="$md">
+            <TamaguiView flexDirection="row" alignItems="center" marginBottom="$md">
               <Ionicons name="medical" size={24} color="#4CAF50" />
-              <TamaguiText
-                fontSize="$5"
-                fontWeight="bold"
-                color="$text"
-                marginLeft="$sm"
-              >
+              <TamaguiText fontSize="$5" fontWeight="bold" color="$text" marginLeft="$sm">
                 Doctor Information
               </TamaguiText>
             </TamaguiView>
 
             <TamaguiView marginBottom="$sm">
-              <TamaguiText
-                fontSize="$4"
-                fontWeight="bold"
-                color="$text"
-                marginBottom="$xs"
-              >
+              <TamaguiText fontSize="$4" fontWeight="bold" color="$text" marginBottom="$xs">
                 {doctor.name}
               </TamaguiText>
-              <TamaguiText
-                fontSize="$3"
-                color="$textSecondary"
-                marginBottom="$xs"
-              >
+              <TamaguiText fontSize="$3" color="$textSecondary" marginBottom="$xs">
                 Specialization: {doctor.specialization}
               </TamaguiText>
               {doctor.phone && (
-                <TamaguiText
-                  fontSize="$3"
-                  color="$textSecondary"
-                  marginBottom="$xs"
-                >
+                <TamaguiText fontSize="$3" color="$textSecondary" marginBottom="$xs">
                   Phone: {doctor.phone}
                 </TamaguiText>
               )}
@@ -174,17 +142,9 @@ export default function CheckInScreen() {
               borderWidth={1}
               borderColor="$border"
             >
-              <TamaguiView
-                flexDirection="row"
-                alignItems="center"
-                marginBottom="$xs"
-              >
+              <TamaguiView flexDirection="row" alignItems="center" marginBottom="$xs">
                 <Ionicons name="location" size={16} color="#666" />
-                <TamaguiText
-                  fontSize="$3"
-                  color="$textSecondary"
-                  marginLeft="$sm"
-                >
+                <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$sm">
                   Location
                 </TamaguiText>
               </TamaguiView>
@@ -198,47 +158,24 @@ export default function CheckInScreen() {
           </TamaguiView>
 
           {/* Check-in Instructions */}
-          <TamaguiView
-            backgroundColor="white"
-            borderRadius="$md"
-            padding="$md"
-            marginBottom="$md"
-          >
-            <TamaguiView
-              flexDirection="row"
-              alignItems="center"
-              marginBottom="$md"
-            >
+          <TamaguiView backgroundColor="white" borderRadius="$md" padding="$md" marginBottom="$md">
+            <TamaguiView flexDirection="row" alignItems="center" marginBottom="$md">
               <Ionicons name="information-circle" size={24} color="#2196F3" />
-              <TamaguiText
-                fontSize="$5"
-                fontWeight="bold"
-                color="$text"
-                marginLeft="$sm"
-              >
+              <TamaguiText fontSize="$5" fontWeight="bold" color="$text" marginLeft="$sm">
                 Check-in Instructions
               </TamaguiText>
             </TamaguiView>
 
             <TamaguiView marginBottom="$sm">
-              <TamaguiView
-                flexDirection="row"
-                alignItems="flex-start"
-                marginBottom="$xs"
-              >
+              <TamaguiView flexDirection="row" alignItems="flex-start" marginBottom="$xs">
                 <TamaguiText fontSize="$3" color="$text" marginRight="$sm">
                   1.
                 </TamaguiText>
                 <TamaguiText fontSize="$3" color="$textSecondary" flex={1}>
-                  Make sure you are within 50 meters of the doctor&apos;s
-                  location
+                  Make sure you are within 50 meters of the doctor&apos;s location
                 </TamaguiText>
               </TamaguiView>
-              <TamaguiView
-                flexDirection="row"
-                alignItems="flex-start"
-                marginBottom="$xs"
-              >
+              <TamaguiView flexDirection="row" alignItems="flex-start" marginBottom="$xs">
                 <TamaguiText fontSize="$3" color="$text" marginRight="$sm">
                   2.
                 </TamaguiText>
@@ -246,11 +183,7 @@ export default function CheckInScreen() {
                   Tap &quot;Get Location&quot; to get your current position
                 </TamaguiText>
               </TamaguiView>
-              <TamaguiView
-                flexDirection="row"
-                alignItems="flex-start"
-                marginBottom="$xs"
-              >
+              <TamaguiView flexDirection="row" alignItems="flex-start" marginBottom="$xs">
                 <TamaguiText fontSize="$3" color="$text" marginRight="$sm">
                   3.
                 </TamaguiText>

@@ -1,197 +1,195 @@
-// Employee Redux Slice - Real API integration for employee management
-// Implements employee CRUD operations with backend API calls
-
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { RootState } from '..';
 import { ServiceContainer } from '../../di/ServiceContainer';
-import { Employee } from '../../types/AyskaModelsType';
-import { PaginationParams } from '../../types/AyskaApiResponseType';
+import {
+  EmployeeCreatePayload,
+  EmployeeListParams,
+  EmployeeResponse,
+  EmployeeUpdatePayload,
+} from '../../types/AyskaEmployeeApiType';
+import { EmployeeService } from '../../services/AyskaEmployeeService';
 
 interface EmployeeState {
-  employees: Employee[];
-  currentEmployee: Employee | null;
+  employees: EmployeeResponse[];
+  selectedEmployee: EmployeeResponse | null;
   loading: boolean;
   error: string | null;
   pagination: {
     total: number;
     page: number;
-    pageSize: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
+    size: number;
+    has_next: boolean;
   };
 }
 
 const initialState: EmployeeState = {
   employees: [],
-  currentEmployee: null,
+  selectedEmployee: null,
   loading: false,
   error: null,
   pagination: {
     total: 0,
     page: 1,
-    pageSize: 20,
-    hasNext: false,
-    hasPrevious: false,
+    size: 10,
+    has_next: false,
   },
 };
 
-// Get employees with pagination
-export const getEmployees = createAsyncThunk(
-  'employees/getEmployees',
-  async (params: PaginationParams = {}, { rejectWithValue }) => {
+// Fetch employees with pagination
+export const fetchEmployees = createAsyncThunk(
+  'employee/fetchEmployees',
+  async (params: EmployeeListParams | undefined, { rejectWithValue }) => {
     try {
       const employeeService = ServiceContainer.getInstance().get(
-        'IEmployeeService'
-      ) as any;
+        'IEmployeeService',
+      ) as EmployeeService;
       const response = await employeeService.getEmployees(params);
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch employees');
+      const message = error.message || 'Failed to fetch employees';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
-// Get employee by ID
-export const getEmployeeById = createAsyncThunk(
-  'employees/getEmployeeById',
+// Fetch employee by ID
+export const fetchEmployeeById = createAsyncThunk(
+  'employee/fetchEmployeeById',
   async (id: string, { rejectWithValue }) => {
     try {
       const employeeService = ServiceContainer.getInstance().get(
-        'IEmployeeService'
-      ) as any;
-      const employee = await employeeService.getEmployeeById(id);
-      return employee;
+        'IEmployeeService',
+      ) as EmployeeService;
+      const response = await employeeService.getEmployeeById(id);
+      return response;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch employee');
+      const message = error.message || 'Failed to fetch employee';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
-// Create new employee
+// Create employee
 export const createEmployee = createAsyncThunk(
-  'employees/createEmployee',
-  async (employeeData: any, { rejectWithValue }) => {
+  'employee/createEmployee',
+  async (data: EmployeeCreatePayload, { rejectWithValue }) => {
     try {
       const employeeService = ServiceContainer.getInstance().get(
-        'IEmployeeService'
-      ) as any;
-      const employee = await employeeService.createEmployee(employeeData);
-      return employee;
+        'IEmployeeService',
+      ) as EmployeeService;
+      const response = await employeeService.createEmployee(data);
+      return response;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to create employee');
+      const message = error.message || 'Failed to create employee';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
 // Update employee
 export const updateEmployee = createAsyncThunk(
-  'employees/updateEmployee',
-  async (
-    { id, updates }: { id: string; updates: any },
-    { rejectWithValue }
-  ) => {
+  'employee/updateEmployee',
+  async ({ id, data }: { id: string; data: EmployeeUpdatePayload }, { rejectWithValue }) => {
     try {
       const employeeService = ServiceContainer.getInstance().get(
-        'IEmployeeService'
-      ) as any;
-      const employee = await employeeService.updateEmployee(id, updates);
-      return employee;
+        'IEmployeeService',
+      ) as EmployeeService;
+      const response = await employeeService.updateEmployee(id, data);
+      return response;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to update employee');
+      const message = error.message || 'Failed to update employee';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
 // Delete employee
 export const deleteEmployee = createAsyncThunk(
-  'employees/deleteEmployee',
+  'employee/deleteEmployee',
   async (id: string, { rejectWithValue }) => {
     try {
       const employeeService = ServiceContainer.getInstance().get(
-        'IEmployeeService'
-      ) as any;
+        'IEmployeeService',
+      ) as EmployeeService;
       await employeeService.deleteEmployee(id);
       return id;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to delete employee');
+      const message = error.message || 'Failed to delete employee';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
-// Get employee analytics
-export const getEmployeeAnalytics = createAsyncThunk(
-  'employees/getEmployeeAnalytics',
+// Reactivate employee
+export const reactivateEmployee = createAsyncThunk(
+  'employee/reactivateEmployee',
   async (id: string, { rejectWithValue }) => {
     try {
       const employeeService = ServiceContainer.getInstance().get(
-        'IEmployeeService'
-      ) as any;
-      const analytics = await employeeService.getEmployeeAnalytics(id);
-      return { id, analytics };
+        'IEmployeeService',
+      ) as EmployeeService;
+      const response = await employeeService.reactivateEmployee(id);
+      return response;
     } catch (error: any) {
-      return rejectWithValue(
-        error.message || 'Failed to fetch employee analytics'
-      );
+      const message = error.message || 'Failed to reactivate employee';
+      return rejectWithValue(message);
     }
-  }
+  },
 );
 
 const employeeSlice = createSlice({
-  name: 'employees',
+  name: 'employee',
   initialState,
   reducers: {
-    clearError(state) {
+    clearError: (state) => {
       state.error = null;
     },
-    clearCurrentEmployee(state) {
-      state.currentEmployee = null;
-    },
-    setCurrentEmployee(state, action: PayloadAction<Employee>) {
-      state.currentEmployee = action.payload;
+    clearSelectedEmployee: (state) => {
+      state.selectedEmployee = null;
     },
   },
-  extraReducers: builder => {
-    // Get Employees
+  extraReducers: (builder) => {
+    // Fetch employees
     builder
-      .addCase(getEmployees.pending, state => {
+      .addCase(fetchEmployees.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getEmployees.fulfilled, (state, action) => {
+      .addCase(fetchEmployees.fulfilled, (state, action) => {
         state.loading = false;
-        state.employees = action.payload.data;
+        state.employees = action.payload.employees;
         state.pagination = {
           total: action.payload.total,
           page: action.payload.page,
-          pageSize: action.payload.page_size,
-          hasNext: action.payload.has_next,
-          hasPrevious: action.payload.has_previous,
+          size: action.payload.size,
+          has_next: action.payload.has_next,
         };
         state.error = null;
       })
-      .addCase(getEmployees.rejected, (state, action) => {
+      .addCase(fetchEmployees.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
 
-    // Get Employee by ID
+    // Fetch employee by ID
     builder
-      .addCase(getEmployeeById.pending, state => {
+      .addCase(fetchEmployeeById.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getEmployeeById.fulfilled, (state, action) => {
+      .addCase(fetchEmployeeById.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentEmployee = action.payload;
+        state.selectedEmployee = action.payload;
         state.error = null;
       })
-      .addCase(getEmployeeById.rejected, (state, action) => {
+      .addCase(fetchEmployeeById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
 
-    // Create Employee
+    // Create employee
     builder
-      .addCase(createEmployee.pending, state => {
+      .addCase(createEmployee.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -206,22 +204,20 @@ const employeeSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Update Employee
+    // Update employee
     builder
-      .addCase(updateEmployee.pending, state => {
+      .addCase(updateEmployee.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateEmployee.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.employees.findIndex(
-          emp => emp.id === action.payload.id
-        );
+        const index = state.employees.findIndex((e) => e.id === action.payload.id);
         if (index !== -1) {
           state.employees[index] = action.payload;
         }
-        if (state.currentEmployee?.id === action.payload.id) {
-          state.currentEmployee = action.payload;
+        if (state.selectedEmployee?.id === action.payload.id) {
+          state.selectedEmployee = action.payload;
         }
         state.error = null;
       })
@@ -230,20 +226,18 @@ const employeeSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Delete Employee
+    // Delete employee
     builder
-      .addCase(deleteEmployee.pending, state => {
+      .addCase(deleteEmployee.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteEmployee.fulfilled, (state, action) => {
         state.loading = false;
-        state.employees = state.employees.filter(
-          emp => emp.id !== action.payload
-        );
+        state.employees = state.employees.filter((e) => e.id !== action.payload);
         state.pagination.total -= 1;
-        if (state.currentEmployee?.id === action.payload) {
-          state.currentEmployee = null;
+        if (state.selectedEmployee?.id === action.payload) {
+          state.selectedEmployee = null;
         }
         state.error = null;
       })
@@ -252,24 +246,38 @@ const employeeSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Get Employee Analytics
+    // Reactivate employee
     builder
-      .addCase(getEmployeeAnalytics.pending, state => {
+      .addCase(reactivateEmployee.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getEmployeeAnalytics.fulfilled, (state, _action) => {
+      .addCase(reactivateEmployee.fulfilled, (state, action) => {
         state.loading = false;
-        // Analytics data can be stored in currentEmployee or separate analytics state
+        const index = state.employees.findIndex((e) => e.id === action.payload.id);
+        if (index !== -1) {
+          state.employees[index] = action.payload;
+        }
+        if (state.selectedEmployee?.id === action.payload.id) {
+          state.selectedEmployee = action.payload;
+        }
         state.error = null;
       })
-      .addCase(getEmployeeAnalytics.rejected, (state, action) => {
+      .addCase(reactivateEmployee.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
   },
 });
 
-export const { clearError, clearCurrentEmployee, setCurrentEmployee } =
-  employeeSlice.actions;
+// Selectors with null coalescing
+export const selectEmployees = (state: RootState) => state.employee?.employees ?? [];
+export const selectSelectedEmployee = (state: RootState) =>
+  state.employee?.selectedEmployee ?? null;
+export const selectEmployeeLoading = (state: RootState) => state.employee?.loading ?? false;
+export const selectEmployeeError = (state: RootState) => state.employee?.error ?? null;
+export const selectEmployeePagination = (state: RootState) =>
+  state.employee?.pagination ?? { total: 0, page: 1, size: 10, has_next: false };
+
+export const { clearError, clearSelectedEmployee } = employeeSlice.actions;
 export default employeeSlice.reducer;

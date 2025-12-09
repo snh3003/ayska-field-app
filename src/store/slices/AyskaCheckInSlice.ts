@@ -1,227 +1,156 @@
-// Check-in Redux Slice - Complete state management for check-in operations
-// Implements all check-in operations with proper error handling
-
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '..';
 import { ServiceContainer } from '../../di/ServiceContainer';
 import {
-  CheckinHistoryResponse,
+  Checkin,
   CheckinQueryParams,
   CheckinRequest,
   CheckinResponse,
-  EmployeeProfileResponse,
 } from '../../types/AyskaCheckInApiType';
+import { CheckInService } from '../../services/AyskaCheckInService';
 
-// State interface
+interface CheckInStats {
+  valid_checkins: number;
+  invalid_checkins: number;
+  total_doctors_visited: number;
+}
+
 interface CheckInState {
-  checkinHistory: any[];
-  currentCheckIn: any | null;
-  employeeProfile: EmployeeProfileResponse | null;
+  checkins: Checkin[];
+  lastCheckin: CheckinResponse | null;
   loading: boolean;
   error: string | null;
   pagination: {
     total: number;
     page: number;
     size: number;
-    hasNext: boolean;
-    validCheckins: number;
-    invalidCheckins: number;
-    totalDoctorsVisited: number;
+    has_next: boolean;
   };
-  filters: CheckinQueryParams;
-  lastCheckIn: CheckinResponse | null;
+  stats: CheckInStats;
 }
 
-// Initial state
 const initialState: CheckInState = {
-  checkinHistory: [],
-  currentCheckIn: null,
-  employeeProfile: null,
+  checkins: [],
+  lastCheckin: null,
   loading: false,
   error: null,
   pagination: {
     total: 0,
     page: 1,
     size: 10,
-    hasNext: false,
-    validCheckins: 0,
-    invalidCheckins: 0,
-    totalDoctorsVisited: 0,
+    has_next: false,
   },
-  filters: {},
-  lastCheckIn: null,
+  stats: {
+    valid_checkins: 0,
+    invalid_checkins: 0,
+    total_doctors_visited: 0,
+  },
 };
 
-// Async thunks
-export const submitCheckIn = createAsyncThunk<
-  CheckinResponse,
-  CheckinRequest,
-  { state: RootState; extra: { serviceContainer: ServiceContainer } }
->('checkin/submitCheckIn', async (data, thunkAPI) => {
-  const service = thunkAPI.extra.serviceContainer.get('ICheckInService') as any;
-  return service.submitCheckIn(data);
-});
+// Perform check-in
+export const performCheckin = createAsyncThunk(
+  'checkin/performCheckin',
+  async (data: CheckinRequest, { rejectWithValue }) => {
+    try {
+      const checkinService = ServiceContainer.getInstance().get(
+        'ICheckInService',
+      ) as CheckInService;
+      const response = await checkinService.submitCheckIn(data);
+      return response;
+    } catch (error: any) {
+      const message = error.message || 'Failed to perform check-in';
+      return rejectWithValue(message);
+    }
+  },
+);
 
-export const fetchCheckInHistory = createAsyncThunk<
-  CheckinHistoryResponse,
-  CheckinQueryParams | undefined,
-  { state: RootState; extra: { serviceContainer: ServiceContainer } }
->('checkin/fetchCheckInHistory', async (params, thunkAPI) => {
-  const service = thunkAPI.extra.serviceContainer.get('ICheckInService') as any;
-  return service.getCheckInHistory(params);
-});
+// Fetch check-in history
+export const fetchCheckinHistory = createAsyncThunk(
+  'checkin/fetchCheckinHistory',
+  async (params: CheckinQueryParams | undefined, { rejectWithValue }) => {
+    try {
+      const checkinService = ServiceContainer.getInstance().get(
+        'ICheckInService',
+      ) as CheckInService;
+      const response = await checkinService.getCheckInHistory(params);
+      return response;
+    } catch (error: any) {
+      const message = error.message || 'Failed to fetch check-in history';
+      return rejectWithValue(message);
+    }
+  },
+);
 
-export const fetchDoctorForCheckIn = createAsyncThunk<
-  any,
-  string,
-  { state: RootState; extra: { serviceContainer: ServiceContainer } }
->('checkin/fetchDoctorForCheckIn', async (id, thunkAPI) => {
-  const service = thunkAPI.extra.serviceContainer.get('ICheckInService') as any;
-  return service.getDoctorForCheckIn(id);
-});
-
-export const fetchEmployeeProfile = createAsyncThunk<
-  EmployeeProfileResponse,
-  void,
-  { state: RootState; extra: { serviceContainer: ServiceContainer } }
->('checkin/fetchEmployeeProfile', async (_, thunkAPI) => {
-  const service = thunkAPI.extra.serviceContainer.get('ICheckInService') as any;
-  return service.getEmployeeProfile();
-});
-
-// Slice
-const checkInSlice = createSlice({
+const checkinSlice = createSlice({
   name: 'checkin',
   initialState,
   reducers: {
-    clearError: state => {
+    clearError: (state) => {
       state.error = null;
     },
-    setFilters: (state, action: PayloadAction<CheckinQueryParams>) => {
-      state.filters = action.payload;
-    },
-    clearCurrentCheckIn: state => {
-      state.currentCheckIn = null;
-    },
-    clearLastCheckIn: state => {
-      state.lastCheckIn = null;
+    clearLastCheckin: (state) => {
+      state.lastCheckin = null;
     },
   },
-  extraReducers: builder => {
-    // Submit check-in
+  extraReducers: (builder) => {
+    // Perform check-in
     builder
-      .addCase(submitCheckIn.pending, state => {
+      .addCase(performCheckin.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(submitCheckIn.fulfilled, (state, action) => {
+      .addCase(performCheckin.fulfilled, (state, action) => {
         state.loading = false;
-        state.lastCheckIn = action.payload;
-        // Add to history if it's a valid check-in
-        if (action.payload.is_valid) {
-          state.checkinHistory.unshift({
-            id: action.payload.checkin_id,
-            is_valid: action.payload.is_valid,
-            distance_meters: action.payload.distance_meters,
-            checkin_time: new Date().toISOString(),
-          });
-          state.pagination.total += 1;
-          state.pagination.validCheckins += 1;
-        } else {
-          state.pagination.invalidCheckins += 1;
-        }
+        state.lastCheckin = action.payload;
+        state.error = null;
       })
-      .addCase(submitCheckIn.rejected, (state, action) => {
+      .addCase(performCheckin.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to submit check-in';
+        state.error = action.payload as string;
       });
 
     // Fetch check-in history
     builder
-      .addCase(fetchCheckInHistory.pending, state => {
+      .addCase(fetchCheckinHistory.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchCheckInHistory.fulfilled, (state, action) => {
+      .addCase(fetchCheckinHistory.fulfilled, (state, action) => {
         state.loading = false;
-        state.checkinHistory = action.payload.checkins;
+        state.checkins = action.payload.checkins;
         state.pagination = {
           total: action.payload.total,
           page: action.payload.page,
           size: action.payload.size,
-          hasNext: action.payload.has_next,
-          validCheckins: action.payload.valid_checkins,
-          invalidCheckins: action.payload.invalid_checkins,
-          totalDoctorsVisited: action.payload.total_doctors_visited,
+          has_next: action.payload.has_next,
         };
-      })
-      .addCase(fetchCheckInHistory.rejected, (state, action) => {
-        state.loading = false;
-        state.error =
-          action.error.message || 'Failed to fetch check-in history';
-      });
-
-    // Fetch doctor for check-in
-    builder
-      .addCase(fetchDoctorForCheckIn.pending, state => {
-        state.loading = true;
+        state.stats = {
+          valid_checkins: action.payload.valid_checkins,
+          invalid_checkins: action.payload.invalid_checkins,
+          total_doctors_visited: action.payload.total_doctors_visited,
+        };
         state.error = null;
       })
-      .addCase(fetchDoctorForCheckIn.fulfilled, (state, action) => {
+      .addCase(fetchCheckinHistory.rejected, (state, action) => {
         state.loading = false;
-        state.currentCheckIn = action.payload;
-      })
-      .addCase(fetchDoctorForCheckIn.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch doctor details';
-      });
-
-    // Fetch employee profile
-    builder
-      .addCase(fetchEmployeeProfile.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchEmployeeProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.employeeProfile = action.payload;
-      })
-      .addCase(fetchEmployeeProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error =
-          action.error.message || 'Failed to fetch employee profile';
+        state.error = action.payload as string;
       });
   },
 });
 
-// Actions
-export const { clearError, setFilters, clearCurrentCheckIn, clearLastCheckIn } =
-  checkInSlice.actions;
-
-// Selectors
-export const selectCheckInHistory = (state: RootState) =>
-  state.checkIn?.checkinHistory ?? [];
-export const selectCurrentCheckIn = (state: RootState) =>
-  state.checkIn?.currentCheckIn ?? null;
-export const selectEmployeeProfile = (state: RootState) =>
-  state.checkIn?.employeeProfile ?? null;
-export const selectCheckInLoading = (state: RootState) =>
-  state.checkIn?.loading ?? false;
-export const selectCheckInError = (state: RootState) =>
-  state.checkIn?.error ?? null;
-export const selectCheckInPagination = (state: RootState) =>
-  state.checkIn?.pagination ?? {
-    total: 0,
-    page: 1,
-    size: 10,
-    hasNext: false,
-    validCheckins: 0,
-    invalidCheckins: 0,
-    totalDoctorsVisited: 0,
+// Selectors with null coalescing
+export const selectCheckins = (state: RootState) => state.checkin?.checkins ?? [];
+export const selectLastCheckin = (state: RootState) => state.checkin?.lastCheckin ?? null;
+export const selectCheckinLoading = (state: RootState) => state.checkin?.loading ?? false;
+export const selectCheckinError = (state: RootState) => state.checkin?.error ?? null;
+export const selectCheckinPagination = (state: RootState) =>
+  state.checkin?.pagination ?? { total: 0, page: 1, size: 10, has_next: false };
+export const selectCheckinStats = (state: RootState) =>
+  state.checkin?.stats ?? {
+    valid_checkins: 0,
+    invalid_checkins: 0,
+    total_doctors_visited: 0,
   };
-export const selectCheckInFilters = (state: RootState) =>
-  state.checkIn?.filters ?? {};
-export const selectLastCheckIn = (state: RootState) =>
-  state.checkIn?.lastCheckIn ?? null;
 
-export default checkInSlice.reducer;
+export const { clearError, clearLastCheckin } = checkinSlice.actions;
+export default checkinSlice.reducer;

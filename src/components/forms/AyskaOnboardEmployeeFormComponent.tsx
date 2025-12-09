@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { Alert } from 'react-native';
 import { View as TamaguiView } from '@tamagui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,15 +12,13 @@ import { ButtonPrimary } from '../ui/AyskaButtonPrimaryComponent';
 import { useColorScheme } from '../../../hooks/use-color-scheme';
 import { Colors } from '../../../constants/theme';
 import { useToast } from '../../../contexts/ToastContext';
-// import { hapticFeedback } from '../../utils/haptics';
+import { hapticFeedback } from '../../../utils/haptics';
 
 interface OnboardEmployeeFormProps {
   onSuccess?: () => void;
 }
 
-export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
-  onSuccess,
-}) => {
+export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({ onSuccess }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { loading } = useSelector((state: RootState) => state.onboarding);
   const scheme = useColorScheme() ?? 'light';
@@ -39,29 +36,26 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
 
   const validationRules = {
     name: [CommonValidators.required('Name is required')],
-    email: [
-      CommonValidators.required('Email is required'),
-      CommonValidators.email,
-    ],
+    email: [CommonValidators.required('Email is required'), CommonValidators.email],
     age: [CommonValidators.required('Age is required'), CommonValidators.age],
     areaOfOperation: [CommonValidators.areaOfOperation],
   };
 
   const handleFieldChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
     if (touched[field]) {
       const context = new ValidationContext();
-      validationRules[field as keyof typeof validationRules]?.forEach(rule =>
-        context.addRule(rule)
+      validationRules[field as keyof typeof validationRules]?.forEach((rule) =>
+        context.addRule(rule),
       );
       const result = context.validate(value);
-      setErrors(prev => ({ ...prev, [field]: result.error || '' }));
+      setErrors((prev) => ({ ...prev, [field]: result.error || '' }));
     }
   };
 
   const handleFieldBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
     handleFieldChange(field, formData[field as keyof typeof formData]);
   };
 
@@ -81,11 +75,10 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
   const isFormValid = useMemo(() => {
     // Check all required fields are filled
     const allFieldsFilled = Object.keys(validationRules).every(
-      field =>
-        formData[field as keyof typeof formData]?.toString().trim() !== ''
+      (field) => formData[field as keyof typeof formData]?.toString().trim() !== '',
     );
     // Check no validation errors exist
-    const noErrors = Object.values(errors).every(err => !err);
+    const noErrors = Object.values(errors).every((err) => !err);
     return allFieldsFilled && noErrors;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData, errors]);
@@ -96,10 +89,8 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
     // hapticFeedback.light();
 
     if (!validateForm()) {
-      Alert.alert(
-        'Validation Error',
-        'Please fix the errors before submitting'
-      );
+      toast.error('Please fix the errors before submitting');
+      hapticFeedback.error();
       return;
     }
 
@@ -111,7 +102,7 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
           age: parseInt(formData.age),
           areaOfOperation: formData.areaOfOperation,
           adminId: 'a1', // Default admin ID
-        })
+        }),
       ).unwrap();
 
       // Show success toast
@@ -128,8 +119,11 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
       setTouched({});
 
       onSuccess?.();
-    } catch {
-      Alert.alert('Error', 'Failed to onboard employee');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.payload || 'Failed to onboard employee. Please try again.';
+      toast.error(errorMessage);
+      hapticFeedback.error();
     }
   };
 
@@ -138,62 +132,42 @@ export const OnboardEmployeeForm: React.FC<OnboardEmployeeFormProps> = ({
       <Input
         label="Name"
         value={formData.name}
-        onChangeText={value => handleFieldChange('name', value)}
+        onChangeText={(value) => handleFieldChange('name', value)}
         onBlur={() => handleFieldBlur('name')}
         placeholder="Enter employee name"
-        icon={
-          <Ionicons
-            name="person-outline"
-            size={20}
-            color={theme.textSecondary}
-          />
-        }
+        icon={<Ionicons name="person-outline" size={20} color={theme.textSecondary} />}
         error={touched.name ? errors.name || '' : ''}
       />
 
       <Input
         label="Email"
         value={formData.email}
-        onChangeText={value => handleFieldChange('email', value)}
+        onChangeText={(value) => handleFieldChange('email', value)}
         onBlur={() => handleFieldBlur('email')}
         placeholder="Enter email address"
         keyboardType="email-address"
-        icon={
-          <Ionicons name="mail-outline" size={20} color={theme.textSecondary} />
-        }
+        icon={<Ionicons name="mail-outline" size={20} color={theme.textSecondary} />}
         error={touched.email ? errors.email || '' : ''}
       />
 
       <Input
         label="Age"
         value={formData.age}
-        onChangeText={value => handleFieldChange('age', value)}
+        onChangeText={(value) => handleFieldChange('age', value)}
         onBlur={() => handleFieldBlur('age')}
         placeholder="Enter age"
         keyboardType="numeric"
-        icon={
-          <Ionicons
-            name="calendar-outline"
-            size={20}
-            color={theme.textSecondary}
-          />
-        }
+        icon={<Ionicons name="calendar-outline" size={20} color={theme.textSecondary} />}
         error={touched.age ? errors.age || '' : ''}
       />
 
       <Input
         label="Area of Operation"
         value={formData.areaOfOperation}
-        onChangeText={value => handleFieldChange('areaOfOperation', value)}
+        onChangeText={(value) => handleFieldChange('areaOfOperation', value)}
         onBlur={() => handleFieldBlur('areaOfOperation')}
         placeholder="Enter area of operation"
-        icon={
-          <Ionicons
-            name="location-outline"
-            size={20}
-            color={theme.textSecondary}
-          />
-        }
+        icon={<Ionicons name="location-outline" size={20} color={theme.textSecondary} />}
         error={touched.areaOfOperation ? errors.areaOfOperation || '' : ''}
       />
 

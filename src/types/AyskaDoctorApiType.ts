@@ -8,11 +8,13 @@ export interface Doctor {
   specialization: string;
   phone: string;
   email: string;
+  age?: number;
   location_lat: number;
   location_lng: number;
-  address: string;
+  location_address: string;
   created_at: string;
   updated_at: string;
+  created_by?: string;
 }
 
 // Create doctor payload
@@ -21,9 +23,10 @@ export interface CreateDoctorPayload {
   specialization: string;
   phone: string;
   email: string;
+  age?: number;
   location_lat: number;
   location_lng: number;
-  address: string;
+  location_address: string;
 }
 
 // Update doctor payload (partial)
@@ -32,9 +35,10 @@ export interface UpdateDoctorPayload {
   specialization?: string;
   phone?: string;
   email?: string;
+  age?: number;
   location_lat?: number;
   location_lng?: number;
-  address?: string;
+  location_address?: string;
 }
 
 // Create doctor response

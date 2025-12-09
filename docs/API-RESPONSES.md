@@ -11,7 +11,7 @@
 1. [Authentication Endpoints](#authentication-endpoints)
 2. [Admin - Employee Management](#admin---employee-management)
 3. [Admin - Doctor Management](#admin---doctor-management)
-4. [Admin - Assignment Management](#admin---assignment-management)
+4. [Admin - Employee Task Assignment](#admin---employee-task-assignment)
 5. [Employee - Assignments](#employee---assignments)
 6. [Employee - Check-ins](#employee---check-ins)
 7. [Employee - Doctors & Profile](#employee---doctors--profile)
@@ -509,7 +509,7 @@ Delete doctor (always permanent).
 
 ---
 
-## Admin - Assignment Management
+## Admin - Employee Task Assignment
 
 ### POST `/api/v1/admin/assignments`
 

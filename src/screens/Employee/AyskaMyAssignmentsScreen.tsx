@@ -6,49 +6,47 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { fetchEmployeeAssignments } from '../../store/slices/AyskaAssignmentSlice';
+import { fetchMyAssignments } from '../../store/slices/AyskaEmployeeViewSlice';
 import { fetchAllDoctors } from '../../store/slices/AyskaOnboardingSlice';
 import { AssignmentCard } from '../../components/business/AyskaAssignmentCardComponent';
+import { CardSkeleton } from '../../components/feedback/AyskaSkeletonLoaderComponent';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function MyAssignmentsScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
   const { doctors } = useSelector((state: RootState) => state.onboarding);
-  const { assignments: employeeAssignments, loading } = useSelector(
-    (state: RootState) => state.assignment
+  const { myAssignments: employeeAssignments, loading } = useSelector(
+    (state: RootState) => state.employeeView,
   );
 
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchEmployeeAssignments(user.id));
+      dispatch(fetchMyAssignments(user.id));
     }
     dispatch(fetchAllDoctors());
   }, [dispatch, user?.id]);
 
   const handleRefresh = () => {
     if (user?.id) {
-      dispatch(fetchEmployeeAssignments(user.id));
+      dispatch(fetchMyAssignments(user.id));
     }
   };
 
   const getDoctorName = (doctorId: string) => {
-    const doctor = doctors.find(doc => doc.id === doctorId);
+    const doctor = doctors.find((doc) => doc.id === doctorId);
     return doctor?.name || `Doctor ${doctorId}`;
   };
 
   const getTotalProgress = () => {
     return employeeAssignments.reduce(
       (sum: number, assignment: any) => sum + assignment.currentProgress,
-      0
+      0,
     );
   };
 
   const getTotalTarget = () => {
-    return employeeAssignments.reduce(
-      (sum: number, assignment: any) => sum + assignment.target,
-      0
-    );
+    return employeeAssignments.reduce((sum: number, assignment: any) => sum + assignment.target, 0);
   };
 
   const getCompletionRate = () => {
@@ -66,11 +64,7 @@ export default function MyAssignmentsScreen() {
         borderBottomWidth={1}
         borderBottomColor="#e0e0e0"
       >
-        <TamaguiView
-          onPress={() => router.back()}
-          padding="$sm"
-          marginRight="$sm"
-        >
+        <TamaguiView onPress={() => router.back()} padding="$sm" marginRight="$sm">
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TamaguiView>
         <TamaguiText fontSize="$6" fontWeight="bold" color="$text">
@@ -80,51 +74,23 @@ export default function MyAssignmentsScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={handleRefresh} />}
       >
         <TamaguiView padding="$md">
           {/* Summary Stats */}
-          <TamaguiView
-            backgroundColor="white"
-            borderRadius="$md"
-            padding="$md"
-            marginBottom="$md"
-          >
-            <TamaguiView
-              flexDirection="row"
-              alignItems="center"
-              marginBottom="$md"
-            >
+          <TamaguiView backgroundColor="white" borderRadius="$md" padding="$md" marginBottom="$md">
+            <TamaguiView flexDirection="row" alignItems="center" marginBottom="$md">
               <Ionicons name="analytics" size={24} color="#2196F3" />
-              <TamaguiText
-                fontSize="$5"
-                fontWeight="bold"
-                color="$text"
-                marginLeft="$sm"
-              >
+              <TamaguiText fontSize="$5" fontWeight="bold" color="$text" marginLeft="$sm">
                 Progress Summary
               </TamaguiText>
             </TamaguiView>
 
-            <TamaguiView
-              flexDirection="row"
-              justifyContent="space-between"
-              marginBottom="$sm"
-            >
+            <TamaguiView flexDirection="row" justifyContent="space-between" marginBottom="$sm">
               <TamaguiView flex={1} marginRight="$sm">
-                <TamaguiView
-                  flexDirection="row"
-                  alignItems="center"
-                  marginBottom="$xs"
-                >
+                <TamaguiView flexDirection="row" alignItems="center" marginBottom="$xs">
                   <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                  <TamaguiText
-                    fontSize="$3"
-                    color="$textSecondary"
-                    marginLeft="$xs"
-                  >
+                  <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
                     Completed
                   </TamaguiText>
                 </TamaguiView>
@@ -134,17 +100,9 @@ export default function MyAssignmentsScreen() {
               </TamaguiView>
 
               <TamaguiView flex={1} marginLeft="$sm">
-                <TamaguiView
-                  flexDirection="row"
-                  alignItems="center"
-                  marginBottom="$xs"
-                >
+                <TamaguiView flexDirection="row" alignItems="center" marginBottom="$xs">
                   <Ionicons name="flag" size={16} color="#FF9800" />
-                  <TamaguiText
-                    fontSize="$3"
-                    color="$textSecondary"
-                    marginLeft="$xs"
-                  >
+                  <TamaguiText fontSize="$3" color="$textSecondary" marginLeft="$xs">
                     Target
                   </TamaguiText>
                 </TamaguiView>
@@ -155,11 +113,7 @@ export default function MyAssignmentsScreen() {
             </TamaguiView>
 
             <TamaguiView marginBottom="$sm">
-              <TamaguiView
-                flexDirection="row"
-                justifyContent="space-between"
-                marginBottom="$xs"
-              >
+              <TamaguiView flexDirection="row" justifyContent="space-between" marginBottom="$xs">
                 <TamaguiText fontSize="$4" color="$text">
                   Overall Progress
                 </TamaguiText>
@@ -185,30 +139,23 @@ export default function MyAssignmentsScreen() {
 
           {/* Assignments List */}
           <TamaguiView backgroundColor="white" borderRadius="$md" padding="$md">
-            <TamaguiView
-              flexDirection="row"
-              alignItems="center"
-              marginBottom="$md"
-            >
+            <TamaguiView flexDirection="row" alignItems="center" marginBottom="$md">
               <Ionicons name="list" size={24} color="#FF9800" />
-              <TamaguiText
-                fontSize="$5"
-                fontWeight="bold"
-                color="$text"
-                marginLeft="$sm"
-              >
+              <TamaguiText fontSize="$5" fontWeight="bold" color="$text" marginLeft="$sm">
                 Doctor Assignments
               </TamaguiText>
             </TamaguiView>
 
-            {employeeAssignments.length === 0 ? (
+            {loading && employeeAssignments.length === 0 ? (
+              <TamaguiView>
+                {[...Array(3)].map((_, i) => (
+                  <CardSkeleton key={i} variant="assignment" />
+                ))}
+              </TamaguiView>
+            ) : employeeAssignments.length === 0 ? (
               <TamaguiView alignItems="center" padding="$lg">
                 <Ionicons name="document-outline" size={48} color="#ccc" />
-                <TamaguiText
-                  fontSize="$4"
-                  color="$textSecondary"
-                  marginTop="$sm"
-                >
+                <TamaguiText fontSize="$4" color="$textSecondary" marginTop="$sm">
                   No assignments yet
                 </TamaguiText>
                 <TamaguiText
